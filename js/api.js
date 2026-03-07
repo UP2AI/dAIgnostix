@@ -8,10 +8,10 @@
 
 // ============== KONFIGURASI ==============
 // Untuk development lokal:
-const API_BASE_URL = 'http://localhost:8000/api';
+// const API_BASE_URL = 'http://localhost:8000/api';
 
 // Untuk production (ganti dengan URL Railway Anda):
-// const API_BASE_URL = 'https://your-app-production.up.railway.app/api';
+const API_BASE_URL = 'https://daignostic-production.up.railway.app/api';
 
 // ============== HELPER ==============
 
