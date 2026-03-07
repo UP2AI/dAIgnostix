@@ -30,7 +30,7 @@ function createLoginModal() {
                     <span class="material-symbols-outlined text-8xl text-accent-yellow drop-shadow-lg">school</span>
                 </div>
                 <h1 class="text-5xl font-black text-white mb-6 leading-tight tracking-tight">dAIgnostic<br><span class="text-accent-yellow">Learning</span> Hub</h1>
-                <p class="text-white/80 text-lg leading-relaxed font-light">Platform pembelajaran interaktif dan adaptif berbasis kecerdasan buatan untuk Aparatur Sipil Negara.</p>
+                <p class="text-white/80 text-lg leading-relaxed font-light">Platform pembelajaran digital dan adaptif berbasis kecerdasan buatan.</p>
             </div>
         </div>
 
@@ -94,7 +94,7 @@ function createLoginModal() {
                 </form>
 
                 <div class="mt-12 text-center text-sm text-slate-500">
-                    <p>© 2024 Unit Peningkatan dan Pengembangan Aktivitas Instruksional Keuangan Negara - Unit Peningkatan dan Pengembangan Aktivitas Instruksional</p>
+                    <p>© 2026 Unit Peningkatan dan Pengembangan Aktivitas Instruksional</p>
                 </div>
             </div>
         </div>
