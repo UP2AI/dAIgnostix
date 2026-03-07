@@ -29,7 +29,7 @@ function createLoginModal() {
                 <div class="bg-white/10 p-6 rounded-3xl backdrop-blur-md border border-white/20 shadow-2xl inline-block mb-10">
                     <span class="material-symbols-outlined text-8xl text-accent-yellow drop-shadow-lg">school</span>
                 </div>
-                <h1 class="text-5xl font-black text-white mb-6 leading-tight tracking-tight">dAIgnostic<br><span class="text-accent-yellow">Learning</span> Hub</h1>
+                <h1 class="text-5xl font-black text-white mb-6 leading-tight tracking-tight">DAIGNOSTIC<br>Hub</h1>
                 <p class="text-white/80 text-lg leading-relaxed font-light">Platform pembelajaran digital dan adaptif berbasis kecerdasan buatan.</p>
             </div>
         </div>
@@ -41,7 +41,7 @@ function createLoginModal() {
                     <div class="inline-flex items-center justify-center bg-primary/10 p-4 rounded-full mb-4">
                         <span class="material-symbols-outlined text-4xl text-primary">school</span>
                     </div>
-                    <h2 class="text-3xl font-black text-slate-900 dark:text-white">dAIgnostic Learning</h2>
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white">DAIGNOSTIC</h2>
                 </div>
 
                 <div class="mb-10 text-center md:text-left">
@@ -284,7 +284,7 @@ function handleLogout() {
                 <span class="material-symbols-outlined text-3xl text-red-500">logout</span>
             </div>
             <h3 class="text-2xl font-black text-center text-slate-900 dark:text-white mb-2">Keluar Akun?</h3>
-            <p class="text-center text-slate-500 dark:text-slate-400 mb-8 font-medium text-sm">Anda akan keluar dari sesi pembelajaran dAIgnostic Learning.</p>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-8 font-medium text-sm">Anda akan keluar dari sesi pembelajaran DAIGNOSTIC.</p>
             
             <div class="flex gap-3">
                 <button id="btn-cancel-logout" class="flex-1 py-3.5 px-4 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 outline-none text-slate-700 dark:text-slate-200 font-bold rounded-xl transition-colors">
