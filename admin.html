@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html class="light" lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Admin Dashboard — Kemenkeu Learning</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent": "#FFCC00",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .tab-active {
+            color: #003366;
+            border-bottom: 3px solid #003366;
+            font-weight: 700;
+        }
+
+        .tab-inactive {
+            color: #94a3b8;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-inactive:hover {
+            color: #003366;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-hover {
+            transition: all 0.2s;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+    </style>
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <!-- Header -->
+        <header
+            class="sticky top-0 z-[70] w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 text-primary">
+                        <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">admin_panel_settings</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">Admin Panel</h2>
+                            <span
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">Kemenkeu
+                                Learning</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="index.html"
+                        class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors text-sm font-semibold">
+                        <span class="material-symbols-outlined text-lg">home</span>
+                        User View
+                    </a>
+                    <div class="hidden sm:flex flex-col items-end mr-2">
+                        <p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none" data-user-name></p>
+                        <p class="text-[11px] text-amber-600 font-bold mt-1 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-xs">shield</span> Admin
+                        </p>
+                    </div>
+                    <div class="relative group cursor-pointer flex-none w-10 h-10">
+                        <div
+                            class="w-full h-full rounded-full bg-primary border-2 border-accent overflow-hidden flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-xl">person</span>
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+                        <div
+                            class="absolute right-0 mt-3 w-52 bg-white dark:bg-slate-800 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <ul class="py-1">
+                                <li>
+                                    <button onclick="handleLogout()"
+                                        class="w-full text-left px-4 py-3 hover:bg-red-50 flex items-center gap-3 text-red-600 font-bold transition-colors">
+                                        <span class="material-symbols-outlined text-lg">logout</span>
+                                        Keluar Akun
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 py-6 md:py-8">
+            <!-- Tab Navigation -->
+            <div class="flex flex-wrap gap-0 border-b border-slate-200 dark:border-slate-700 mb-8 overflow-x-auto">
+                <button onclick="switchTab('dashboard')" id="tab-dashboard"
+                    class="tab-active px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">dashboard</span> Dashboard
+                </button>
+                <button onclick="switchTab('config')" id="tab-config"
+                    class="tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">settings</span> Konfigurasi
+                </button>
+                <button onclick="switchTab('bab')" id="tab-bab"
+                    class="tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">menu_book</span> Bab & Materi
+                </button>
+                <button onclick="switchTab('users')" id="tab-users"
+                    class="tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">group</span> Users
+                </button>
+                <button onclick="switchTab('database')" id="tab-database"
+                    class="tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">database</span> Database
+                </button>
+            </div>
+
+            <!-- TAB CONTENTS -->
+
+            <!-- Dashboard Tab -->
+            <div id="panel-dashboard" class="fade-in">
+                <h1 class="text-3xl font-extrabold text-primary dark:text-white mb-6 tracking-tight">Dashboard Overview
+                </h1>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8" id="stats-cards">
+                    <!-- JS populated -->
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div
+                        class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 card-hover">
+                        <h3 class="font-bold text-lg text-primary dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined">menu_book</span> Bab Terdaftar
+                        </h3>
+                        <div id="dashboard-bab-list" class="space-y-2 text-sm text-slate-600">Loading...</div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 card-hover">
+                        <h3 class="font-bold text-lg text-primary dark:text-white mb-4 flex items-center gap-2">
+                            <span class="material-symbols-outlined">group</span> User Terbaru
+                        </h3>
+                        <div id="dashboard-users-list" class="space-y-2 text-sm text-slate-600">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Config Tab -->
+            <div id="panel-config" class="hidden fade-in">
+                <h1 class="text-3xl font-extrabold text-primary dark:text-white mb-6 tracking-tight">Konfigurasi
+                    E-Learning</h1>
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 max-w-2xl card-hover">
+                    <form id="config-form" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Judul
+                                E-Learning</label>
+                            <input type="text" id="config-judul" required
+                                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent text-sm" />
+                        </div>
+                        <div>
+                            <label
+                                class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Deskripsi</label>
+                            <textarea id="config-deskripsi" rows="3"
+                                class="w-full px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:text-white focus:ring-2 focus:ring-primary focus:border-transparent text-sm"></textarea>
+                        </div>
+                        <button type="submit"
+                            class="bg-primary text-white px-6 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors flex items-center gap-2">
+                            <span class="material-symbols-outlined text-lg">save</span> Simpan Konfigurasi
+                        </button>
+                    </form>
+                    <div id="config-status" class="mt-4 hidden text-sm font-semibold"></div>
+                </div>
+            </div>
+
+            <!-- Bab & Materi Tab -->
+            <div id="panel-bab" class="hidden fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <h1 class="text-3xl font-extrabold text-primary dark:text-white tracking-tight">Bab & Materi PDF
+                    </h1>
+                    <button onclick="showAddBabModal()"
+                        class="bg-primary text-white px-5 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-colors flex items-center gap-2 text-sm self-start">
+                        <span class="material-symbols-outlined text-lg">add</span> Tambah Bab
+                    </button>
+                </div>
+                <div id="bab-list" class="space-y-4">
+                    <p class="text-slate-500">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Users Tab -->
+            <div id="panel-users" class="hidden fade-in">
+                <h1 class="text-3xl font-extrabold text-primary dark:text-white mb-6 tracking-tight">Manajemen Users
+                </h1>
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+                    <div
+                        class="p-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">search</span>
+                            <input type="text" id="user-search" placeholder="Cari NIP atau Nama..."
+                                class="px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm w-64 focus:ring-2 focus:ring-primary"
+                                oninput="filterUsers()" />
+                        </div>
+                        <span id="user-count" class="text-xs font-bold text-slate-400 uppercase tracking-wider"></span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead
+                                class="bg-slate-50 dark:bg-slate-800/50 text-left text-xs font-bold uppercase tracking-wider text-slate-500">
+                                <tr>
+                                    <th class="px-5 py-3">NIP</th>
+                                    <th class="px-5 py-3">Nama</th>
+                                    <th class="px-5 py-3">Role</th>
+                                    <th class="px-5 py-3">Terdaftar</th>
+                                    <th class="px-5 py-3 text-right">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-tbody" class="divide-y divide-slate-100 dark:divide-slate-800">
+                                <tr>
+                                    <td colspan="5" class="px-5 py-4 text-center text-slate-400">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Database Tab -->
+            <div id="panel-database" class="hidden fade-in">
+                <h1 class="text-3xl font-extrabold text-primary dark:text-white mb-6 tracking-tight">Database Overview
+                </h1>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" id="db-tables">
+                    <p class="text-slate-500">Loading...</p>
+                </div>
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-6 max-w-lg card-hover">
+                    <h3 class="font-bold text-red-600 flex items-center gap-2 mb-3">
+                        <span class="material-symbols-outlined">warning</span> Danger Zone
+                    </h3>
+                    <p class="text-sm text-slate-600 mb-4">Hapus semua data vector (materi_chunks). Semua bab perlu
+                        di-index ulang setelah ini.</p>
+                    <button onclick="handleClearVectors()"
+                        class="bg-red-600 text-white px-5 py-2.5 rounded-lg font-bold hover:bg-red-700 transition-colors flex items-center gap-2 text-sm">
+                        <span class="material-symbols-outlined text-lg">delete_forever</span> Clear All Vectors
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer
+            class="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 px-6 md:px-12 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto flex flex-col justify-center items-center gap-6 text-center">
+                <div class="flex flex-col items-center items-center text-primary/60 dark:text-slate-500">
+                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2024 Kementerian Keuangan
+                        Republik Indonesia</p>
+                    <p class="text-[10px] font-bold mt-1 uppercase tracking-widest text-slate-500">Pusat Pendidikan dan
+                        Pelatihan Keuangan</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add/Edit Bab Modal -->
+    <div id="bab-modal"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-md mx-4">
+            <h3 id="bab-modal-title" class="text-xl font-bold text-primary dark:text-white mb-5">Tambah Bab</h3>
+            <form id="bab-form" class="space-y-4">
+                <input type="hidden" id="bab-edit-id" value="" />
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Nomor Bab</label>
+                    <input type="number" id="bab-nomor" required min="1"
+                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Judul Bab</label>
+                    <input type="text" id="bab-judul" required
+                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm" />
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Deskripsi</label>
+                    <textarea id="bab-deskripsi" rows="2"
+                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white text-sm"></textarea>
+                </div>
+                <div class="flex gap-3 pt-2">
+                    <button type="submit"
+                        class="flex-1 bg-primary text-white py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-colors text-sm">Simpan</button>
+                    <button type="button" onclick="closeBabModal()"
+                        class="flex-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 py-2.5 rounded-lg font-bold hover:bg-slate-200 transition-colors text-sm">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Detail Modal -->
+    <div id="user-detail-modal"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm hidden">
+        <div
+            class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xl font-bold text-primary dark:text-white">Detail User</h3>
+                <button onclick="closeUserDetailModal()"
+                    class="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="user-detail-content" class="space-y-3 text-sm">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        // ============== STATE ==============
+        let allUsers = [];
+
+        // ============== TAB SWITCHING ==============
+        const tabs = ['dashboard', 'config', 'bab', 'users', 'database'];
+
+        function switchTab(tab) {
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).className = t === tab ? 'tab-active px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2' : 'tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2';
+                document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
+            });
+            // Load data for the tab
+            if (tab === 'dashboard') loadDashboard();
+            if (tab === 'config') loadConfig();
+            if (tab === 'bab') loadBab();
+            if (tab === 'users') loadUsers();
+            if (tab === 'database') loadDatabase();
+        }
+
+        // ============== DASHBOARD ==============
+        async function loadDashboard() {
+            try {
+                const [dbData, babData, usersData] = await Promise.all([
+                    getDbOverview(),
+                    getAdminBab(),
+                    getAdminUsers(),
+                ]);
+                const t = dbData.tables;
+
+                // Stats cards
+                const statsHtml = [
+                    { icon: 'group', label: 'Total Users', value: t.users || 0, color: 'bg-blue-500' },
+                    { icon: 'menu_book', label: 'Total Bab', value: babData.total || 0, color: 'bg-emerald-500' },
+                    { icon: 'data_array', label: 'Vector Chunks', value: t.materi_chunks || 0, color: 'bg-purple-500' },
+                    { icon: 'assignment', label: 'Pre-test Done', value: t.pretest || 0, color: 'bg-amber-500' },
+                ].map(s => `
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-5 card-hover">
+                        <div class="flex items-center gap-3">
+                            <div class="${s.color} w-11 h-11 rounded-xl flex items-center justify-center">
+                                <span class="material-symbols-outlined text-white">${s.icon}</span>
+                            </div>
+                            <div>
+                                <p class="text-2xl font-extrabold text-slate-900 dark:text-white">${s.value}</p>
+                                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">${s.label}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                document.getElementById('stats-cards').innerHTML = statsHtml;
+
+                // Bab list
+                if (babData.bab.length > 0) {
+                    document.getElementById('dashboard-bab-list').innerHTML = babData.bab.map(b => `
+                        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                            <div class="flex items-center gap-2">
+                                <span class="w-7 h-7 rounded-lg bg-primary/10 text-primary font-bold text-xs flex items-center justify-center">${b.nomor}</span>
+                                <span class="font-medium text-slate-700 dark:text-slate-300">${b.judul}</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded-full ${b.indexed ? 'bg-emerald-100 text-emerald-700' : b.pdf_filename ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'}">
+                                ${b.indexed ? '✓ Indexed' : b.pdf_filename ? 'PDF Only' : 'No PDF'}
+                            </span>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('dashboard-bab-list').innerHTML = '<p class="text-slate-400 italic">Belum ada bab terdaftar</p>';
+                }
+
+                // Users list (recent 5)
+                const recentUsers = usersData.users.slice(0, 5);
+                if (recentUsers.length > 0) {
+                    document.getElementById('dashboard-users-list').innerHTML = recentUsers.map(u => `
+                        <div class="flex items-center justify-between py-2 px-3 rounded-lg bg-slate-50 dark:bg-slate-800">
+                            <div>
+                                <span class="font-medium text-slate-700 dark:text-slate-300">${u.nama}</span>
+                                <span class="text-xs text-slate-400 ml-2">${u.nip}</span>
+                            </div>
+                            <span class="text-xs font-bold px-2 py-1 rounded-full ${u.role === 'admin' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}">
+                                ${u.role || 'user'}
+                            </span>
+                        </div>
+                    `).join('');
+                } else {
+                    document.getElementById('dashboard-users-list').innerHTML = '<p class="text-slate-400 italic">Belum ada user</p>';
+                }
+            } catch (err) {
+                console.error('Dashboard load error:', err);
+                document.getElementById('stats-cards').innerHTML = '<p class="text-red-500 col-span-4">Gagal memuat data: ' + err.message + '</p>';
+            }
+        }
+
+        // ============== CONFIG ==============
+        async function loadConfig() {
+            try {
+                const config = await getAdminConfig();
+                document.getElementById('config-judul').value = config.judul || '';
+                document.getElementById('config-deskripsi').value = config.deskripsi || '';
+            } catch (err) {
+                console.error('Config load error:', err);
+            }
+        }
+
+        document.getElementById('config-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const statusEl = document.getElementById('config-status');
+            try {
+                const judul = document.getElementById('config-judul').value.trim();
+                const deskripsi = document.getElementById('config-deskripsi').value.trim();
+                await saveAdminConfig(judul, deskripsi);
+                statusEl.textContent = '✓ Konfigurasi berhasil disimpan!';
+                statusEl.className = 'mt-4 text-sm font-semibold text-emerald-600 bg-emerald-50 p-3 rounded-lg';
+            } catch (err) {
+                statusEl.textContent = '✗ Gagal menyimpan: ' + err.message;
+                statusEl.className = 'mt-4 text-sm font-semibold text-red-600 bg-red-50 p-3 rounded-lg';
+            }
+            statusEl.classList.remove('hidden');
+            setTimeout(() => statusEl.classList.add('hidden'), 4000);
+        });
+
+        // ============== BAB MANAGEMENT ==============
+        async function loadBab() {
+            try {
+                const data = await getAdminBab();
+                const container = document.getElementById('bab-list');
+                if (data.bab.length === 0) {
+                    container.innerHTML = `
+                        <div class="bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-8 text-center">
+                            <span class="material-symbols-outlined text-4xl text-slate-400 mb-2">menu_book</span>
+                            <p class="text-slate-500 font-medium">Belum ada bab. Klik "Tambah Bab" untuk memulai.</p>
+                        </div>`;
+                    return;
+                }
+
+                container.innerHTML = data.bab.map(b => `
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden card-hover">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 gap-4">
+                            <div class="flex items-center gap-4 min-w-0">
+                                <div class="w-12 h-12 rounded-xl bg-primary/10 text-primary font-extrabold text-lg flex items-center justify-center shrink-0 border border-primary/20">${b.nomor}</div>
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-slate-900 dark:text-white text-base truncate">${b.judul}</h4>
+                                    <p class="text-xs text-slate-500 mt-0.5">${b.deskripsi || 'Tidak ada deskripsi'}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0 flex-wrap">
+                                <span class="text-xs font-bold px-2.5 py-1.5 rounded-full ${b.indexed ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : b.pdf_filename ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'}">
+                                    ${b.indexed ? '✓ Indexed' : b.pdf_filename ? '⏳ Not Indexed' : '✗ No PDF'}
+                                </span>
+                                <button onclick="editBab(${b.id}, ${b.nomor}, '${escapeAttr(b.judul)}', '${escapeAttr(b.deskripsi || '')}')" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors" title="Edit">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                </button>
+                                <button onclick="handleDeleteBab(${b.id}, '${escapeAttr(b.judul)}')" class="p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors" title="Hapus">
+                                    <span class="material-symbols-outlined text-lg">delete</span>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- PDF Upload Section -->
+                        <div class="border-t border-slate-100 dark:border-slate-800 px-5 py-4 bg-slate-50/50 dark:bg-slate-800/30">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                                <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 min-w-0">
+                                    <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
+                                    <span class="truncate">${b.pdf_filename ? b.pdf_filename : 'Belum ada PDF'}</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <label class="cursor-pointer bg-primary/10 text-primary hover:bg-primary/20 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm">upload_file</span>
+                                        Upload PDF
+                                        <input type="file" accept=".pdf" class="hidden" onchange="handleUploadPdf(${b.id}, this)" />
+                                    </label>
+                                    ${b.pdf_filename ? `<button onclick="handleReindex(${b.id})" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm">refresh</span> Re-Index
+                                    </button>` : ''}
+                                </div>
+                            </div>
+                            <div id="upload-status-${b.id}" class="mt-2 text-xs font-semibold hidden"></div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('bab-list').innerHTML = `<p class="text-red-500">Gagal memuat bab: ${err.message}</p>`;
+            }
+        }
+
+        function escapeAttr(str) {
+            return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        }
+
+        function showAddBabModal() {
+            document.getElementById('bab-modal-title').textContent = 'Tambah Bab Baru';
+            document.getElementById('bab-edit-id').value = '';
+            document.getElementById('bab-nomor').value = '';
+            document.getElementById('bab-judul').value = '';
+            document.getElementById('bab-deskripsi').value = '';
+            document.getElementById('bab-modal').classList.remove('hidden');
+        }
+
+        function editBab(id, nomor, judul, deskripsi) {
+            document.getElementById('bab-modal-title').textContent = 'Edit Bab';
+            document.getElementById('bab-edit-id').value = id;
+            document.getElementById('bab-nomor').value = nomor;
+            document.getElementById('bab-judul').value = judul;
+            document.getElementById('bab-deskripsi').value = deskripsi;
+            document.getElementById('bab-modal').classList.remove('hidden');
+        }
+
+        function closeBabModal() {
+            document.getElementById('bab-modal').classList.add('hidden');
+        }
+
+        document.getElementById('bab-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const editId = document.getElementById('bab-edit-id').value;
+            const nomor = parseInt(document.getElementById('bab-nomor').value);
+            const judul = document.getElementById('bab-judul').value.trim();
+            const deskripsi = document.getElementById('bab-deskripsi').value.trim();
+
+            try {
+                if (editId) {
+                    await updateAdminBab(parseInt(editId), nomor, judul, deskripsi);
+                } else {
+                    await addAdminBab(nomor, judul, deskripsi);
+                }
+                closeBabModal();
+                loadBab();
+            } catch (err) {
+                await customAlert('Error: ' + err.message, 'Error');
+            }
+        });
+
+        async function handleDeleteBab(id, judul) {
+            const confirmed = await customConfirm(`Hapus "${judul}"? Data terkait akan hilang.`, 'Hapus Bab');
+            if (!confirmed) return;
+            try {
+                await deleteAdminBab(id);
+                loadBab();
+            } catch (err) {
+                await customAlert('Gagal menghapus: ' + err.message, 'Hapus Gagal');
+            }
+        }
+
+        async function handleUploadPdf(babId, input) {
+            const file = input.files[0];
+            if (!file) return;
+            const statusEl = document.getElementById(`upload-status-${babId}`);
+            statusEl.textContent = '⏳ Mengupload dan mengindex...';
+            statusEl.className = 'mt-2 text-xs font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg';
+            statusEl.classList.remove('hidden');
+
+            try {
+                const result = await uploadBabPdf(babId, file);
+                statusEl.textContent = `✓ ${result.message}`;
+                statusEl.className = 'mt-2 text-xs font-semibold text-emerald-600 bg-emerald-50 p-2 rounded-lg';
+                setTimeout(() => loadBab(), 1500);
+            } catch (err) {
+                statusEl.textContent = `✗ Error: ${err.message}`;
+                statusEl.className = 'mt-2 text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg';
+            }
+            input.value = '';
+        }
+
+        async function handleReindex(babId) {
+            const confirmed = await customConfirm('Jalankan ulang indexing AI untuk bab ini?', 'Konfirmasi Re-index');
+            if (!confirmed) return;
+            const statusEl = document.getElementById(`upload-status-${babId}`);
+            statusEl.textContent = '⏳ Re-indexing...';
+            statusEl.className = 'mt-2 text-xs font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg';
+            statusEl.classList.remove('hidden');
+
+            try {
+                const result = await reindexBab(babId);
+                statusEl.textContent = `✓ ${result.message}`;
+                statusEl.className = 'mt-2 text-xs font-semibold text-emerald-600 bg-emerald-50 p-2 rounded-lg';
+                setTimeout(() => loadBab(), 1500);
+            } catch (err) {
+                statusEl.textContent = `✗ Error: ${err.message}`;
+                statusEl.className = 'mt-2 text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg';
+            }
+        }
+
+        // ============== USER MANAGEMENT ==============
+        async function loadUsers() {
+            try {
+                const data = await getAdminUsers();
+                allUsers = data.users;
+                document.getElementById('user-count').textContent = `${data.total} users`;
+                renderUsers(allUsers);
+            } catch (err) {
+                document.getElementById('users-tbody').innerHTML = `<tr><td colspan="5" class="px-5 py-4 text-center text-red-500">${err.message}</td></tr>`;
+            }
+        }
+
+        function renderUsers(users) {
+            const tbody = document.getElementById('users-tbody');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-5 py-4 text-center text-slate-400">Tidak ada user ditemukan</td></tr>';
+                return;
+            }
+            tbody.innerHTML = users.map(u => `
+                <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td class="px-5 py-3 font-mono text-xs text-slate-700 dark:text-slate-300">${u.nip}</td>
+                    <td class="px-5 py-3 font-medium">${u.nama}</td>
+                    <td class="px-5 py-3">
+                        <select onchange="handleRoleChange('${u.nip}', this.value)" class="text-xs font-bold px-2 py-1 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 ${u.role === 'admin' ? 'text-amber-700 bg-amber-50' : 'text-blue-700 bg-blue-50'}">
+                            <option value="user" ${(!u.role || u.role === 'user') ? 'selected' : ''}>User</option>
+                            <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Admin</option>
+                        </select>
+                    </td>
+                    <td class="px-5 py-3 text-xs text-slate-400">${u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID') : '-'}</td>
+                    <td class="px-5 py-3 text-right">
+                        <div class="flex items-center justify-end gap-1">
+                            <button onclick="showUserDetail('${u.nip}')" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-colors" title="Detail">
+                                <span class="material-symbols-outlined text-lg">visibility</span>
+                            </button>
+                            <button onclick="handleDeleteUser('${u.nip}', '${escapeAttr(u.nama)}')" class="p-1.5 rounded-lg hover:bg-red-50 text-red-500 transition-colors" title="Hapus">
+                                <span class="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filterUsers() {
+            const q = document.getElementById('user-search').value.toLowerCase();
+            const filtered = allUsers.filter(u => u.nip.toLowerCase().includes(q) || u.nama.toLowerCase().includes(q));
+            renderUsers(filtered);
+        }
+
+        async function handleRoleChange(nip, newRole) {
+            try {
+                await updateUserRole(nip, newRole);
+            } catch (err) {
+                await customAlert('Gagal ubah role: ' + err.message, 'Error');
+                loadUsers();
+            }
+        }
+
+        async function handleDeleteUser(nip, nama) {
+            const confirmed = await customConfirm(`Hapus permanen pengguna "${nama}" (${nip}) dan SEMUA data pembelajaran terkait?`, 'Hapus Pengguna');
+            if (!confirmed) return;
+            try {
+                await deleteAdminUser(nip);
+                loadUsers();
+            } catch (err) {
+                await customAlert('Gagal menghapus pengguna: ' + err.message, 'Error');
+            }
+        }
+
+        async function showUserDetail(nip) {
+            document.getElementById('user-detail-modal').classList.remove('hidden');
+            document.getElementById('user-detail-content').innerHTML = '<p class="text-slate-500">Loading...</p>';
+            try {
+                const data = await getAdminUserDetail(nip);
+                const u = data.user;
+                const p = data.progress;
+                const ps = p.progress_state || 0;
+                const stateLabels = ['Belum Pre-test', 'Pre-test Done', 'Materi Done', 'Post-test Done', 'Feedback Done'];
+
+                let materiHtml = '';
+                if (p.materi && p.materi.length > 0) {
+                    materiHtml = p.materi.map(m => `
+                        <div class="flex items-center justify-between text-xs py-1">
+                            <span>${m.bab}</span>
+                            <span class="font-bold ${m.finished ? 'text-emerald-600' : 'text-slate-400'}">${m.finished ? 'Selesai' : 'Belum'} · ${Math.round((m.time_spent_seconds || 0) / 60)} mnt</span>
+                        </div>
+                    `).join('');
+                }
+
+                document.getElementById('user-detail-content').innerHTML = `
+                    <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+                        <p class="text-lg font-bold text-slate-900 dark:text-white">${u.nama}</p>
+                        <p class="text-xs text-slate-500 mt-1">NIP: ${u.nip} · Role: <span class="font-bold ${u.role === 'admin' ? 'text-amber-600' : 'text-blue-600'}">${u.role || 'user'}</span></p>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Progress</p>
+                        <p class="font-bold text-primary text-sm">${stateLabels[ps]} (State ${ps}/4)</p>
+                        ${p.pretest_nilai !== undefined ? `<p class="text-xs mt-1">'pretest': ${p.pretest_nilai}/100</p>` : ''}
+                        ${p.posttest_nilai !== undefined ? `<p class="text-xs mt-1">'posttest': ${p.posttest_nilai}/100</p>` : ''}
+                    </div>
+                    ${materiHtml ? `
+                    <div class="bg-slate-50 dark:bg-slate-700/50 rounded-lg p-4">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Materi Progress</p>
+                        ${materiHtml}
+                    </div>` : ''}
+                `;
+            } catch (err) {
+                document.getElementById('user-detail-content').innerHTML = `<p class="text-red-500">${err.message}</p>`;
+            }
+        }
+
+        function closeUserDetailModal() {
+            document.getElementById('user-detail-modal').classList.add('hidden');
+        }
+
+        // ============== DATABASE ==============
+        async function loadDatabase() {
+            try {
+                const data = await getDbOverview();
+                const tables = data.tables;
+                const icons = {
+                    users: 'group', pretest: 'assignment', posttest: 'verified',
+                    learning_path: 'route', materi_progress: 'trending_up',
+                    feedback: 'forum', events: 'timeline', materi_chunks: 'data_array',
+                    elearning_config: 'settings', elearning_bab: 'menu_book',
+                };
+                document.getElementById('db-tables').innerHTML = Object.entries(tables).map(([name, count]) => `
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 p-4 card-hover">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-primary text-lg">${icons[name] || 'table'}</span>
+                            </div>
+                            <div>
+                                <p class="font-bold text-sm text-slate-900 dark:text-white">${name}</p>
+                                <p class="text-xs text-slate-500">${count === 'error' ? 'Error' : count + ' rows'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('db-tables').innerHTML = `<p class="text-red-500">${err.message}</p>`;
+            }
+        }
+
+        async function handleClearVectors() {
+            const confirmed = await customConfirm('PERHATIAN: Semua data vector akan dihapus. AI tidak akan dapat membaca materi sampai Anda melakukan re-index ulang semua PDF. Yakin lanjutkan?', 'Kosongkan Vector', 'Ya, Kosongkan', 'Batal');
+            if (!confirmed) return;
+
+            try {
+                const result = await clearVectors();
+                await customAlert(result.message, 'Sukses');
+                loadDatabase();
+            } catch (err) {
+                await customAlert('Gagal mengosongkan vector: ' + err.message, 'Error');
+            }
+        }
+
+        // ============== INIT ==============
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isLoggedIn() || !isAdmin()) return; // auth.js handles redirect
+            loadDashboard();
+        });
+    </script>
+</body>
+
+</html>

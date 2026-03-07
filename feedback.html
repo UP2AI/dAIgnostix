@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Ulasan & Analisis AI - Kemenkeu Learning</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent": "#FFCC00",
+                        "accent-yellow": "#FFCC00",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }</script>
+    <style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <script>
+        // Check progression state from Backend
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isLoggedIn()) return;
+            try {
+                const status = await getUserStatus(getCurrentNip());
+                if (status.progress_state < 3) {
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                // Ignore
+            }
+        });
+    </script>
+    <!-- API & Auth Modules -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tracker.js"></script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="sticky top-0 z-[70] w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+                <div class="flex items-center gap-4"><button
+                        class="lg:hidden p-2 -ml-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+                        id="mobile-menu-btn">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="flex items-center gap-2 text-primary">
+                        <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">school</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">Kemenkeu Learning
+                            </h2>
+                            <span
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">Pusdiklat
+                                Digital</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex gap-2 mr-2">
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+                            <span class="material-symbols-outlined">help</span>
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex flex-col items-end mr-4">
+                        <p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none" data-user-name></p>
+                        <p class="text-[11px] text-slate-500 font-medium mt-1">NIP <span data-user-nip></span></p>
+                    </div>
+                    <div class="relative group cursor-pointer flex-none w-10 h-10">
+                        <div class="w-full h-full rounded-full bg-primary border-2 border-accent overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="User profile avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnAzKEm418PbviM00GkQ9aPeclA8s4IDUTLyWQ-pU-96O7Ise3OwG_45gaU209E-ku2l4iBc-_faiE2rpseNIYJCxPXj48MP9_K5Njz0KDxG8rNqmPTIYPv5xCKR2o2FMgdKO9FDMpf_AVB70Qdhqg7qMopeJhahTI8oXJUIw5RRGPjhf-NNz23XAJ9PVF5Rty5GPconrMaZh6DRK_C7oVkW1d8GFD5C5_2Gm0dA70K1gz2kwklHcMf33-T5A-Bn7L480yVyAurA" />
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                            class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div
+                                class="px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Akun Anda</p>
+                                <p class="text-xs font-bold text-primary dark:text-accent truncate" data-user-name></p>
+                            </div>
+                            <ul class="py-1 text-sm text-slate-700 dark:text-slate-300">
+                                <li>
+                                    <button onclick="handleLogout()"
+                                        class="w-full text-left px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 text-red-600 dark:text-red-400 font-bold transition-colors group/logout">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 group-hover/logout:bg-red-600 group-hover/logout:text-white transition-all">
+                                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                                        </div>
+                                        <div>
+                                            <p class="leading-none">Keluar Akun</p>
+                                            <p class="text-[10px] font-medium text-slate-400 mt-1">Selesaikan sesi ini
+                                            </p>
+                                        </div>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main
+            class="flex-grow flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 py-6 md:py-8 gap-6 md:gap-8">
+            <div class="flex-grow space-y-8 min-w-0">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+                            <span>Beranda</span>
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            <span class="text-primary font-semibold">Feedback &amp; Analytics</span>
+                        </nav>
+                        <h1 class="text-3xl font-black text-slate-900 dark:text-white">Analisis & Ulasan Pembelajaran AI
+                        </h1>
+                    </div>
+                    <button
+                        class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">download</span> Unduh Laporan
+                    </button>
+                </div>
+                <!-- AI Generated Badge / Alert -->
+                <div
+                    class="bg-gradient-to-r from-primary to-slate-800 rounded-xl p-6 text-white shadow-lg flex flex-col md:flex-row gap-6 items-center">
+                    <div class="p-4 bg-white/10 rounded-full shrink-0">
+                        <span class="material-symbols-outlined text-5xl text-accent-yellow">auto_awesome</span>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold mb-2 text-accent-yellow">AI Comprehensive Analysis</h3>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Laporan ini di-generate secara otomatis oleh AI berdasarkan data pembelajaran Anda, meliputi
+                            hasil Pre-test, Post-test, serta analisis waktu yang dihabiskan pada setiap materi
+                            pembelajaran.
+                        </p>
+                    </div>
+                </div>
+                <!-- Score & Profile Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-semibold text-slate-500">Nilai Pre-test</span>
+                            <span class="material-symbols-outlined text-slate-400">assignment</span>
+                        </div>
+                        <div class="text-3xl font-black text-slate-900 dark:text-white" id="fb-Pre-test">-<span
+                                class="text-sm text-slate-500 font-medium">/100</span></div>
+                        <div class="mt-2 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded inline-flex w-max shrink-0"
+                            id="fb-Pre-test-badge">Memuat...</div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-semibold text-slate-500">Nilai Post-test</span>
+                            <span class="material-symbols-outlined text-slate-400">verified</span>
+                        </div>
+                        <div class="text-3xl font-black text-primary dark:text-white" id="fb-Post-test">-<span
+                                class="text-sm text-slate-500 font-medium">/100</span></div>
+                        <div class="mt-2 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded inline-flex w-max shrink-0"
+                            id="fb-Post-test-badge">Memuat...</div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-semibold text-slate-500">Profil Awal</span>
+                            <span class="material-symbols-outlined text-slate-400">person_search</span>
+                        </div>
+                        <div class="text-xl font-bold text-slate-700 dark:text-slate-300" id="fb-profil-awal">-</div>
+                    </div>
+                    <div
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between border-b-4 border-b-accent-yellow">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-sm font-semibold text-slate-500">Profil Akhir</span>
+                            <span class="material-symbols-outlined text-accent-yellow">military_tech</span>
+                        </div>
+                        <div class="text-xl font-black text-primary dark:text-accent-yellow" id="fb-profil-akhir">-
+                        </div>
+                    </div>
+                </div>
+                <!-- AI Detailed Report -->
+                <div
+                    class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+                    <h3
+                        class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <span class="material-symbols-outlined text-primary">subject</span>
+                        Interpretasi &amp; Rekomendasi AI
+                    </h3>
+                    <div id="ai-report-container"
+                        class="prose prose-slate dark:prose-invert max-w-none space-y-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                        <!-- Loading state -->
+                        <div class="flex items-center gap-3 py-8 justify-center" id="report-loading">
+                            <div class="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin">
+                            </div>
+                            <span class="text-slate-500">AI sedang menganalisis data Anda...</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Chapter Time Logs (Dynamic) -->
+                <div
+                    class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                    <div
+                        class="px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex justify-between items-center">
+                        <h3 class="text-base font-bold text-slate-900 dark:text-white">Statistik Keterlibatan Pemelajar
+                            per
+                            Bab</h3>
+                        <span class="material-symbols-outlined text-slate-400">timer</span>
+                    </div>
+                    <div class="p-6">
+                        <div id="bab-time-stats" class="space-y-4">
+                            <p class="text-slate-400 text-sm">Memuat statistik bab...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[55] hidden lg:hidden transition-opacity opacity-0"
+                id="sidebar-overlay"></div>
+            <aside
+                class="fixed inset-y-0 left-0 z-[60] w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:w-80 lg:shrink-0 lg:border-none transition-transform duration-300 ease-in-out h-full overflow-y-auto lg:h-auto lg:overflow-visible overscroll-contain"
+                id="sidebar">
+                <div
+                    class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm lg:sticky lg:top-24 w-full">
+                    <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-primary/5">
+                        <h2 class="font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">list_alt</span>
+                            Navigasi Belajar
+                        </h2>
+                    </div>
+                    <nav class="p-2 space-y-1">
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="index.html" href="index.html">
+                            <span class="material-symbols-outlined text-xl">home</span>
+                            <span class="text-sm">Home</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="pretest.html" href="pretest.html">
+                            <span class="material-symbols-outlined text-xl">assignment</span>
+                            <span class="text-sm">Pre-test</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="learningpath.html" href="learningpath.html">
+                            <span class="material-symbols-outlined text-xl">route</span>
+                            <span class="text-sm">Learning Path</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="materi.html" href="materi.html">
+                            <span class="material-symbols-outlined text-xl">menu_book</span>
+                            <span class="text-sm">Materi</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="postest.html" href="postest.html">
+                            <span class="material-symbols-outlined text-xl">verified</span>
+                            <span class="text-sm">Post-test</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-md font-bold"
+                            data-page="feedback.html" href="feedback.html">
+                            <span class="material-symbols-outlined text-xl">forum</span>
+                            <span class="text-sm">Ulasan & Feedback</span>
+                        </a>
+                    </nav>
+                    <div class="p-4 mt-2">
+                        <div class="bg-primary rounded-lg p-4 text-white relative overflow-hidden group">
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-8xl">help_outline</span>
+                            </div>
+                            <p class="text-xs font-semibold uppercase text-accent mb-1 tracking-wider">Bantuan</p>
+                            <h5 class="font-bold mb-3 text-sm">Butuh bantuan teknis?</h5>
+                            <button
+                                class="w-full bg-white text-primary text-xs py-2 rounded-md font-bold hover:bg-yellow-400 hover:text-slate-900 transition-colors">
+                                Hubungi Helpdesk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+        <footer
+            class="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 px-6 md:px-12 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto flex flex-col justify-center items-center gap-6 text-center">
+                <div class="flex flex-col items-center items-center text-primary/60 dark:text-slate-500">
+                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2024 Kementerian Keuangan
+                        Republik Indonesia</p>
+                    <p class="text-[10px] font-bold mt-1 uppercase tracking-widest text-slate-500">Pusat Pendidikan dan
+                        Pelatihan Keuangan</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script>
+        // update href logic from # to feedback.html on sidebar in other pages
+    </script>
+    <script id="sidebar-script">
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            function toggleSidebar() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    // Open
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                    }, 10);
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                } else {
+                    // Close
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 300);
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', toggleSidebar);
+                overlay.addEventListener('click', toggleSidebar);
+            }
+
+            // Defer sidebar links UI update until API returns, but allow basic nav locally
+            const nip = getCurrentNip();
+            if (isLoggedIn() && nip) {
+                getUserStatus(nip).then(status => {
+                    const state = status.progress_state;
+                    const sidebarLinks = document.querySelectorAll('#sidebar nav a');
+                    sidebarLinks.forEach(link => {
+                        const page = link.getAttribute('data-page');
+                        if (page === 'learningpath.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'materi.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'postest.html' && state < 2) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'feedback.html' && state < 3) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                    });
+                }).catch(e => console.error('Failed to sync sidebar permissions', e));
+            }
+
+            // ========== FEEDBACK API INTEGRATION ==========
+            // Load dynamic bab stats
+            async function loadBabStats() {
+                const nip = getCurrentNip();
+                const container = document.getElementById('bab-time-stats');
+                try {
+                    const [configData, progressData] = await Promise.all([
+                        getPublicConfig(),
+                        nip ? getMateriProgress(nip) : Promise.resolve({ progress: [] }),
+                    ]);
+                    const babList = configData.bab || [];
+                    const materiProgress = progressData.progress || [];
+
+                    if (babList.length === 0) {
+                        container.innerHTML = '<p class="text-amber-500 text-sm">Admin belum menambahkan bab materi.</p>';
+                        return;
+                    }
+
+                    // Find max time for highlight
+                    let maxTime = 0;
+                    babList.forEach(b => {
+                        const prog = materiProgress.find(p => p.bab === `bab${b.nomor}`);
+                        const seconds = prog ? (prog.time_spent_seconds || 0) : 0;
+                        if (seconds > maxTime) maxTime = seconds;
+                    });
+
+                    container.innerHTML = babList.map(b => {
+                        const prog = materiProgress.find(p => p.bab === `bab${b.nomor}`);
+                        const seconds = prog ? (prog.time_spent_seconds || 0) : 0;
+                        const isMax = seconds > 0 && seconds === maxTime;
+                        const pctOfMax = maxTime > 0 ? Math.round((seconds / maxTime) * 100) : 0;
+
+                        // Format time
+                        let timeStr;
+                        if (seconds >= 3600) {
+                            const hours = Math.floor(seconds / 3600);
+                            const mins = Math.round((seconds % 3600) / 60);
+                            timeStr = `${hours} Jam ${mins} Menit`;
+                        } else {
+                            timeStr = `${Math.round(seconds / 60)} Menit`;
+                        }
+
+                        const barColor = isMax ? 'bg-accent-yellow' : 'bg-primary';
+                        const barShadow = isMax ? 'shadow-inner' : '';
+                        const timeColor = isMax ? 'text-primary dark:text-accent-yellow font-black' : 'text-primary font-bold';
+                        const badge = isMax ? ' <span class="text-[10px] bg-accent-yellow text-primary px-1.5 rounded-full font-bold shadow-sm">Pusat Fokus (Terlama)</span>' : '';
+
+                        return `
+                        <div>
+                            <div class="flex flex-col sm:flex-row sm:justify-between text-sm mb-1 gap-1">
+                                <span class="font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">Bab ${b.nomor}: ${b.judul}${badge}</span>
+                                <span class="${timeColor}">${timeStr}</span>
+                            </div>
+                            <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2 ${barShadow}">
+                                <div class="${barColor} h-2 rounded-full transition-all" style="width: ${pctOfMax}%"></div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                } catch (err) {
+                    container.innerHTML = `<p class="text-red-500 text-sm">Gagal memuat: ${err.message}</p>`;
+                }
+            }
+
+            loadBabStats();
+
+            async function loadFeedback() {
+                const nip = getCurrentNip();
+                if (!nip) return;
+
+                // Track access to DB
+                try {
+                    await trackEvent(nip, 'feedback', 'page_view');
+                } catch (e) { }
+
+                try {
+                    const data = await getFeedback(nip);
+                    // Update score cards
+                    // Update score cards
+                    const preNilai = data.pretest_nilai ?? data.skor_pretest;
+                    if (preNilai != null) {
+                        document.getElementById('fb-Pre-test').innerHTML = `${preNilai}<span class="text-sm text-slate-500 font-medium">/100</span>`;
+                        const badge = document.getElementById('fb-Pre-test-badge');
+                        if (badge) {
+                            if (preNilai >= 75) {
+                                badge.className = 'mt-2 text-xs text-green-600 font-medium bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded inline-flex w-max shrink-0';
+                                badge.textContent = 'Baik';
+                            } else {
+                                badge.className = 'mt-2 text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded inline-flex w-max shrink-0';
+                                badge.textContent = 'Perlu Peningkatan';
+                            }
+                        }
+                    }
+                    if (data.posttest_nilai != null) {
+                        document.getElementById('fb-Post-test').innerHTML = `${data.posttest_nilai}<span class="text-sm text-slate-500 font-medium">/100</span>`;
+                        const badge = document.getElementById('fb-Post-test-badge');
+                        if (badge) {
+                            const diff = data.posttest_nilai - (preNilai || 0);
+                            badge.className = 'mt-2 text-xs text-green-600 font-medium bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded inline-flex w-max shrink-0 flex items-center gap-1';
+                            badge.innerHTML = `<span class="material-symbols-outlined text-[12px]">trending_up</span> ${diff >= 0 ? '+' : ''}${diff} Poin`;
+                        }
+                    }
+                    if (data.profil_awal) document.getElementById('fb-profil-awal').textContent = data.profil_awal;
+                    if (data.profil_akhir) document.getElementById('fb-profil-akhir').textContent = data.profil_akhir;
+
+                    // Update AI report
+                    const container = document.getElementById('ai-report-container');
+                    container.innerHTML = '';
+                    if (data.analisis_perkembangan) {
+                        container.innerHTML += `<p><strong>Analisis Perkembangan Kompetensi:</strong> ${data.analisis_perkembangan}</p>`;
+                    }
+                    if (data.evaluasi_perilaku) {
+                        container.innerHTML += `<p><strong>Evaluasi Perilaku Belajar:</strong><br>${data.evaluasi_perilaku}</p>`;
+                    }
+                    if (data.transformasi_profil) {
+                        container.innerHTML += `<p><strong>Transformasi Klasifikasi Profil:</strong><br>${data.transformasi_profil}</p>`;
+                    }
+                    if (data.kesimpulan_strategis) {
+                        container.innerHTML += `
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 mt-4">
+                                <h4 class="font-bold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-sm">lightbulb</span> Kesimpulan Strategis &amp; Next Actions
+                                </h4>
+                                <p class="text-blue-700 dark:text-blue-400">${data.kesimpulan_strategis}</p>
+                            </div>`;
+                    }
+                    if (!container.innerHTML) {
+                        container.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada data feedback. Selesaikan Pre-test dan Post-test terlebih dahulu.</p>';
+                    }
+                } catch (err) {
+                    document.getElementById('ai-report-container').innerHTML = `
+                        <div class="text-center py-8">
+                            <span class="material-symbols-outlined text-red-500 text-4xl">error</span>
+                            <p class="text-red-600 mt-2">${err.message}</p>
+                            <button onclick="loadFeedback()" class="mt-4 bg-primary text-white px-6 py-2 rounded-lg font-bold">Coba Lagi</button>
+                        </div>`;
+                }
+            }
+
+            loadFeedback();
+        });
+    </script>
+</body>
+
+</html>
+```
