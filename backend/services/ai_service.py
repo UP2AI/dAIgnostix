@@ -57,7 +57,7 @@ Gunakan field "bab_referensi" sesuai nama bab di atas (contoh: "Bab 1", "Bab 2",
         total_soal = 10
         distribusi = "Distribusikan soal secara merata dari semua bab materi.\nTotal: 10 soal."
 
-    prompt = f"""Kamu adalah pembuat soal ujian yang sangat handal dan profesional seperti seorang guru untuk materi pembelajaran saya.
+    prompt = f"""Gunakan kemampuan terhebat kamu. Kamu adalah Dosen pembuat soal ujian pre test yang sangat handal dan profesional untuk materi pembelajaran saya.
 
 Berdasarkan konteks materi berikut:
 ---
@@ -68,6 +68,22 @@ Buatkan {total_soal} soal pilihan ganda untuk pretest. soal harus bersifat tekni
 buatlah soal yang jawabannya tersurat pada materi yang telah diberikan sehingga mempermudah user dalam menjawab secara teori.
 {distribusi}
 Tingkat kesulitan: campuran mudah (30%), sedang (50%), sulit (20%).
+
+contoh soal yang jelek untuk pre test. 
+1. Apa nama program atau konsep yang diusung Kementerian Keuangan dalam materi tersebut?
+2. Berdasarkan materi, apa yang menjadi kekuatan organisasi Kementerian Keuangan untuk mengantisipasi ketidakpastian?
+3. Dalam konteks materi, apa yang harus diantisipasi oleh Learning Organization di lingkungan Kementerian Keuangan?
+4. Berdasarkan materi yang diberikan, dokumen hukum mana yang mengatur tentang Manajemen Pengetahuan?
+
+jangan menggunakan "Berdasarkan materi" , karena saat pre test materi belum diberikan.
+
+contoh soal yang bagus
+1. Pembelajaran Terintegrasi mengkombinasikan model belajar apa saja?
+2. Dalam tahapan pengelolaan prosesnya, Pembelajaran Terintegrasi harus diawali dengan?
+3. Apa yang dimaksud dengan pembelajaran terintegrasi menurut KMK Nomor 350/KMK.011/2022?
+4. Di bawah ini yang BUKAN merupakan salah satu model pembelajaran terintegrasi menurut KMK Nomor 350/KMK.011/2022
+5. Dalam implementasi dukungan manajemen pengetahuan, pendekatan intervensi pembelajaran di mana belajar tidak perlu meninggalkan tempat kerja disebut dengan
+6. Yang BUKAN merupakan tujuan dari pelaksanaan pembelajaran terintegrasi adalah
 
 FORMAT OUTPUT (JSON array saja, tanpa text lain):
 [
@@ -109,7 +125,7 @@ Gunakan field "bab_referensi" sesuai nama bab di atas (contoh: "Bab 1", "Bab 2",
         total_soal = 10
         distribusi = "Distribusikan soal secara merata dari semua bab materi.\nTotal: 10 soal."
 
-    prompt = f"""Kamu adalah pembuat soal ujian.
+    prompt = f"""Gunakan kemampuan terhebat kamu. Kamu adalah Dosen pembuat soal ujian post test.
 
 Berdasarkan konteks materi berikut:
 ---
@@ -122,6 +138,23 @@ jangan asal membuat soal dengan menggunakan materi tidak inti.
 jawaban harus tersurat pada materi yang telah diberikan sehingga mempermudah user dalam menjawab secara teori.
 {distribusi}
 Tingkat kesulitan: campuran mudah (20%), sedang (50%), sulit (30%).
+
+contoh soal yang jelek untuk pre test. 
+1. Apa nama program atau konsep yang diusung Kementerian Keuangan dalam materi tersebut?
+2. Berdasarkan materi, apa yang menjadi kekuatan organisasi Kementerian Keuangan untuk mengantisipasi ketidakpastian?
+3. Dalam konteks materi, apa yang harus diantisipasi oleh Learning Organization di lingkungan Kementerian Keuangan?
+4. Berdasarkan materi yang diberikan, dokumen hukum mana yang mengatur tentang Manajemen Pengetahuan?
+
+jangan menggunakan "Berdasarkan materi"
+
+contoh soal yang bagus
+1. Pembelajaran Terintegrasi mengkombinasikan model belajar apa saja?
+2. Dalam tahapan pengelolaan prosesnya, Pembelajaran Terintegrasi harus diawali dengan?
+3. Apa yang dimaksud dengan pembelajaran terintegrasi menurut KMK Nomor 350/KMK.011/2022?
+4. Di bawah ini yang BUKAN merupakan salah satu model pembelajaran terintegrasi menurut KMK Nomor 350/KMK.011/2022
+5. Dalam implementasi dukungan manajemen pengetahuan, pendekatan intervensi pembelajaran di mana belajar tidak perlu meninggalkan tempat kerja disebut dengan
+6. Yang BUKAN merupakan tujuan dari pelaksanaan pembelajaran terintegrasi adalah
+
 
 FORMAT OUTPUT (JSON array saja, tanpa text lain):
 [

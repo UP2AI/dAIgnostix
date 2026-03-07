@@ -1,0 +1,154 @@
+# Alur dan Struktur Kerja Aplikasi dAIgnostic Learning
+
+Dokumen ini memuat visualisasi alur kerja pengguna (User Workflow), alur kerja admin (Admin Workflow), serta struktur sistem (System Architecture) untuk keperluan presentasi dan dokumentasi aplikasi Anda.
+
+---
+
+## 1. Arsitektur Sistem (System Architecture)
+
+Aplikasi ini menggunakan arsitektur *Client-Server* modern yang diintegrasikan dengan kecerdasan buatan (Google Gemini) untuk menghasilkan personalisasi pembelajaran.
+
+```mermaid
+graph TD
+    subgraph "Frontend Layer"
+        UI[Antarmuka Pengguna/UI\nHTML5, TailwindCSS]
+        JS[Logika Klien\nVanilla JS - api.js]
+    end
+
+    subgraph "Backend Layer (Python/FastAPI)"
+        API[REST API\nFastAPI Routers]
+        SVC[Services Layer\nUser, Pretest, Posttest, dll]
+        VA[Vector Analytics\nPDF Content & AI Matching]
+    end
+
+    subgraph "External Services & Data"
+        DB[(Database Utama)]
+        VDB[(Vector Storage)]
+        AI[Google Gemini AI\nLLM Service]
+    end
+
+    UI <-->|Interaksi| JS
+    JS <-->|HTTP/JSON Request| API
+    API --> SVC
+    SVC <--> DB
+    SVC <--> VDB
+    VA <-->|Generate Embedding| VDB
+    SVC <-->|Prompt & Analisis| AI
+```
+
+---
+
+## 2. Alur Kerja Pengguna (User Journey/Workflow)
+
+Alur di bawah ini menunjukkan siklus perjalanan (journey) seorang pegawai (User) dari mulai masuk ke sistem hingga menyelesaikan seluruh rangkaian pembelajaran dan mendapatkan hasil evaluasi.
+
+```mermaid
+sequenceDiagram
+    actor U as Pegawai (User)
+    participant F as Frontend App
+    participant B as Backend API
+    participant AI as Gemini AI Engine
+
+    %% Proses Login
+    U->>F: Masuk (Login) / Input NIP
+    F->>B: GET /user/{nip}/status
+    B-->>F: Kembalikan Status Saat Ini
+    
+    %% Alur Evaluasi Pretest
+    rect rgb(240, 248, 255)
+        Note over U, AI: Tahap 1: Asesmen Awal (Pretest)
+        opt Jika status Baru / Belum Pretest
+            F->>U: Tampilkan Pretest (pretest.html)
+            U->>F: Submit Jawaban Pretest
+            F->>B: POST /pretest/submit
+            B->>AI: Analisis Gap Kompetensi (Prompting)
+            AI-->>B: Hasil Analisis & Rekomendasi Path
+            B-->>F: Status Sukses
+            F->>U: Arahkan ke Learning Path
+        end
+    end
+
+    %% Alur Belajar
+    rect rgb(240, 255, 240)
+        Note over U, B: Tahap 2: Pembelajaran Personal (Learning Path & Materi)
+        U->>F: Buka Dashboard (learningpath.html)
+        F->>B: GET /learning-path/{nip}
+        B-->>F: Daftar Bab & Materi yang Direkomendasikan
+        F->>U: Tampilkan Materi Terkurasi (materi.html)
+        
+        U->>F: Baca Materi
+        F->>B: POST /materi/track (Simpan durasi baca & aktivitas)
+        U->>F: Tandai "Selesai Membaca"
+        F->>B: POST /materi/complete
+    end
+
+    %% Alur Evaluasi Akhir
+    rect rgb(255, 245, 238)
+        Note over U, AI: Tahap 3: Asesmen Akhir (Posttest & Feedback)
+        opt Jika Seluruh Materi Selesai
+            F->>U: Tampilkan Posttest (postest.html)
+            U->>F: Submit Jawaban Akhir
+            F->>B: POST /posttest/submit
+            B->>AI: Evaluasi Akhir vs Pretest (Hitung Peningkatan)
+            AI-->>B: Generasi Feedback
+            B-->>F: Selesai
+            F->>U: Tampilkan Hasil Akhir & Sertifikat/Perayaan (feedback.html)
+        end
+    end
+```
+
+---
+
+## 3. Alur Kerja Administrator (Admin Workflow)
+
+Administrator bertugas untuk menyiapkan konten materi agar siap diakses dan dianalisis oleh AI (Vectorisasi). 
+
+```mermaid
+flowchart TD
+    A([Admin Login]) --> B{Pilih Menu}
+    B -->|Kelola Konfigurasi| C[Atur Konfigurasi Umum]
+    B -->|Kelola Pengguna| D[Lihat Progress User / Assign Role]
+    B -->|Kelola Materi/Bab| E[Input Bab Baru]
+    
+    E --> F[Upload Modul PDF per Bab]
+    F --> G[POST /admin/bab/{id}/upload-pdf]
+    
+    G --> H[Mengekstrak Teks dari PDF]
+    H --> I[Melakukan Vectorisasi Text]
+    I --> J[(Simpan di Vector Database)]
+    J --> K([Materi Siap Digunakan & Terbaca oleh AI])
+```
+
+---
+
+## 4. Struktur Folder (Direktori) Aplikasi
+
+Berikut adalah susunan ruang kerja (workspace) yang digunakan untuk membangun aplikasi e-learning ini:
+
+```text
+elearning_project/
+├── 📁 backend/                # Server dan Logika Inti (Python/FastAPI)
+│   ├── 📁 routers/            # Pengaturan Endpoint (Pretest, User, Materi, dll.)
+│   ├── 📁 services/           # Logika Bisnis & Penghubung ke AI Gemini
+│   ├── 📁 data/               # Penyimpanan lokal (Database SQLite, dll.)
+│   ├── 📁 scripts/            # Script utilitas perbaikan/maintenance
+│   ├── .env                   # Variabel environment (API Keys)
+│   ├── main.py                # File utama FastAPI
+│   └── requirements.txt       # Dependencies Backend
+│
+├── 📁 js/                     # Skrip Klien (JavaScript)
+│   └── api.js                 # Centralize pemanggilan API Backend ke Frontend
+│
+├── 📄 index.html              # Halaman Beranda / Autentikasi
+├── 📄 learningpath.html       # Tampilan kurikulum hasil generasi AI
+├── 📄 materi.html             # Modul pembelajaran & tracking waktu
+├── 📄 pretest.html            # Halaman asesmen awal
+├── 📄 postest.html            # Halaman asesmen akhir
+├── 📄 feedback.html           # Hasil evaluasi dan selebrasi
+└── 📄 admin.html              # Dashboard tata kelola admin (Upload materi)
+```
+
+## Keunggulan Utama untuk Dipresentasikan
+1. **Model Penilaian Dinamis**: Pengumpulan data melalui *Pretest* dan *Posttest* divalidasi dan dianalisis menggunakan *LLM (Google Gemini).*
+2. **Personalisasi Berbasis AI**: Sistem membuat rute pembelajaran (*Learning Path*) yang disesuaikan berdasarkan gap *(celah)* kompetensi pengguna.
+3. **Data-Driven Tracking**: Admin dapat melihat secara detail di modul mana *User* menghabiskan waktu paling banyak melalui fitur *Time Tracking*.
