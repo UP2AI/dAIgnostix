@@ -173,7 +173,11 @@ async def serve_materi_pdf(bab_id: int):
     if not os.path.exists(filepath):
         raise HTTPException(status_code=404, detail="File PDF tidak ditemukan di server")
 
-    return FileResponse(filepath, media_type="application/pdf", filename=filename)
+    return FileResponse(
+        filepath,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename=\"{filename}\""},
+    )
 
 
 @router.post("/admin/upload-pdf")
