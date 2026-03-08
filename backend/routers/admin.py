@@ -3,6 +3,7 @@ Admin router — E-Learning management, user management, PDF upload & indexing.
 """
 import os
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from services import db_service, rag_service
 
@@ -127,6 +128,52 @@ async def upload_bab_pdf(bab_id: int, file: UploadFile = File(...)):
             "chunks": 0,
             "indexed": False,
         }
+
+@router.post("/admin/bab/{bab_id}/upload-materi-pdf")
+async def upload_bab_materi_pdf(bab_id: int, file: UploadFile = File(...)):
+    """Upload user-facing materi PDF for a specific bab (NOT indexed to vector DB)."""
+    existing = db_service.get_bab_by_id(bab_id)
+    if not existing:
+        raise HTTPException(status_code=404, detail="Bab tidak ditemukan")
+
+    if not file.filename.lower().endswith(".pdf"):
+        raise HTTPException(status_code=400, detail="Hanya file PDF yang diizinkan")
+
+    os.makedirs(PDF_DIR, exist_ok=True)
+
+    safe_filename = f"bab{existing['nomor']}_materi_{file.filename}"
+    filepath = os.path.join(PDF_DIR, safe_filename)
+
+    content = await file.read()
+    with open(filepath, "wb") as f:
+        f.write(content)
+
+    db_service.update_bab_materi_pdf(bab_id, safe_filename)
+    return {
+        "message": f"PDF Materi berhasil diupload",
+        "filename": safe_filename,
+    }
+
+
+@router.get("/admin/bab/{bab_id}/serve-materi-pdf")
+async def serve_materi_pdf(bab_id: int):
+    """Serve the user-facing materi PDF file for display in frontend."""
+    bab = db_service.get_bab_by_id(bab_id)
+    if not bab:
+        raise HTTPException(status_code=404, detail="Bab tidak ditemukan")
+
+    filename = bab.get("pdf_materi_filename", "")
+    if not filename:
+        # Fallback to RAG PDF if no separate materi PDF
+        filename = bab.get("pdf_filename", "")
+    if not filename:
+        raise HTTPException(status_code=404, detail="Bab ini belum memiliki PDF materi")
+
+    filepath = os.path.join(PDF_DIR, filename)
+    if not os.path.exists(filepath):
+        raise HTTPException(status_code=404, detail="File PDF tidak ditemukan di server")
+
+    return FileResponse(filepath, media_type="application/pdf", filename=filename)
 
 
 @router.post("/admin/upload-pdf")

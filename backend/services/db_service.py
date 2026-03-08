@@ -401,6 +401,17 @@ def update_bab_pdf(bab_id: int, pdf_filename: str, indexed: bool = False) -> dic
     return res.data[0] if res.data else {}
 
 
+def update_bab_materi_pdf(bab_id: int, pdf_materi_filename: str) -> dict:
+    """Update materi PDF filename for a bab (user-facing, not indexed)."""
+    res = (
+        supabase.table("elearning_bab")
+        .update({"pdf_materi_filename": pdf_materi_filename})
+        .eq("id", bab_id)
+        .execute()
+    )
+    return res.data[0] if res.data else {}
+
+
 def mark_bab_indexed(bab_id: int) -> dict:
     """Mark a bab as indexed (vector DB populated)."""
     res = (

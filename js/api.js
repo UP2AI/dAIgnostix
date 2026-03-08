@@ -165,6 +165,10 @@ async function uploadBabPdf(babId, file) {
     return apiUpload(`/admin/bab/${babId}/upload-pdf`, file);
 }
 
+async function uploadBabMateriPdf(babId, file) {
+    return apiUpload(`/admin/bab/${babId}/upload-materi-pdf`, file);
+}
+
 async function reindexBab(babId) {
     return apiCall(`/admin/reindex-bab/${babId}`, 'POST');
 }

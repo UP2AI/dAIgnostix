@@ -506,25 +506,47 @@
                                 </button>
                             </div>
                         </div>
-                        <!-- PDF Upload Section -->
-                        <div class="border-t border-slate-100 dark:border-slate-800 px-5 py-4 bg-slate-50/50 dark:bg-slate-800/30">
+                        <!-- PDF Upload Section: Dual -->
+                        <div class="border-t border-slate-100 dark:border-slate-800 px-5 py-4 bg-slate-50/50 dark:bg-slate-800/30 space-y-3">
+                            <!-- PDF Database RAG -->
                             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                                <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 min-w-0">
-                                    <span class="material-symbols-outlined text-lg">picture_as_pdf</span>
-                                    <span class="truncate">${b.pdf_filename ? b.pdf_filename : 'Belum ada PDF'}</span>
+                                <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 min-w-0 flex-1">
+                                    <span class="material-symbols-outlined text-lg text-purple-500">database</span>
+                                    <div class="min-w-0">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-purple-600 dark:text-purple-400">PDF Database RAG</span>
+                                        <p class="truncate text-xs">${b.pdf_filename ? b.pdf_filename : 'Belum ada PDF database'}</p>
+                                    </div>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
-                                    <label class="cursor-pointer bg-primary/10 text-primary hover:bg-primary/20 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
+                                    <label class="cursor-pointer bg-purple-100 text-purple-700 hover:bg-purple-200 dark:bg-purple-900/30 dark:text-purple-400 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
                                         <span class="material-symbols-outlined text-sm">upload_file</span>
-                                        Upload PDF
+                                        Upload RAG
                                         <input type="file" accept=".pdf" class="hidden" onchange="handleUploadPdf(${b.id}, this)" />
                                     </label>
-                                    ${b.pdf_filename ? `<button onclick="handleReindex(${b.id})" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
+                                    ${b.pdf_filename ? ` <button onclick="handleReindex(${b.id})" class="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
                                         <span class="material-symbols-outlined text-sm">refresh</span> Re-Index
                                     </button>` : ''}
                                 </div>
                             </div>
-                            <div id="upload-status-${b.id}" class="mt-2 text-xs font-semibold hidden"></div>
+                            <div id="upload-status-${b.id}" class="text-xs font-semibold hidden"></div>
+                            <!-- PDF Materi User -->
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
+                                <div class="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 min-w-0 flex-1">
+                                    <span class="material-symbols-outlined text-lg text-blue-500">menu_book</span>
+                                    <div class="min-w-0">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">PDF Materi User</span>
+                                        <p class="truncate text-xs">${b.pdf_materi_filename ? b.pdf_materi_filename : 'Belum ada PDF materi'}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <label class="cursor-pointer bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-400 px-3.5 py-2 rounded-lg font-bold text-xs transition-colors flex items-center gap-1.5">
+                                        <span class="material-symbols-outlined text-sm">upload_file</span>
+                                        Upload Materi
+                                        <input type="file" accept=".pdf" class="hidden" onchange="handleUploadMateriPdf(${b.id}, this)" />
+                                    </label>
+                                </div>
+                            </div>
+                            <div id="upload-materi-status-${b.id}" class="text-xs font-semibold hidden"></div>
                         </div>
                     </div>
                 `).join('');
@@ -606,6 +628,26 @@
             } catch (err) {
                 statusEl.textContent = `✗ Error: ${err.message}`;
                 statusEl.className = 'mt-2 text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg';
+            }
+            input.value = '';
+        }
+
+        async function handleUploadMateriPdf(babId, input) {
+            const file = input.files[0];
+            if (!file) return;
+            const statusEl = document.getElementById(`upload-materi-status-${babId}`);
+            statusEl.textContent = '⏳ Mengupload PDF materi...';
+            statusEl.className = 'text-xs font-semibold text-blue-600 bg-blue-50 p-2 rounded-lg';
+            statusEl.classList.remove('hidden');
+
+            try {
+                const result = await uploadBabMateriPdf(babId, file);
+                statusEl.textContent = `✓ ${result.message}`;
+                statusEl.className = 'text-xs font-semibold text-emerald-600 bg-emerald-50 p-2 rounded-lg';
+                setTimeout(() => loadBab(), 1500);
+            } catch (err) {
+                statusEl.textContent = `✗ Error: ${err.message}`;
+                statusEl.className = 'text-xs font-semibold text-red-600 bg-red-50 p-2 rounded-lg';
             }
             input.value = '';
         }

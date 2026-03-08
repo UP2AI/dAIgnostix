@@ -101,7 +101,8 @@
                             <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">DAIGNOSTIC
                             </h2>
                             <span
-                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">pembelajaran Digital dan Adaptif</span>
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">pembelajaran
+                                Digital dan Adaptif</span>
                         </div>
                     </div>
                 </div>
@@ -324,7 +325,8 @@
             class="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 px-6 md:px-12 bg-white dark:bg-slate-900">
             <div class="max-w-7xl mx-auto flex flex-col justify-center items-center gap-6 text-center">
                 <div class="flex flex-col items-center items-center text-primary/60 dark:text-slate-500">
-                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2026 Unit Peningkatan dan Pengembangan Aktivitas Instruksional</p>
+                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2026 Unit Peningkatan dan
+                        Pengembangan Aktivitas Instruksional</p>
                 </div>
             </div>
         </footer>
@@ -471,7 +473,8 @@
                         </div>
                         <p class="text-xs text-slate-500 mb-3 flex-grow leading-relaxed line-clamp-2">${b.deskripsi || 'Klik untuk membuka materi bab ini.'}</p>
                         <div class="flex items-center gap-2 mt-auto">
-                            ${b.pdf_filename ? '<span class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-xs">picture_as_pdf</span> PDF</span>' : ''}
+                            ${(b.pdf_materi_filename || b.pdf_filename) ? '<span class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-xs">picture_as_pdf</span> PDF</span>' : ''}
+                            ${b.pdf_materi_filename ? '<span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold">Materi</span>' : ''}
                             ${b.indexed ? '<span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-semibold">Indexed</span>' : ''}
                         </div>
                     </div>
@@ -497,11 +500,12 @@
             document.getElementById('bab-detail').classList.remove('hidden');
 
             // Show PDF section or no-PDF section
-            if (bab.pdf_filename) {
+            // Use serve-materi-pdf endpoint (returns pdf_materi_filename or fallback to pdf_filename)
+            if (bab.pdf_materi_filename || bab.pdf_filename) {
                 document.getElementById('pdf-section').classList.remove('hidden');
                 document.getElementById('no-pdf-section').classList.add('hidden');
-                document.getElementById('pdf-filename').textContent = bab.pdf_filename;
-                const pdfUrl = `${API_BASE_URL.replace('/api', '')}/data/materi/${bab.pdf_filename}`;
+                document.getElementById('pdf-filename').textContent = bab.pdf_materi_filename || bab.pdf_filename;
+                const pdfUrl = `${API_BASE_URL}/admin/bab/${bab.id}/serve-materi-pdf`;
                 // Embed PDF in iframe with toolbar hidden to prevent download
                 document.getElementById('pdf-iframe').src = pdfUrl + '#toolbar=0&navpanes=0&statusbar=0';
             } else {

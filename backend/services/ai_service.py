@@ -206,6 +206,7 @@ Buatkan learning path personal dengan format JSON.
 FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil": "Pemula|Menengah|Mahir",
+  "syarat pembagian profil": "Pemula: 0-60, Menengah: 61-80, Mahir: 81-100",
   "penjabaran_profil": "Deskripsi analisis kemampuan user berdasarkan data pretest... jangan menggunakan kata user tetapi gunakan kata 'Anda' sebagai sapaan",
   "skor_pretest": {nilai},
   "learning_path": {{
@@ -242,7 +243,7 @@ def generate_feedback(
 
     events_summary = json.dumps(events[:50], default=str, ensure_ascii=False)
 
-    prompt = f"""Kamu adalah dosen dan analis AI pembelajaran profesional . Buat laporan feedback komprehensif.
+    prompt = f"""Kamu adalah dosen dan analis AI pembelajaran profesional. Buat laporan feedback komprehensif.
 
 DATA PEMBELAJARAN:
 - Nilai Pretest: {pretest_nilai}/100
