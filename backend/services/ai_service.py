@@ -243,8 +243,22 @@ def generate_feedback(
 
     events_summary = json.dumps(events[:50], default=str, ensure_ascii=False)
 
-    prompt = f"""Kamu adalah dosen dan analis AI pembelajaran profesional. Buat laporan feedback komprehensif tanpa men jugje user dengan buruk
-    berikan feedback yang membangun, yang memotivasi user.
+    prompt = f"""Role: Anda adalah seorang Spesialis Pengembangan SDM dan Motivator Pembelajaran Digital di lingkungan Kementerian Keuangan.
+
+Tugas: Buatlah analisis hasil pembelajaran e-learning untuk pegawai Kemenkeu berdasarkan data performa mereka. Gunakan nada bicara yang sangat apresiatif, inspiratif, personal, dan profesional (seperti gaya mentor yang menyemangati).
+
+Ketentuan Penulisan:
+
+Gaya Bahasa: Gunakan pendekatan motivasional yang hangat. Hindari bahasa yang terlalu kaku, namun tetap jaga profesionalitas ASN.
+
+Panjang Konten: Setiap nilai dalam JSON harus berupa paragraf yang panjang, mendalam, dan deskriptif (minimal 4-6 kalimat per paragraf).
+
+Konteks Kemenkeu: Hubungkan keberhasilan belajar dengan kontribusi terhadap organisasi (Kemenkeu), peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi internal (seperti BPPK, KLC, atau LSP Kemenkeu).
+
+Sapaan: Selalu gunakan kata "Anda".
+
+Larangan: Jangan memberikan saran untuk mengubah tipe atau format materi e-learning yang diberikan penyelenggara. Fokus pada pengembangan diri user.
+
 
 DATA PEMBELAJARAN:
 - Nilai Pretest: {pretest_nilai}/100
@@ -258,12 +272,10 @@ DATA PEMBELAJARAN:
 FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "Pemula|Menengah|Mahir",
-  "analisis_perkembangan": "Paragraf analisis perbandingan pretest-posttest...",
-  "evaluasi_perilaku": "Paragraf analisis behavior learning berdasarkan event tracker. jika user suka skip materi maka memang cara belajar user seperti itu...",
-  "transformasi_profil": "Paragraf transformasi profil dari awal ke akhir...",
-  "kesimpulan_strategis": "Paragraf saran dan next actions yang berguna untuk user 
-  dalam meningkatkan pengetahuan/skill/karir berkaitan dengan pelaksanaan pembelajaran ini. jangan sarankan terkait perubahan tipe materi elearning yang penyelenggara berikan. gunakan kata 'Anda' sebagai sapaan.
-  jika user lulus posttest, berikan rekomendasi pengembangan karir yang sesuai dengan elearning ini, misal user bisa mengajukan sertifikasi dan berikan link sertifikasi nya, user bisa bekerja pada bagian tertentu, pemahaman setara manajer, dan sebagainya "
+  "analisis_perkembangan": "[Tulis paragraf panjang tentang perbandingan skor pre-test dan post-test. jika ada lompatan nilai yang signifikan, Tekankan pada 'lompatan' kompetensi yang luar biasa sebagai bukti ketajaman berpikir di bawah tekanan waktu]",
+  "evaluasi_perilaku": "[Tulis paragraf panjang tentang pola belajar user. Jika user banyak skip materi dan langsung ke post-test, interpretasikan ini secara positif sebagai gaya belajar 'Strategic Problem Solver' atau strategi belajar user yang sangat efisien untuk ritme kerja Kemenkeu yang cepat]",
+  "transformasi_profil": "[Tulis paragraf panjang tentang perubahan status dari user. jika profil user berkembang maka Gambarkan bagaimana pemahaman baru ini menjadi modal kuat untuk menjadi ahli di bidangnya, jika profil user menurun maka berikan feedback yang membangun dan menyemangati user untuk terus belajar]",
+  "kesimpulan_strategis": "[Tulis paragraf berisi saran karier spesifik Kemenkeu. Sertakan rekomendasi sertifikasi yang sesuai dengan tema pembelajaran ini ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS/sistem internal dan kesiapan mengambil tanggung jawab teknis yang lebih strategis/setara manajerial]"
 }}
 
 PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
