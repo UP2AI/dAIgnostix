@@ -16,15 +16,24 @@ async def get_quiz(nip: str, bab_nomor: int):
     """
     Get quiz questions for a user + chapter.
     Pulls 5 random questions from the published bank soal for that chapter.
+    Allows retake if previous attempt score < 70.
     """
     user = db_service.get_user(nip)
     if not user:
         raise HTTPException(status_code=404, detail="User tidak ditemukan")
 
-    # Check if quiz already completed
+    # Check if quiz already completed and PASSED
     existing = db_service.get_quiz_result(nip, bab_nomor)
     if existing and existing.get("completed"):
-        return existing
+        # If score >= 70, they already passed, just return existing
+        if existing.get("nilai", 0) >= 70:
+            # Ensure benar and total are available for the frontend
+            soal = existing.get("soal", [])
+            benar = sum(1 for s in soal if s.get("jawaban_user", "").strip().upper() == s.get("jawaban_benar", "").strip().upper())
+            existing["benar"] = benar
+            existing["total"] = len(soal)
+            return existing
+        # If score < 70, we continue to generate a NEW attempt below
 
     # Pull from bank soal
     bank = db_service.get_bank_soal_by_bab(bab_nomor)
@@ -37,7 +46,7 @@ async def get_quiz(nip: str, bab_nomor: int):
     all_soal = bank.get("soal", [])
     if len(all_soal) < 5:
         # Fallback if bank has fewer than 5 questions
-        selected_soal = all_soal
+        selected_soal = random.sample(all_soal, len(all_soal))
     else:
         selected_soal = random.sample(all_soal, 5)
 
@@ -55,8 +64,17 @@ async def submit_quiz(nip: str, bab_nomor: int, body: QuizSubmit):
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz belum dimulai.")
 
-    if quiz.get("completed"):
-        return {"message": "Quiz sudah diselesaikan", "nilai": quiz["nilai"], "soal": quiz["soal"]}
+    if quiz.get("completed") and quiz.get("nilai", 0) >= 70:
+        soal = quiz["soal"]
+        # Calculate for response consistency
+        benar = sum(1 for s in soal if s.get("jawaban_user", "").strip().upper() == s.get("jawaban_benar", "").strip().upper())
+        return {
+            "message": "Quiz sudah diselesaikan", 
+            "nilai": quiz["nilai"], 
+            "benar": benar,
+            "total": len(soal),
+            "soal": soal
+        }
 
     soal = quiz["soal"]
     benar = 0
@@ -64,9 +82,11 @@ async def submit_quiz(nip: str, bab_nomor: int, body: QuizSubmit):
 
     for s in soal:
         nomor = str(s["nomor"])
-        jawaban_user = body.jawaban.get(nomor, "")
+        jawaban_user = body.jawaban.get(nomor, "").strip().upper()
+        jawaban_benar = s.get("jawaban_benar", "").strip().upper()
+        
         s["jawaban_user"] = jawaban_user
-        if jawaban_user == s["jawaban_benar"]:
+        if jawaban_user == jawaban_benar:
             benar += 1
 
     nilai = round((benar / total) * 100) if total > 0 else 0
@@ -74,8 +94,9 @@ async def submit_quiz(nip: str, bab_nomor: int, body: QuizSubmit):
     # Submit result
     result = db_service.submit_quiz_result(nip, bab_nomor, nilai, soal)
     
-    # Mark bab as complete in progress table
-    db_service.mark_bab_complete(nip, f"bab{bab_nomor}")
+    # Mark bab as complete in progress table ONLY if passed
+    if nilai >= 70:
+        db_service.mark_bab_complete(nip, f"bab{bab_nomor}")
 
     return {
         "message": "Quiz berhasil disubmit",

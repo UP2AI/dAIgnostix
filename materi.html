@@ -784,6 +784,20 @@
             const container = document.getElementById('quiz-modal-content');
             const isPass = res.nilai >= 70;
 
+            // Fallback for benar/total if API doesn't provide them directly
+            let benar = res.benar;
+            let total = res.total;
+            if (benar === undefined && res.soal) {
+                benar = res.soal.filter(s => {
+                    const u = (s.jawaban_user || "").trim().toUpperCase();
+                    const b = (s.jawaban_benar || "").trim().toUpperCase();
+                    return u === b && u !== "";
+                }).length;
+            }
+            if (total === undefined && res.soal) {
+                total = res.soal.length;
+            }
+
             container.innerHTML = `
                 <div class="text-center py-8">
                     <div class="w-24 h-24 rounded-full ${isPass ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'} mx-auto flex items-center justify-center mb-6 scale-in">
@@ -800,11 +814,11 @@
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Benar</p>
-                                <p class="text-2xl font-black text-emerald-500">${res.benar}</p>
+                                <p class="text-2xl font-black text-emerald-500">${benar ?? '-'}</p>
                             </div>
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total</p>
-                                <p class="text-2xl font-black text-slate-400">${res.total}</p>
+                                <p class="text-2xl font-black text-slate-400">${total ?? '-'}</p>
                             </div>
                         </div>
                     </div>
