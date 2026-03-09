@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Post-test - DAIGNOSTIC</title>
+    <title>Post-test - dAIgnostix</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap"
         rel="stylesheet" />
@@ -39,7 +39,7 @@
             if (!isLoggedIn()) return;
             try {
                 const status = await getUserStatus(getCurrentNip());
-                if (status.progress_state < 2) {
+                if (status.progress_state < 1) {
                     window.location.href = 'index.html';
                 }
             } catch (err) {
@@ -68,11 +68,11 @@
                             <span class="material-symbols-outlined text-white text-2xl">school</span>
                         </div>
                         <div class="flex flex-col">
-                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">DAIGNOSTIC
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">dAIgnostix
                             </h2>
                             <span
-                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">pembelajaran
-                                Digital dan Adaptif</span>
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">AI-Powered
+                                Diagnostic Tools</span>
                         </div>
                     </div>
                 </div>
@@ -208,11 +208,6 @@
                                 </li>
                                 <li
                                     class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
-                                    <span class="material-symbols-outlined text-primary">verified</span>
-                                    <span>Ambang Batas: <strong class="text-primary font-bold">75 / 100</strong></span>
-                                </li>
-                                <li
-                                    class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
                                     <span class="material-symbols-outlined text-primary">sync</span>
                                     <span>Kesempatan: <strong class="text-primary font-bold">5 Kali</strong></span>
                                 </li>
@@ -227,10 +222,10 @@
                                             pengerjaan post-test.</span></li>
                                     <li class="flex gap-2"><span>2.</span><span>Post-test terdiri dari 30 soal pilihan
                                             ganda dengan durasi 45 menit.</span></li>
-                                    <li class="flex gap-2"><span>3.</span><span>Batas nilai kelulusan (passing grade)
-                                            adalah 75.</span></li>
-                                    <li class="flex gap-2"><span>4.</span><span>Hanya diberikan 5 kali kesempatan untuk
-                                            mengulang jika tidak lulus.</span></li>
+                                    <li class="flex gap-2"><span>3.</span><span>Semua pertanyaan wajib dijawab sebelum
+                                            dapat melakukan submit.</span></li>
+                                    <li class="flex gap-2"><span>4.</span><span>Anda dapat melihat hasil evaluasi secara
+                                            langsung setelah submit.</span></li>
                                 </ul>
                             </div>
                             <div class="mt-auto">

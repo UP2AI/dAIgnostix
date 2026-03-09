@@ -148,6 +148,17 @@ def mark_bab_complete(nip: str, bab: str) -> dict:
     return res.data[0] if res.data else {}
 
 
+def mark_all_bab_complete(nip: str) -> list:
+    """Mark all chapters as finished for a user."""
+    res = (
+        supabase.table("materi_progress")
+        .update({"finished": True})
+        .eq("nip", nip)
+        .execute()
+    )
+    return res.data
+
+
 def update_materi_time(nip: str, bab: str, seconds: int) -> dict:
     """Increment time_spent_seconds for a bab."""
     # Get current time first

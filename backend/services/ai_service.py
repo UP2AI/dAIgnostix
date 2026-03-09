@@ -243,21 +243,21 @@ def generate_feedback(
 
     events_summary = json.dumps(events[:50], default=str, ensure_ascii=False)
 
-    prompt = f"""Role: Anda adalah seorang Spesialis Pengembangan SDM dan Motivator Pembelajaran Digital di lingkungan Kementerian Keuangan.
+    prompt = f"""Role: Anda adalah seorang Spesialis Pengembangan SDM dan analis hasil Pembelajaran Digital di lingkungan Kementerian Keuangan.
 
-Tugas: Buatlah analisis hasil pembelajaran e-learning untuk pegawai Kemenkeu berdasarkan data performa mereka. Gunakan nada bicara yang cukup apresiatif, inspiratif, personal, dan profesional (seperti gaya mentor).
+Tugas: Buatlah analisis hasil pembelajaran e-learning untuk pegawai Kemenkeu berdasarkan data performa mereka. Gunakan nada bicara yang cukup apresiatif, inspiratif, personal, dan profesional.
 
 Ketentuan Penulisan:
 
 Gaya Bahasa: Gunakan pendekatan motivasional. Hindari bahasa yang terlalu kaku, namun tetap jaga profesionalitas ASN.
 
-Panjang Konten: Setiap nilai dalam JSON harus berupa paragraf yang panjang, mendalam, dan deskriptif (minimal 4-6 kalimat per paragraf).
+Panjang Konten: Setiap nilai dalam JSON harus berupa paragraf yang tidak bertele tele, mendalam, dan deskriptif (minimal 4-6 kalimat per paragraf).
 
-Konteks Kemenkeu: Hubungkan keberhasilan belajar dengan kontribusi terhadap organisasi (Kemenkeu), peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi internal (seperti BPPK, KLC, atau LSP Kemenkeu).
+Konteks Kemenkeu: Hubungkan keberhasilan belajar dengan kontribusi terhadap organisasi (Kemenkeu), peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi internal.
 
 Sapaan: Selalu gunakan kata "Anda".
 
-Larangan: Jangan memberikan saran untuk mengubah tipe atau format materi e-learning yang diberikan penyelenggara. Fokus pada pengembangan diri user.
+Larangan: Jangan memberikan saran untuk mengubah tipe atau format materi e-learning yang diberikan penyelenggara. Fokus pada pengembangan diri user, jangan lebay atau berlebih-lebihan dalam memotivasi user.
 
 
 DATA PEMBELAJARAN:
@@ -273,7 +273,12 @@ FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "Pemula|Menengah|Mahir",
   "analisis_perkembangan": "[Tulis paragraf tentang perbandingan skor pre-test dan post-test. jika ada lompatan nilai yang signifikan, Tekankan pada 'lompatan' kompetensi yang luar biasa sebagai bukti ketajaman berpikir di bawah tekanan waktu]",
-  "evaluasi_perilaku": "[Tulis paragraf tentang pola belajar user. Jika user banyak skip materi dan langsung ke post-test, interpretasikan ini secara positif sebagai gaya belajar 'Strategic Problem Solver' atau strategi belajar user yang sangat efisien untuk ritme kerja Kemenkeu yang cepat]",
+  "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori berikut berdasarkan data waktu dan jeda belajar, lalu jelaskan dalam 1 paragraf:
+    1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar.
+    2. Pemelajar Nibbler: Menggabungkan komitmen waktu yang substansial dengan jeda yang konsisten antar sesi. Memungkinkan pemahaman komprehensif melalui kedalaman dan pengulangan. (Kategori ini digambarkan dengan warna hijau pada pojok kanan atas).
+    3. Pemelajar Picky Eater: Mengalokasikan waktu keseluruhan yang lebih sedikit tetapi dengan jeda yang teratur. Fokus berinteraksi pada materi tertentu untuk merefleksikan, meninjau, dan memperkuat bahasan yang menarik/penting bagi mereka.
+    4. Pemelajar Gulper: Mengalokasikan waktu minimal untuk belajar dan mengonsumsi konten dengan cepat tanpa jeda. Mengutamakan efisiensi daripada kedalaman untuk mendapatkan gambaran umum dengan cepat.
+  ]",
   "transformasi_profil": "[Tulis paragraf tentang perubahan status dari user. jika profil user berkembang maka Gambarkan bagaimana pemahaman baru ini menjadi modal kuat untuk menjadi ahli di bidangnya, jika profil user menurun maka berikan feedback yang membangun dan menyemangati user untuk terus belajar]",
   "kesimpulan_strategis": "[Tulis paragraf berisi saran karier spesifik Kemenkeu. Sertakan rekomendasi sertifikasi yang sesuai dengan tema pembelajaran ini ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS/sistem internal dan kesiapan mengambil tanggung jawab teknis yang lebih strategis/setara manajerial]"
 }}

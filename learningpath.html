@@ -82,10 +82,11 @@
                                 <span class="material-symbols-outlined text-white text-2xl">school</span>
                             </div>
                             <div class="flex flex-col">
-                                <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">DAIGNOSTIC</h2>
+                                <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">dAIgnostix
+                                </h2>
                                 <span
-                                    class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">pembelajaran
-                                    Digital dan Adaptif</span>
+                                    class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">AI-Powered
+                                    Diagnostic Tools</span>
                             </div>
                         </div>
                     </div>
@@ -398,7 +399,7 @@
                         const page = link.getAttribute('data-page');
                         if (page === 'learningpath.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
                         if (page === 'materi.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
-                        if (page === 'postest.html' && state < 2) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'postest.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
                         if (page === 'feedback.html' && state < 3) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
                     });
                 }).catch(e => console.error('Failed to sync sidebar permissions', e));
@@ -467,10 +468,9 @@
                         </div>`;
                     }).join('');
 
-                    // Unlock Post-test if all babs done from API
+                    // Unlock Post-test if pretest done from API
                     const status = await getUserStatus(getCurrentNip());
-                    const allDone = finishedCount >= totalBab;
-                    if (status.progress_state >= 2 || allDone) {
+                    if (status.progress_state >= 1) {
                         const pbCard = document.getElementById('card-Post-test');
                         const pbTitle = document.getElementById('title-Post-test');
                         const pbDesc = document.getElementById('desc-Post-test');

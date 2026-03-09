@@ -22,18 +22,15 @@ async def get_quiz(nip: str, bab_nomor: int):
     if not user:
         raise HTTPException(status_code=404, detail="User tidak ditemukan")
 
-    # Check if quiz already completed and PASSED
+    # Check if quiz already completed
     existing = db_service.get_quiz_result(nip, bab_nomor)
     if existing and existing.get("completed"):
-        # If score >= 70, they already passed, just return existing
-        if existing.get("nilai", 0) >= 70:
-            # Ensure benar and total are available for the frontend
-            soal = existing.get("soal", [])
-            benar = sum(1 for s in soal if s.get("jawaban_user", "").strip().upper() == s.get("jawaban_benar", "").strip().upper())
-            existing["benar"] = benar
-            existing["total"] = len(soal)
-            return existing
-        # If score < 70, we continue to generate a NEW attempt below
+        # Ensure benar and total are available for the frontend
+        soal = existing.get("soal", [])
+        benar = sum(1 for s in soal if s.get("jawaban_user", "").strip().upper() == s.get("jawaban_benar", "").strip().upper())
+        existing["benar"] = benar
+        existing["total"] = len(soal)
+        return existing
 
     # Pull from bank soal
     bank = db_service.get_bank_soal_by_bab(bab_nomor)
@@ -64,7 +61,7 @@ async def submit_quiz(nip: str, bab_nomor: int, body: QuizSubmit):
     if not quiz:
         raise HTTPException(status_code=404, detail="Quiz belum dimulai.")
 
-    if quiz.get("completed") and quiz.get("nilai", 0) >= 70:
+    if quiz.get("completed"):
         soal = quiz["soal"]
         # Calculate for response consistency
         benar = sum(1 for s in soal if s.get("jawaban_user", "").strip().upper() == s.get("jawaban_benar", "").strip().upper())
@@ -94,9 +91,8 @@ async def submit_quiz(nip: str, bab_nomor: int, body: QuizSubmit):
     # Submit result
     result = db_service.submit_quiz_result(nip, bab_nomor, nilai, soal)
     
-    # Mark bab as complete in progress table ONLY if passed
-    if nilai >= 70:
-        db_service.mark_bab_complete(nip, f"bab{bab_nomor}")
+    # Mark bab as complete in progress table
+    db_service.mark_bab_complete(nip, f"bab{bab_nomor}")
 
     return {
         "message": "Quiz berhasil disubmit",

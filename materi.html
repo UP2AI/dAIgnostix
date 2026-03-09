@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Materi Pembelajaran - DAIGNOSTIC</title>
+    <title>Materi Pembelajaran - dAIgnostix</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
@@ -99,11 +99,11 @@
                             <span class="material-symbols-outlined text-white text-2xl">school</span>
                         </div>
                         <div class="flex flex-col">
-                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">DAIGNOSTIC
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">dAIgnostix
                             </h2>
                             <span
-                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">pembelajaran
-                                Digital dan Adaptif</span>
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">AI-Powered
+                                Diagnostic Tools</span>
                         </div>
                     </div>
                 </div>
@@ -517,6 +517,19 @@
             currentBabNum = bab.nomor;
             buildSidebarBabNav();
 
+            // Mark bab as complete immediately on access
+            const nip = getCurrentNip();
+            if (nip) {
+                completeBab(nip, `bab${bab.nomor}`).then(() => {
+                    // Update local progress set silently
+                    const prog = materiProgress.find(p => p.bab === `bab${bab.nomor}`);
+                    if (prog) prog.finished = true;
+                    else materiProgress.push({ bab: `bab${bab.nomor}`, finished: true });
+                    // Refresh sidebar to show checkmark
+                    buildSidebarBabNav();
+                }).catch(err => console.error("Error marking bab complete:", err));
+            }
+
             // Start silent study time tracking
             startStudyTimer();
         }
@@ -765,21 +778,18 @@
                 // Show result screen
                 showQuizResult(result);
 
-                // If passed, refresh progress status
-                if (result.nilai >= 70) {
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: { y: 0.6 },
-                        colors: ['#003366', '#FFCC00', '#10b981']
-                    });
+                // Reload progress silently to reflect completion (though it should be done on access)
+                const progressData = await getMateriProgress(nip);
+                materiProgress = progressData.progress || [];
+                buildSidebarBabNav();
+                if (currentBabNum === 0) showBabOverview();
 
-                    // Reload progress silently
-                    const progressData = await getMateriProgress(nip);
-                    materiProgress = progressData.progress || [];
-                    buildSidebarBabNav();
-                    if (currentBabNum === 0) showBabOverview();
-                }
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#003366', '#FFCC00', '#10b981']
+                });
             } catch (err) {
                 console.error(err);
                 alert("Gagal mengirim kuis: " + err.message);
@@ -790,7 +800,6 @@
 
         function showQuizResult(res) {
             const container = document.getElementById('quiz-modal-content');
-            const isPass = res.nilai >= 70;
 
             // Fallback for benar/total if API doesn't provide them directly
             let benar = res.benar;
@@ -808,11 +817,11 @@
 
             container.innerHTML = `
                 <div class="text-center py-8">
-                    <div class="w-24 h-24 rounded-full ${isPass ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'} mx-auto flex items-center justify-center mb-6 scale-in">
-                        <span class="material-symbols-outlined text-6xl">${isPass ? 'workspace_premium' : 'error'}</span>
+                    <div class="w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center mb-6 scale-in">
+                        <span class="material-symbols-outlined text-6xl">workspace_premium</span>
                     </div>
-                    <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">${isPass ? 'Luar Biasa!' : 'Belum Berhasil'}</h2>
-                    <p class="text-slate-500 mb-8">${isPass ? 'Anda telah menyelesaikan kuis bab ini dengan baik.' : 'Skor Anda belum mencapai ambang batas kelulusan (70%).'}</p>
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Selesai!</h2>
+                    <p class="text-slate-500 mb-8">Anda telah menyelesaikan kuis bab ini dengan baik.</p>
                     
                     <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 mb-8 border border-slate-100 dark:border-slate-800">
                         <div class="grid grid-cols-3 gap-4">
@@ -832,18 +841,10 @@
                     </div>
                     
                     <div class="flex flex-col gap-3">
-                        ${isPass ?
-                    `<button onclick="closeQuizModal(); goBackToOverview();" class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
-                                <span class="material-symbols-outlined">arrow_back</span>
-                                Kembali ke Daftar Materi
-                            </button>` :
-                    `<button onclick="openQuizModal(currentBabNum)" class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-primary/20">
-                                Coba Lagi
-                            </button>
-                            <button onclick="closeQuizModal()" class="w-full text-slate-500 font-bold py-2 hover:text-primary transition-colors">
-                                Tutup
-                            </button>`
-                }
+                        <button onclick="closeQuizModal(); goBackToOverview();" class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Kembali ke Daftar Materi
+                        </button>
                     </div>
                 </div>
             `;

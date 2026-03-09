@@ -23,6 +23,9 @@ async def get_posttest(nip: str):
     if not user:
         raise HTTPException(status_code=404, detail="User tidak ditemukan")
 
+    # Mark all chapters as complete upon accessing posttest
+    db_service.mark_all_bab_complete(nip)
+
     existing = db_service.get_posttest(nip)
     if existing:
         existing["max_attempts"] = 5
