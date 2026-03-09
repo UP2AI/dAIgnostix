@@ -684,16 +684,24 @@
                 <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 leading-relaxed">${q.pertanyaan}</h3>
                 
                 <div class="space-y-3">
-                    ${q.opsi.map(opt => {
-                const letter = opt.charAt(0);
+                    ${q.opsi.map((opt, idx) => {
+                const letter = String.fromCharCode(65 + idx); // A, B, C, D
                 const isSelected = quizAnswers[currentQuizIndex] === letter;
+
+                // Robustly clean option text: remove "A. ", "A) ", "A: " if present
+                let cleanOpt = opt;
+                const prefixMatch = opt.match(/^[A-E][.\)\:]\s*/i);
+                if (prefixMatch) {
+                    cleanOpt = opt.substring(prefixMatch[0].length);
+                }
+
                 return `
                         <button onclick="selectQuizAnswer('${letter}')" 
                             class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 group ${isSelected ? 'border-primary bg-primary/5' : 'border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:bg-slate-50 dark:hover:bg-slate-800/50'}">
                             <div class="w-10 h-10 rounded-lg flex-none flex items-center justify-center font-bold text-sm transition-colors ${isSelected ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'}">
                                 ${letter}
                             </div>
-                            <span class="text-sm font-medium ${isSelected ? 'text-primary dark:text-white' : 'text-slate-600 dark:text-slate-300'}">${opt.substring(3)}</span>
+                            <span class="text-sm font-medium ${isSelected ? 'text-primary dark:text-white' : 'text-slate-600 dark:text-slate-300'}">${cleanOpt}</span>
                         </button>
                         `;
             }).join('')}
