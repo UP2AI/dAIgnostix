@@ -243,7 +243,8 @@ def generate_feedback(
 
     events_summary = json.dumps(events[:50], default=str, ensure_ascii=False)
 
-    prompt = f"""Kamu adalah dosen dan analis AI pembelajaran profesional. Buat laporan feedback komprehensif.
+    prompt = f"""Kamu adalah dosen dan analis AI pembelajaran profesional. Buat laporan feedback komprehensif tanpa men jugje user dengan buruk
+    berikan feedback yang membangun, yang memotivasi user.
 
 DATA PEMBELAJARAN:
 - Nilai Pretest: {pretest_nilai}/100
@@ -258,10 +259,11 @@ FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "Pemula|Menengah|Mahir",
   "analisis_perkembangan": "Paragraf analisis perbandingan pretest-posttest...",
-  "evaluasi_perilaku": "Paragraf analisis behavior learning berdasarkan event tracker...",
+  "evaluasi_perilaku": "Paragraf analisis behavior learning berdasarkan event tracker. jika user suka skip materi maka memang cara belajar user seperti itu...",
   "transformasi_profil": "Paragraf transformasi profil dari awal ke akhir...",
   "kesimpulan_strategis": "Paragraf saran dan next actions yang berguna untuk user 
-  dalam meningkatkan pengetahuan/skill/karir berkaitan dengan pelaksanaan pembelajaran ini. jangan sarankan terkait perubahan tipe materi elearning yang penyelenggara berikan. gunakan kata 'Anda' sebagai sapaan"
+  dalam meningkatkan pengetahuan/skill/karir berkaitan dengan pelaksanaan pembelajaran ini. jangan sarankan terkait perubahan tipe materi elearning yang penyelenggara berikan. gunakan kata 'Anda' sebagai sapaan.
+  jika user lulus posttest, berikan rekomendasi pengembangan karir yang sesuai dengan elearning ini, misal user bisa mengajukan sertifikasi dan berikan link sertifikasi nya, user bisa bekerja pada bagian tertentu, pemahaman setara manajer, dan sebagainya "
 }}
 
 PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
