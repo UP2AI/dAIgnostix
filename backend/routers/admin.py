@@ -5,7 +5,7 @@ import os
 from fastapi import APIRouter, UploadFile, File, HTTPException, Form
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
-from services import db_service, rag_service
+from services import db_service, rag_service, ai_service
 
 router = APIRouter()
 
@@ -27,6 +27,10 @@ class BabBody(BaseModel):
 
 class RoleBody(BaseModel):
     role: str  # "admin" or "user"
+
+class BankSoalUpdate(BaseModel):
+    soal: list
+    status: str = "draft"
 
 
 # ======================== E-LEARNING CONFIG ========================
@@ -238,6 +242,73 @@ async def reindex_bab(bab_id: int):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Gagal re-index: {str(e)}")
 
+
+# ======================== BANK SOAL MANAGEMENT ========================
+
+@router.post("/admin/bank-soal/generate")
+async def generate_all_bank_soal(bab_id: int = None):
+    """
+    Generate bank soal for all bab or a specific bab using AI.
+    """
+    if bab_id:
+        babs = [db_service.get_bab_by_id(bab_id)]
+        if not babs[0]:
+            raise HTTPException(status_code=404, detail="Bab tidak ditemukan")
+    else:
+        babs = db_service.get_all_bab()
+
+    results = []
+    for b in babs:
+        try:
+            # Query context for this bab
+            context = rag_service.query_materi(f"materi lengkap {b['judul']} bab {b['nomor']}", k=10)
+            if not context:
+                results.append({"bab": b["nomor"], "status": "error", "message": "Context RAG kosong"})
+                continue
+            
+            soal = ai_service.generate_bank_soal_questions(context, b["nomor"], b["judul"])
+            saved = db_service.save_bank_soal(b["nomor"], b["judul"], soal)
+            results.append({"bab": b["nomor"], "status": "success", "id": saved.get("id")})
+        except Exception as e:
+            results.append({"bab": b["nomor"], "status": "error", "message": str(e)})
+
+    return {"message": "Proses generate selesai", "results": results}
+
+@router.get("/admin/bank-soal")
+async def list_bank_soal():
+    """List all bank soal entries."""
+    bank = db_service.get_all_bank_soal()
+    return {"bank_soal": bank}
+
+@router.get("/admin/bank-soal/{bab_nomor}")
+async def get_bank_soal(bab_nomor: int):
+    """Get bank soal for a chapter."""
+    bank = db_service.get_bank_soal_by_bab(bab_nomor)
+    if not bank:
+        raise HTTPException(status_code=404, detail="Bank soal belum dibuat")
+    return bank
+
+@router.put("/admin/bank-soal/{bank_id}")
+async def update_bank_soal(bank_id: int, body: BankSoalUpdate):
+    """Update bank soal questions or status."""
+    result = db_service.update_bank_soal_status(bank_id, body.status)
+    # Also update questions
+    from services.db_service import supabase
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    res = supabase.table("bank_soal").update({
+        "soal": body.soal, 
+        "status": body.status,
+        "updated_at": now
+    }).eq("id", bank_id).execute()
+    
+    return {"message": "Bank soal berhasil diupdate", "bank": res.data[0] if res.data else {}}
+
+@router.post("/admin/bank-soal/{bank_id}/publish")
+async def publish_bank_soal(bank_id: int):
+    """Mark bank soal as published."""
+    result = db_service.update_bank_soal_status(bank_id, "published")
+    return {"message": "Bank soal berhasil dipublish", "bank": result}
 
 # ======================== USER MANAGEMENT ========================
 

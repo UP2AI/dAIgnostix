@@ -608,33 +608,8 @@
             stopStudyTimer();
             const nip = getCurrentNip();
             if (nip && currentBabNum > 0) {
-                try {
-                    await completeBab(nip, `bab${currentBabNum}`);
-
-                    // Reload progress to check if all babs are done
-                    const progressData = await getMateriProgress(nip);
-                    materiProgress = progressData.progress || [];
-
-                    const allDone = materiProgress.length > 0 && materiProgress.every(m => m.finished);
-                    // Server handles progress state advancement seamlessly
-
-                    await customAlert(`Bab ${currentBabNum} diselesaikan!`, 'Selesai');
-
-                    // Find next unfinished bab
-                    const nextBab = allBab.find(b => {
-                        const prog = materiProgress.find(p => p.bab === `bab${b.nomor}`);
-                        return !prog || !prog.finished;
-                    });
-
-                    if (nextBab && !allDone) {
-                        window.location.href = `materi.html?bab=${nextBab.nomor}`;
-                    } else {
-                        window.location.href = 'learningpath.html';
-                    }
-                } catch (e) {
-                    console.error('Failed to mark complete', e);
-                    await customAlert('Gagal menandai bab selesai. Coba lagi.', 'Error');
-                }
+                // Redirect to quiz instead of directly completing
+                window.location.href = `quiz.html?bab=${currentBabNum}`;
             }
         }
     </script>

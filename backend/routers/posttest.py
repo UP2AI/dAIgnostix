@@ -29,24 +29,52 @@ async def get_posttest(nip: str):
         existing["attempts"] = existing.get("attempts", 1) if existing.get("attempts") is not None else 1
         return existing
 
-    # Generate via AI + RAG
+    # Pull from Bank Soal instead of AI generation
     try:
-        context = rag_service.query_materi("materi audit internal keuangan negara lengkap semua bab untuk posttest", k=15)
-        if not context:
-            raise HTTPException(status_code=500, detail="Materi belum diindex.")
+        all_published = db_service.get_published_bank_soal()
+        if not all_published:
+            raise HTTPException(status_code=500, detail="Bank soal belum dipublish.")
 
-        # Get dynamic bab list for proportional question generation
-        bab_list = db_service.get_all_bab()
+        pretest = db_service.get_pretest(nip)
+        pretest_questions = []
+        if pretest:
+            # Gather questions already seen in pretest to avoid duplicates if possible
+            pretest_questions = [s.get("pertanyaan") for s in pretest.get("soal", [])]
 
-        soal = ai_service.generate_posttest_questions(context, bab_list=bab_list if bab_list else None)
-        saved = db_service.save_posttest(nip, soal)
+        final_soal = []
+        import random
+
+        for bank in all_published:
+            soal_pool = bank.get("soal", [])
+            if not soal_pool:
+                continue
+            
+            # Try to pick questions NOT in pretest
+            available = [s for s in soal_pool if s.get("pertanyaan") not in pretest_questions]
+            
+            if len(available) >= 5:
+                selected = random.sample(available, 5)
+            else:
+                # If not enough new questions, just pick 5 randomly from original pool
+                selected = random.sample(soal_pool, min(5, len(soal_pool)))
+            
+            final_soal.extend(selected)
+
+        if not final_soal:
+            raise HTTPException(status_code=500, detail="Gagal mengambil soal posttest.")
+
+        # Re-number for the session
+        for i, s in enumerate(final_soal):
+            s["nomor"] = i + 1
+
+        saved = db_service.save_posttest(nip, final_soal)
         saved["max_attempts"] = 5
         saved["attempts"] = saved.get("attempts", 1) if saved.get("attempts") is not None else 1
         return saved
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Gagal generate soal dari AI: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Gagal mengambil soal posttest: {str(e)}")
 
 
 @router.post("/posttest/{nip}/submit")

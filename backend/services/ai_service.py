@@ -268,3 +268,42 @@ PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
 """
     response_text = _generate_with_retry(prompt)
     return _parse_json(response_text)
+def generate_bank_soal_questions(context: str, bab_nomor: int, bab_judul: str, jumlah: int = 10) -> list:
+    """
+    Generate a bank of MCQ questions for a specific chapter.
+    Requires RAG context.
+    """
+    prompt = f"""Gunakan kemampuan terhebat kamu. Kamu adalah Dosen pembuat soal ujian profesional.
+    
+Tugas Anda adalah membuat DATABASE SOAL (Bank Soal) untuk materi pembelajaran berikut:
+Bab {bab_nomor}: {bab_judul}
+
+KONTEKS MATERI:
+---
+{context}
+---
+
+Buatkan {jumlah} soal pilihan ganda yang BERVARIASI. 
+Kriteria soal:
+1. Soal harus bersifat teknis (berdasarkan fakta/isi materi) dan bukan sekadar konseptual umum.
+2. Gunakan variasi narasi: ada yang langsung "Apa yang dimaksud...", ada yang skenario "Jika terjadi X maka...", ada yang menanyakan dasar hukum/peraturan jika ada.
+3. Jawaban harus tersurat (ada) di dalam materi yang diberikan.
+4. Distribusi tingkat kesulitan: Mudah (30%), Sedang (50%), Sulit (20%).
+
+FORMAT OUTPUT (JSON array saja, tanpa text lain, tanpa penjelasan):
+[
+  {{
+    "nomor": 1,
+    "pertanyaan": "...",
+    "opsi": ["A. ...", "B. ...", "C. ...", "D. ..."],
+    "jawaban_benar": "A",
+    "bab_referensi": "Bab {bab_nomor}"
+  }}
+]
+
+PENTING: 
+- HANYA output JSON array.
+- Pastikan semua {jumlah} soal benar-benar berasal dari konteks materi di atas.
+"""
+    response_text = _generate_with_retry(prompt)
+    return _parse_json(response_text)

@@ -197,6 +197,35 @@ async function clearVectors() {
     return apiCall('/admin/vectors', 'DELETE');
 }
 
+// ============== BANK SOAL API (Admin) ==============
+
+async function generateBankSoal(babId = null) {
+    const url = babId ? `/admin/bank-soal/generate?bab_id=${babId}` : '/admin/bank-soal/generate';
+    return apiCall(url, 'POST');
+}
+
+async function getAdminBankSoal() {
+    return apiCall('/admin/bank-soal');
+}
+
+async function updateBankSoal(bankId, soal, status = 'draft') {
+    return apiCall(`/admin/bank-soal/${bankId}`, 'PUT', { soal, status });
+}
+
+async function publishBankSoal(bankId) {
+    return apiCall(`/admin/bank-soal/${bankId}/publish`, 'POST');
+}
+
+// ============== QUIZ API (User) ==============
+
+async function getQuiz(nip, babNomor) {
+    return apiCall(`/quiz/${nip}/${babNomor}`);
+}
+
+async function submitQuiz(nip, babNomor, jawaban) {
+    return apiCall(`/quiz/${nip}/${babNomor}/submit`, 'POST', { jawaban });
+}
+
 // ============== UTILITY ==============
 
 function getCurrentNip() {

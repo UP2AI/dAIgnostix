@@ -26,23 +26,37 @@ async def get_pretest(nip: str):
     if existing:
         return existing
 
-    # Generate via AI + RAG
+    # Pull from Bank Soal instead of generating on the fly
     try:
-        # Reduce k to 1 to drastically minimize token usage
-        context = rag_service.query_materi("materi audit internal keuangan negara lengkap semua bab", k=1)
-        if not context:
-            raise HTTPException(status_code=500, detail="Materi belum diindex. Admin perlu menjalankan indexing PDF terlebih dahulu.")
+        all_published = db_service.get_published_bank_soal()
+        if not all_published:
+            raise HTTPException(status_code=500, detail="Bank soal belum dipublish oleh admin. Silakan hubungi admin.")
 
-        # Get dynamic bab list for proportional question generation
-        bab_list = db_service.get_all_bab()
+        final_soal = []
+        import random
+        
+        for bank in all_published:
+            soal_pool = bank.get("soal", [])
+            if not soal_pool:
+                continue
+            
+            # Select 5 random questions from this bab
+            selected = random.sample(soal_pool, min(5, len(soal_pool)))
+            final_soal.extend(selected)
 
-        soal = ai_service.generate_pretest_questions(context, bab_list=bab_list if bab_list else None)
-        saved = db_service.save_pretest(nip, soal)
+        if not final_soal:
+            raise HTTPException(status_code=500, detail="Gagal mengambil soal dari bank soal.")
+
+        # Re-number for the session
+        for i, s in enumerate(final_soal):
+            s["nomor"] = i + 1
+
+        saved = db_service.save_pretest(nip, final_soal)
         return saved
     except Exception as e:
         import traceback
         traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Gagal generate soal dari AI: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Gagal mengambil soal dari database: {str(e)}")
 
 
 @router.post("/pretest/{nip}/submit")

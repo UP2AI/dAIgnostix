@@ -31,7 +31,7 @@ os.makedirs(MATERI_DIR, exist_ok=True)
 app.mount("/data/materi", StaticFiles(directory=MATERI_DIR), name="materi-files")
 
 # --- Routers ---
-from routers import user, pretest, learning_path, materi, posttest, feedback, admin
+from routers import user, pretest, learning_path, materi, posttest, feedback, admin, quiz
 
 app.include_router(user.router, prefix="/api", tags=["User"])
 app.include_router(pretest.router, prefix="/api", tags=["Pretest"])
@@ -40,6 +40,7 @@ app.include_router(materi.router, prefix="/api", tags=["Materi"])
 app.include_router(posttest.router, prefix="/api", tags=["Posttest"])
 app.include_router(feedback.router, prefix="/api", tags=["Feedback"])
 app.include_router(admin.router, prefix="/api", tags=["Admin"])
+app.include_router(quiz.router, prefix="/api", tags=["Quiz"])
 
 
 @app.get("/")

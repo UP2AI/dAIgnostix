@@ -429,13 +429,107 @@ def get_bab_by_id(bab_id: int) -> dict | None:
     return res.data[0] if res.data else None
 
 
+# ======================== BANK SOAL ========================
+
+def get_all_bank_soal() -> list:
+    """Get all bank soal entries."""
+    res = supabase.table("bank_soal").select("*").order("bab_nomor").execute()
+    return res.data
+
+def get_bank_soal_by_bab(bab_nomor: int) -> dict | None:
+    """Get bank soal for a specific chapter."""
+    res = supabase.table("bank_soal").select("*").eq("bab_nomor", bab_nomor).execute()
+    return res.data[0] if res.data else None
+
+def get_published_bank_soal() -> list:
+    """Get all published bank soal entries."""
+    res = supabase.table("bank_soal").select("*").eq("status", "published").order("bab_nomor").execute()
+    return res.data
+
+def save_bank_soal(bab_nomor: int, bab_judul: str, soal: list, status: str = "draft") -> dict:
+    """Upsert bank soal for a chapter."""
+    existing = get_bank_soal_by_bab(bab_nomor)
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    
+    data = {
+        "bab_nomor": bab_nomor,
+        "bab_judul": bab_judul,
+        "soal": soal,
+        "status": status,
+        "updated_at": now
+    }
+    
+    if existing:
+        res = supabase.table("bank_soal").update(data).eq("id", existing["id"]).execute()
+    else:
+        res = supabase.table("bank_soal").insert(data).execute()
+    return res.data[0] if res.data else {}
+
+def update_bank_soal_status(bank_id: int, status: str) -> dict:
+    """Update bank soal status (draft/published)."""
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc).isoformat()
+    res = supabase.table("bank_soal").update({"status": status, "updated_at": now}).eq("id", bank_id).execute()
+    return res.data[0] if res.data else {}
+
+# ======================== QUIZ RESULTS ========================
+
+def get_quiz_result(nip: str, bab_nomor: int) -> dict | None:
+    """Get quiz result for a user and chapter."""
+    res = (
+        supabase.table("quiz_results")
+        .select("*")
+        .eq("nip", nip)
+        .eq("bab_nomor", bab_nomor)
+        .execute()
+    )
+    return res.data[0] if res.data else None
+
+def save_quiz_attempt(nip: str, bab_nomor: int, soal: list) -> dict:
+    """Save an initial quiz attempt."""
+    existing = get_quiz_result(nip, bab_nomor)
+    if existing and existing.get("completed"):
+        return existing
+        
+    data = {
+        "nip": nip,
+        "bab_nomor": bab_nomor,
+        "soal": soal,
+        "completed": False,
+        "nilai": 0
+    }
+    
+    if existing:
+        res = supabase.table("quiz_results").update(data).eq("id", existing["id"]).execute()
+    else:
+        res = supabase.table("quiz_results").insert(data).execute()
+    return res.data[0] if res.data else {}
+
+def submit_quiz_result(nip: str, bab_nomor: int, nilai: int, soal_updated: list) -> dict:
+    """Submit quiz answers and mark as completed."""
+    from datetime import datetime, timezone
+    res = (
+        supabase.table("quiz_results")
+        .update({
+            "nilai": nilai,
+            "soal": soal_updated,
+            "completed": True,
+            "completed_at": datetime.now(timezone.utc).isoformat(),
+        })
+        .eq("nip", nip)
+        .eq("bab_nomor", bab_nomor)
+        .execute()
+    )
+    return res.data[0] if res.data else {}
+
 # ======================== ADMIN — DB OVERVIEW ========================
 
 def get_db_overview() -> dict:
     """Get row counts for key tables."""
     tables = ["users", "pretest", "posttest", "learning_path",
               "materi_progress", "feedback", "events", "materi_chunks",
-              "elearning_config", "elearning_bab"]
+              "elearning_config", "elearning_bab", "bank_soal", "quiz_results"]
     overview = {}
     for t in tables:
         try:

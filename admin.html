@@ -160,6 +160,10 @@
                     class="tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
                     <span class="material-symbols-outlined text-lg">database</span> Database
                 </button>
+                <button onclick="switchTab('banksoal')" id="tab-banksoal"
+                    class="tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2">
+                    <span class="material-symbols-outlined text-lg">quiz</span> Bank Soal
+                </button>
             </div>
 
             <!-- TAB CONTENTS -->
@@ -290,6 +294,35 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Bank Soal Tab -->
+            <div id="panel-banksoal" class="hidden fade-in">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <h1 class="text-3xl font-extrabold text-primary dark:text-white tracking-tight">Database Bank Soal</h1>
+                    <button onclick="handleGenerateBankSoal()" id="btn-generate-bank"
+                        class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all flex items-center gap-2 text-sm shadow-md">
+                        <span class="material-symbols-outlined text-lg">psychology</span> Buat Database Soal (AI)
+                    </button>
+                </div>
+
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5 mb-8">
+                    <div class="flex gap-3">
+                        <span class="material-symbols-outlined text-blue-600 dark:text-blue-400">info</span>
+                        <div class="text-sm text-blue-800 dark:text-blue-300">
+                            <p class="font-bold mb-1">Cara Kerja Database Soal:</p>
+                            <ul class="list-disc ml-4 space-y-1">
+                                <li>Klik tombol <b>"Buat Database Soal"</b> untuk menghasilkan 10 soal per bab menggunakan AI.</li>
+                                <li>Review soal yang dihasilkan, Anda dapat mengedit teks atau pilihan jawaban.</li>
+                                <li>Klik <b>"Simpan"</b> untuk menyimpan perubahan, lalu <b>"Publish"</b> agar soal mulai digunakan di Pretest, Posttest, dan Kuis Bab.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="bank-soal-container" class="space-y-6">
+                    <p class="text-slate-500 italic">Memuat database soal...</p>
+                </div>
+            </div>
         </main>
 
         <footer
@@ -356,12 +389,16 @@
         let allUsers = [];
 
         // ============== TAB SWITCHING ==============
-        const tabs = ['dashboard', 'config', 'bab', 'users', 'database'];
+        const tabs = ['dashboard', 'config', 'bab', 'users', 'database', 'banksoal'];
 
         function switchTab(tab) {
             tabs.forEach(t => {
-                document.getElementById(`tab-${t}`).className = t === tab ? 'tab-active px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2' : 'tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2';
-                document.getElementById(`panel-${t}`).classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    btn.className = t === tab ? 'tab-active px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2' : 'tab-inactive px-5 py-3 text-sm font-semibold transition-all whitespace-nowrap flex items-center gap-2';
+                }
+                const panel = document.getElementById(`panel-${t}`);
+                if (panel) panel.classList.toggle('hidden', t !== tab);
             });
             // Load data for the tab
             if (tab === 'dashboard') loadDashboard();
@@ -369,6 +406,7 @@
             if (tab === 'bab') loadBab();
             if (tab === 'users') loadUsers();
             if (tab === 'database') loadDatabase();
+            if (tab === 'banksoal') loadBankSoal();
         }
 
         // ============== DASHBOARD ==============
@@ -825,6 +863,166 @@
                 loadDatabase();
             } catch (err) {
                 await customAlert('Gagal mengosongkan vector: ' + err.message, 'Error');
+            }
+        }
+
+        // ============== BANK SOAL ==============
+        let currentBankData = [];
+
+        async function loadBankSoal() {
+            const container = document.getElementById('bank-soal-container');
+            container.innerHTML = '<p class="text-slate-500 italic">Memuat database soal...</p>';
+            try {
+                const data = await getAdminBankSoal();
+                currentBankData = data.bank_soal;
+                renderBankSoal();
+            } catch (err) {
+                container.innerHTML = `<p class="text-red-500">Gagal memuat bank soal: ${err.message}</p>`;
+            }
+        }
+
+        function renderBankSoal() {
+            const container = document.getElementById('bank-soal-container');
+            if (currentBankData.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white dark:bg-slate-900 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 p-12 text-center">
+                        <span class="material-symbols-outlined text-5xl text-slate-300 mb-3">quiz</span>
+                        <p class="text-slate-500 font-medium text-lg">Belum ada database soal.</p>
+                        <p class="text-slate-400 text-sm mt-1 mb-6">Pastikan PDF sudah di-index RAG sebelum membuat soal.</p>
+                        <button onclick="handleGenerateBankSoal()" class="bg-primary text-white px-6 py-2.5 rounded-lg font-bold hover:bg-primary/90 transition-all">
+                            Buat Sekarang
+                        </button>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = currentBankData.map((bank, bankIdx) => `
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden mb-6">
+                    <div class="px-6 py-4 bg-slate-50/50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary font-bold flex items-center justify-center border border-primary/20">${bank.bab_nomor}</div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 dark:text-white">${bank.bab_judul}</h3>
+                                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold font-mono">${bank.status} · ${bank.soal.length} soal</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="saveChapterBank(${bank.id}, ${bankIdx})" class="px-4 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">save</span> Simpan Perubahan
+                            </button>
+                            ${bank.status !== 'published' ? `
+                            <button onclick="handlePublishBank(${bank.id})" class="px-4 py-2 bg-primary text-white hover:bg-slate-800 rounded-lg text-xs font-bold transition-colors flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">publish</span> Publish
+                            </button>` : `
+                            <span class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-xs font-bold flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">verified</span> Published
+                            </span>`}
+                        </div>
+                    </div>
+                    <div class="p-6 space-y-6">
+                        ${bank.soal.map((s, sIdx) => `
+                            <div class="p-5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-800/10">
+                                <div class="flex items-start gap-4">
+                                    <span class="text-sm font-bold text-slate-400 mt-2">#${sIdx + 1}</span>
+                                    <div class="flex-1 space-y-4">
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pertanyaan</label>
+                                            <textarea oninput="updateLocalQuestion(${bankIdx}, ${sIdx}, 'pertanyaan', this.value)" class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-primary h-20">${s.pertanyaan}</textarea>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            ${s.opsi.map((o, oIdx) => `
+                                                <div>
+                                                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Opsi ${String.fromCharCode(65 + oIdx)}</label>
+                                                    <input type="text" value="${o}" oninput="updateLocalOption(${bankIdx}, ${sIdx}, ${oIdx}, this.value)"
+                                                        class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm focus:ring-2 focus:ring-primary" />
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jawaban Benar</label>
+                                            <select onchange="updateLocalQuestion(${bankIdx}, ${sIdx}, 'jawaban_benar', this.value)"
+                                                class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm font-bold text-primary">
+                                                ${['A', 'B', 'C', 'D'].map(v => `<option value="${v}" ${s.jawaban_benar === v ? 'selected' : ''}>${v}</option>`).join('')}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <button onclick="removeQuestion(${bankIdx}, ${sIdx})" class="text-slate-300 hover:text-red-500 p-2 transition-colors">
+                                        <span class="material-symbols-outlined">delete</span>
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                        <button onclick="addQuestion(${bankIdx})" class="w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl text-slate-400 hover:text-primary hover:border-primary transition-all font-bold text-sm flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">add_circle</span> Tambah Soal Baru
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateLocalQuestion(bankIdx, sIdx, field, value) {
+            currentBankData[bankIdx].soal[sIdx][field] = value;
+        }
+
+        function updateLocalOption(bankIdx, sIdx, oIdx, value) {
+            currentBankData[bankIdx].soal[sIdx].opsi[oIdx] = value;
+        }
+
+        function removeQuestion(bankIdx, sIdx) {
+            currentBankData[bankIdx].soal.splice(sIdx, 1);
+            renderBankSoal();
+        }
+
+        function addQuestion(bankIdx) {
+            currentBankData[bankIdx].soal.push({
+                pertanyaan: 'Pertanyaan baru...',
+                opsi: ['A. Opsi A', 'B. Opsi B', 'C. Opsi C', 'D. Opsi D'],
+                jawaban_benar: 'A',
+                bab_referensi: `Bab ${currentBankData[bankIdx].bab_nomor}`
+            });
+            renderBankSoal();
+        }
+
+        async function saveChapterBank(bankId, bankIdx) {
+            try {
+                const bank = currentBankData[bankIdx];
+                await updateBankSoal(bankId, bank.soal, bank.status);
+                await customAlert(`Database soal Bab ${bank.bab_nomor} berhasil disimpan!`, 'Sukses');
+                loadBankSoal();
+            } catch (err) {
+                await customAlert('Gagal menyimpan: ' + err.message, 'Error');
+            }
+        }
+
+        async function handleGenerateBankSoal() {
+            const confirmed = await customConfirm('AI akan menghasilkan 10 soal untuk setiap bab yang PDF-nya sudah di-index. Proses ini memakan waktu beberapa menit. Lanjutkan?', 'Mulai Generate');
+            if (!confirmed) return;
+
+            const btn = document.getElementById('btn-generate-bank');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-symbols-outlined animate-spin text-lg">sync</span> Menghasilkan Soal...';
+            
+            try {
+                const result = await generateBankSoal();
+                await customAlert('Proses generate database soal selesai!', 'Berhasil');
+                loadBankSoal();
+            } catch (err) {
+                await customAlert('Gagal generate soal: ' + err.message, 'Error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function handlePublishBank(bankId) {
+            const confirmed = await customConfirm('Publish database soal untuk bab ini? Soal akan mulai digunakan oleh pengguna.', 'Konfirmasi Publish');
+            if (!confirmed) return;
+            try {
+                await publishBankSoal(bankId);
+                loadBankSoal();
+            } catch (err) {
+                await customAlert('Gagal publish: ' + err.message, 'Error');
             }
         }
 
