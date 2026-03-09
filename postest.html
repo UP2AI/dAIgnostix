@@ -542,14 +542,23 @@
                 const s = posttestSoal[i];
                 const saved = jawaban[s.nomor] || '';
                 let opsiHTML = '';
-                for (const opsi of s.opsi) {
-                    const val = opsi.charAt(0);
+                for (let j = 0; j < s.opsi.length; j++) {
+                    const opsi = s.opsi[j];
+                    const val = String.fromCharCode(65 + j);
                     const isSelected = saved === val;
+
+                    // Clean option text robustly
+                    let cleanOpt = opsi;
+                    const prefixMatch = opsi.match(/^[A-E][.\)\:]\s*/i);
+                    if (prefixMatch) {
+                        cleanOpt = opsi.substring(prefixMatch[0].length);
+                    }
+
                     opsiHTML += `
                         <label class="flex items-center gap-3 p-3 rounded-lg border ${isSelected ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-700'} hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
                             <input class="text-primary focus:ring-primary" name="q${s.nomor}" type="radio" value="${val}" ${isSelected ? 'checked' : ''}
                                 onchange="jawaban[${s.nomor}]='${val}'" />
-                            <span class="${isSelected ? 'font-medium text-primary' : ''}">${opsi}</span>
+                            <span class="${isSelected ? 'font-medium text-primary' : ''}">${cleanOpt}</span>
                         </label>`;
                 }
                 container.innerHTML += `
@@ -644,9 +653,19 @@
             const reviewContainer = document.getElementById('review-container');
             reviewContainer.innerHTML = '';
             for (const s of soal) {
-                const isCorrect = s.jawaban_user === s.jawaban_benar;
-                const correctOpsi = s.opsi.find(o => o.startsWith(s.jawaban_benar)) || s.jawaban_benar;
-                const userOpsi = s.opsi.find(o => o.startsWith(s.jawaban_user)) || s.jawaban_user || 'Tidak dijawab';
+                const isCorrect = (s.jawaban_user || "").trim().toUpperCase() === (s.jawaban_benar || "").trim().toUpperCase();
+
+                // Find full text by letter index
+                const getOptText = (letter) => {
+                    if (!letter) return null;
+                    const idx = letter.charCodeAt(0) - 65;
+                    let opt = s.opsi[idx] || letter;
+                    const prefixMatch = opt.match(/^[A-E][.\)\:]\s*/i);
+                    return prefixMatch ? opt.substring(prefixMatch[0].length) : opt;
+                };
+
+                const correctOpsi = getOptText(s.jawaban_benar) || s.jawaban_benar;
+                const userOpsi = getOptText(s.jawaban_user) || s.jawaban_user || 'Tidak dijawab';
 
                 reviewContainer.innerHTML += `
                     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">

@@ -108,9 +108,10 @@ async def submit_posttest(nip: str, body: PosttestSubmit):
 
     for s in soal:
         nomor = str(s["nomor"])
-        jawaban_user = body.jawaban.get(nomor, "")
+        jawaban_user = body.jawaban.get(nomor, "").strip().upper()
         s["jawaban_user"] = jawaban_user
-        if jawaban_user == s["jawaban_benar"]:
+        jawaban_benar = s["jawaban_benar"].strip().upper()
+        if jawaban_user == jawaban_benar:
             benar += 1
 
     nilai = round((benar / total) * 100) if total > 0 else 0
