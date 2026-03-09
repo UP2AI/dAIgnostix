@@ -553,8 +553,11 @@ def get_db_overview() -> dict:
     overview = {}
     for t in tables:
         try:
-            res = supabase.table(t).select("id", count="exact").execute()
+            # Using select("*", count="exact") and limit(1) to get count without fetching all data
+            # This is safer than selecting "id" which might not exist in all tables
+            res = supabase.table(t).select("*", count="exact").limit(1).execute()
             overview[t] = res.count if res.count is not None else len(res.data)
-        except Exception:
-            overview[t] = "error"
+        except Exception as e:
+            print(f"Error counting table {t}: {str(e)}")
+            overview[t] = 0 # Fallback to 0 instead of "error" string to avoid frontend issues
     return overview
