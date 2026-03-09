@@ -230,6 +230,7 @@ def generate_feedback(
     learning_path_data: dict,
     materi_progress: list,
     events: list,
+    is_failed_posttest: bool = False,
 ) -> dict:
     """Generate comprehensive AI feedback based on all user data."""
     pretest_nilai = pretest_data.get("nilai", 0)
@@ -243,9 +244,28 @@ def generate_feedback(
 
     events_summary = json.dumps(events[:50], default=str, ensure_ascii=False)
 
+    # Determine focus based on pass/fail
+    if is_failed_posttest:
+        focus_instruction = """
+Tugas Khusus: User BELUM LULUS post-test (nilai < 80). 
+Fokus analisis Anda harus pada:
+1. Identifikasi bab mana yang paling lemah berdasarkan hasil post-test.
+2. Memberikan saran perbaikan yang sangat spesifik dan langkah-langkah konkret untuk dipelajari kembali agar LULUS di percobaan berikutnya.
+3. Memberikan motivasi yang kuat namun jujur bahwa kegagalan ini adalah bagian dari proses menuju kompetensi yang lebih tinggi.
+4. Hindari saran karir yang terlalu jauh (seperti sertifikasi eksternal atau kenaikan jabatan) sampai mereka benar-benar lulus. Fokus pada penguasaan materi saat ini.
+"""
+    else:
+        focus_instruction = """
+Tugas: User telah menyelesaikan pembelajaran dengan baik.
+Fokus analisis Anda adalah pada:
+1. Apresiasi atas capaian nilai dan perkembangan kompetensi dari pre-test ke post-test.
+2. Memberikan saran pengembangan karir yang strategis di lingkungan Kemenkeu.
+3. Rekomendasi sertifikasi atau langkah lanjutan untuk menjaga momentum keahlian ini.
+"""
+
     prompt = f"""Role: Anda adalah seorang Spesialis Pengembangan SDM dan analis hasil Pembelajaran Digital di lingkungan Kementerian Keuangan.
 
-Tugas: Buatlah analisis hasil pembelajaran e-learning untuk pegawai Kemenkeu berdasarkan data performa mereka. Gunakan nada bicara yang cukup apresiatif, inspiratif, personal, dan profesional.
+{focus_instruction}
 
 Ketentuan Penulisan:
 
@@ -253,7 +273,7 @@ Gaya Bahasa: Gunakan pendekatan motivasional. Hindari bahasa yang terlalu kaku, 
 
 Panjang Konten: Setiap nilai dalam JSON harus berupa paragraf yang tidak bertele tele, mendalam, dan deskriptif (minimal 4-6 kalimat per paragraf).
 
-Konteks Kemenkeu: Hubungkan keberhasilan belajar dengan kontribusi terhadap organisasi (Kemenkeu), peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi internal.
+Konteks Kemenkeu: Hubungkan {"perlu-nya perbaikan" if is_failed_posttest else "keberhasilan"} belajar dengan kontribusi terhadap organisasi (Kemenkeu), peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi internal.
 
 Sapaan: Selalu gunakan kata "Anda".
 
@@ -272,21 +292,23 @@ DATA PEMBELAJARAN:
 FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "Pemula|Menengah|Mahir",
-  "analisis_perkembangan": "[Tulis paragraf tentang perbandingan skor pre-test dan post-test. jika ada lompatan nilai yang signifikan, Tekankan pada 'lompatan' kompetensi yang luar biasa sebagai bukti ketajaman berpikir di bawah tekanan waktu]",
+  "analisis_perkembangan": "[Tulis paragraf tentang perbandingan skor pre-test dan post-test.{' Jika nilai masih di bawah 80, jelaskan area mana yang perlu diperkuat.' if is_failed_posttest else ' Jika ada lompatan nilai yang signifikan, tekankan pada bukti ketajaman berpikir.'}]",
   "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori berikut berdasarkan data waktu dan jeda belajar, lalu jelaskan dalam 1 paragraf:
     1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar.
     2. Pemelajar Nibbler: Menggabungkan komitmen waktu yang substansial dengan jeda yang konsisten antar sesi. Memungkinkan pemahaman komprehensif melalui kedalaman dan pengulangan. (Kategori ini digambarkan dengan warna hijau pada pojok kanan atas).
     3. Pemelajar Picky Eater: Mengalokasikan waktu keseluruhan yang lebih sedikit tetapi dengan jeda yang teratur. Fokus berinteraksi pada materi tertentu untuk merefleksikan, meninjau, dan memperkuat bahasan yang menarik/penting bagi mereka.
     4. Pemelajar Gulper: Mengalokasikan waktu minimal untuk belajar dan mengonsumsi konten dengan cepat tanpa jeda. Mengutamakan efisiensi daripada kedalaman untuk mendapatkan gambaran umum dengan cepat.
   ]",
-  "transformasi_profil": "[Tulis paragraf tentang perubahan status dari user. jika profil user berkembang maka Gambarkan bagaimana pemahaman baru ini menjadi modal kuat untuk menjadi ahli di bidangnya, jika profil user menurun maka berikan feedback yang membangun dan menyemangati user untuk terus belajar]",
-  "kesimpulan_strategis": "[Tulis paragraf berisi saran karier spesifik Kemenkeu. Sertakan rekomendasi sertifikasi yang sesuai dengan tema pembelajaran ini ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS/sistem internal dan kesiapan mengambil tanggung jawab teknis yang lebih strategis/setara manajerial]"
+  "transformasi_profil": "[Tulis paragraf tentang perubahan status dari user. {'Karena user belum lulus, berikan feedback yang sangat membangun dan instruksi belajar kembali agar siap ujian ulang.' if is_failed_posttest else 'Gambarkan bagaimana pemahaman baru ini menjadi modal kuat untuk menjadi ahli di bidangnya.'}]",
+  "kesimpulan_strategis": "[Tulis paragraf berisi saran {'belajar ulang dan persiapan ujian' if is_failed_posttest else 'karier spesifik Kemenkeu'}. {'Sebutkan bab materi mana saja yang harus dibaca ulang secara mendalam.' if is_failed_posttest else 'Sertakan rekomendasi sertifikasi yang sesuai dengan tema pembelajaran ini ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS dan kesiapan mengambil tanggung jawab lebih strategis.'}]"
 }}
 
 PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
 """
     response_text = _generate_with_retry(prompt)
     return _parse_json(response_text)
+
+
 def generate_bank_soal_questions(context: str, bab_nomor: int, bab_judul: str, jumlah: int = 10) -> list:
     """
     Generate a bank of MCQ questions for a specific chapter.

@@ -277,6 +277,15 @@ def save_feedback(nip: str, data: dict) -> dict:
     return res.data[0] if res.data else {}
 
 
+def delete_feedback(nip: str) -> bool:
+    """Delete feedback for a user (e.g. before retaking posttest)."""
+    try:
+        supabase.table("feedback").delete().eq("nip", nip).execute()
+        return True
+    except Exception:
+        return False
+
+
 # ======================== MATERI CHUNKS (pgvector) ========================
 
 def insert_chunk(content: str, metadata: dict, embedding: list) -> dict:

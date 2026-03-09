@@ -34,6 +34,9 @@ async def get_feedback(nip: str):
         materi_progress = db_service.get_materi_progress(nip)
         events = db_service.get_events(nip)
         
+        # Determine if failed (score < 80)
+        is_failed = posttest.get("nilai", 0) < 80
+        
         try:
             ai_generated = ai_service.generate_feedback(
                 pretest_data=pretest or {},
@@ -41,6 +44,7 @@ async def get_feedback(nip: str):
                 learning_path_data=learning_path or {},
                 materi_progress=materi_progress,
                 events=events,
+                is_failed_posttest=is_failed
             )
             feedback_data = db_service.save_feedback(nip, ai_generated)
         except Exception as e:

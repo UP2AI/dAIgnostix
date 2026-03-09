@@ -307,6 +307,11 @@
                                 </div>
                                 <div
                                     class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm w-32">
+                                    <p class="text-xs text-white/70 font-bold uppercase tracking-widest mb-1">Status</p>
+                                    <p class="text-xl font-black uppercase" id="result-status">-</p>
+                                </div>
+                                <div
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm w-32">
                                     <p class="text-xs text-white/70 font-bold uppercase tracking-widest mb-1">Percobaan
                                     </p>
                                     <p class="text-3xl font-black text-amber-300" id="result-attempt"><span
@@ -634,9 +639,23 @@
             document.getElementById('questions-section').classList.add('hidden');
             document.getElementById('result-section').classList.remove('hidden');
             document.getElementById('result-nilai').textContent = nilai;
-            document.getElementById('result-benar').innerHTML = `${benar}<span class="text-lg text-slate-400">/${soal.length}</span>`;
+            document.getElementById('result-benar').innerHTML = `${benar}<span class="text-lg text-white/50">/${soal.length}</span>`;
             document.getElementById('curr-attempt').textContent = attempts;
             document.getElementById('max-attempt').textContent = max_attempts;
+
+            const isLulus = resultData.lulus !== undefined ? resultData.lulus : (nilai >= 80);
+            const statusEl = document.getElementById('result-status');
+            const resultMsg = document.querySelector('#result-section p.text-white\\/80');
+
+            if (isLulus) {
+                statusEl.textContent = 'LULUS';
+                statusEl.className = 'text-xl font-black uppercase text-green-400';
+                resultMsg.textContent = 'Selamat! Anda telah lulus post-test dengan hasil yang memuaskan.';
+            } else {
+                statusEl.textContent = 'GAGAL';
+                statusEl.className = 'text-xl font-black uppercase text-red-400';
+                resultMsg.innerHTML = 'Nilai Anda belum mencapai batas kelulusan (80). <br><span class="text-sm font-medium text-accent-yellow">Silakan buka Feedback untuk melihat analisis AI dan saran agar Anda lulus di percobaan berikutnya.</span>';
+            }
 
             const btnRetake = document.getElementById('btn-retake');
             if (attempts < max_attempts) {

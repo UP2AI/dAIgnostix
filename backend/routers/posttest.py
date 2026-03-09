@@ -120,12 +120,16 @@ async def submit_posttest(nip: str, body: PosttestSubmit):
     nilai = round((benar / total) * 100) if total > 0 else 0
     result = db_service.submit_posttest(nip, nilai, soal)
 
+    # passing grade logic
+    lulus = nilai >= 80
+
     return {
         "message": "Posttest berhasil disubmit",
         "nilai": nilai,
         "benar": benar,
         "total": total,
         "soal": soal,
+        "lulus": lulus
     }
 
 
@@ -151,6 +155,8 @@ async def retake_posttest(nip: str):
     
     try:
         updated = db_service.reset_posttest_for_retake(nip, new_attempts, soal_bersih)
+        # Clear feedback so it can be regenerated with new results
+        db_service.delete_feedback(nip)
     except Exception as e:
         import traceback
         traceback.print_exc()
