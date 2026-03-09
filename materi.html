@@ -644,6 +644,8 @@
 
                 loading.classList.add('hidden');
                 content.classList.remove('hidden');
+                // Ensure container exists (it might have been overwritten by showQuizResult)
+                content.innerHTML = '<div id="quiz-question-container"></div>';
                 renderQuizQuestion();
             } catch (err) {
                 console.error(err);
