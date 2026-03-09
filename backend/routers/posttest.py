@@ -41,24 +41,41 @@ async def get_posttest(nip: str):
             # Gather questions already seen in pretest to avoid duplicates if possible
             pretest_questions = [s.get("pertanyaan") for s in pretest.get("soal", [])]
 
-        final_soal = []
         import random
+        total_target = 30
+        chapters = [b for b in all_published if b.get("soal")]
+        
+        if not chapters:
+             raise HTTPException(status_code=500, detail="Bank soal kosong.")
 
-        for bank in all_published:
-            soal_pool = bank.get("soal", [])
-            if not soal_pool:
-                continue
+        final_soal = []
+        # Prepare pools, prioritizing questions NOT in pretest
+        pools = {}
+        for b in chapters:
+            soal_pool = b.get("soal", [])
+            new_questions = [s for s in soal_pool if s.get("pertanyaan") not in pretest_questions]
+            seen_questions = [s for s in soal_pool if s.get("pertanyaan") in pretest_questions]
             
-            # Try to pick questions NOT in pretest
-            available = [s for s in soal_pool if s.get("pertanyaan") not in pretest_questions]
-            
-            if len(available) >= 5:
-                selected = random.sample(available, 5)
-            else:
-                # If not enough new questions, just pick 5 randomly from original pool
-                selected = random.sample(soal_pool, min(5, len(soal_pool)))
-            
-            final_soal.extend(selected)
+            random.shuffle(new_questions)
+            random.shuffle(seen_questions)
+            # Combine: new questions first, then seen questions as fallback
+            pools[b['bab_nomor']] = new_questions + seen_questions
+
+        # Round-robin selection to ensure proportionality
+        chapter_ids = list(pools.keys())
+        random.shuffle(chapter_ids)
+        
+        while len(final_soal) < total_target:
+            added_this_round = 0
+            for b_id in chapter_ids:
+                if pools[b_id]:
+                    question = pools[b_id].pop(0)
+                    final_soal.append(question)
+                    added_this_round += 1
+                    if len(final_soal) >= total_target:
+                        break
+            if added_this_round == 0:
+                break
 
         if not final_soal:
             raise HTTPException(status_code=500, detail="Gagal mengambil soal posttest.")
@@ -68,8 +85,6 @@ async def get_posttest(nip: str):
             s["nomor"] = i + 1
 
         saved = db_service.save_posttest(nip, final_soal)
-        saved["max_attempts"] = 5
-        saved["attempts"] = saved.get("attempts", 1) if saved.get("attempts") is not None else 1
         return saved
     except Exception as e:
         import traceback

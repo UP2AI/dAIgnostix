@@ -32,17 +32,34 @@ async def get_pretest(nip: str):
         if not all_published:
             raise HTTPException(status_code=500, detail="Bank soal belum dipublish oleh admin. Silakan hubungi admin.")
 
-        final_soal = []
         import random
+        total_target = 30
+        chapters = [b for b in all_published if b.get("soal")]
         
-        for bank in all_published:
-            soal_pool = bank.get("soal", [])
-            if not soal_pool:
-                continue
-            
-            # Select 5 random questions from this bab
-            selected = random.sample(soal_pool, min(5, len(soal_pool)))
-            final_soal.extend(selected)
+        if not chapters:
+             raise HTTPException(status_code=500, detail="Bank soal kosong. Silakan hubungi admin.")
+
+        final_soal = []
+        # Prepare pools
+        pools = {b['bab_nomor']: list(b['soal']) for b in chapters}
+        for b_id in pools:
+            random.shuffle(pools[b_id])
+
+        # Round-robin selection to ensure proportionality
+        chapter_ids = list(pools.keys())
+        random.shuffle(chapter_ids) # Randomize order of chapters for remainder distribution
+        
+        while len(final_soal) < total_target:
+            added_this_round = 0
+            for b_id in chapter_ids:
+                if pools[b_id]:
+                    question = pools[b_id].pop()
+                    final_soal.append(question)
+                    added_this_round += 1
+                    if len(final_soal) >= total_target:
+                        break
+            if added_this_round == 0:
+                break # No more questions available in any chapter
 
         if not final_soal:
             raise HTTPException(status_code=500, detail="Gagal mengambil soal dari bank soal.")

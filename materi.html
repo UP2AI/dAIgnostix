@@ -81,6 +81,7 @@
     <script src="js/api.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
@@ -608,11 +609,264 @@
             stopStudyTimer();
             const nip = getCurrentNip();
             if (nip && currentBabNum > 0) {
-                // Redirect to quiz instead of directly completing
-                window.location.href = `quiz.html?bab=${currentBabNum}`;
+                // Open Quiz Modal instead of redirect
+                openQuizModal(currentBabNum);
             }
         }
+
+        // ============== QUIZ MODAL LOGIC ==============
+        let currentQuizSoal = [];
+        let currentQuizIndex = 0;
+        let quizAnswers = {};
+        let isSubmittingQuiz = false;
+
+        async function openQuizModal(babNum) {
+            const modal = document.getElementById('quiz-modal');
+            const content = document.getElementById('quiz-modal-content');
+            const loading = document.getElementById('quiz-modal-loading');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden';
+
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            try {
+                const data = await getQuiz(getCurrentNip(), babNum);
+                currentQuizSoal = data.soal || [];
+                currentQuizIndex = 0;
+                quizAnswers = {};
+
+                if (currentQuizSoal.length === 0) {
+                    throw new Error("Tidak ada soal tersedia untuk bab ini.");
+                }
+
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+                renderQuizQuestion();
+            } catch (err) {
+                console.error(err);
+                alert("Gagal memuat kuis: " + err.message);
+                closeQuizModal();
+            }
+        }
+
+        function closeQuizModal() {
+            const modal = document.getElementById('quiz-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('quiz-question-container');
+            const q = currentQuizSoal[currentQuizIndex];
+            const total = currentQuizSoal.length;
+
+            const progressPercent = ((currentQuizIndex + 1) / total) * 100;
+
+            container.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-primary uppercase tracking-wider">Pertanyaan ${currentQuizIndex + 1} dari ${total}</span>
+                        <span class="text-xs font-bold text-slate-400">${Math.round(progressPercent)}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary transition-all duration-300" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 leading-relaxed">${q.pertanyaan}</h3>
+                
+                <div class="space-y-3">
+                    ${q.opsi.map(opt => {
+                const letter = opt.charAt(0);
+                const isSelected = quizAnswers[currentQuizIndex] === letter;
+                return `
+                        <button onclick="selectQuizAnswer('${letter}')" 
+                            class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 group ${isSelected ? 'border-primary bg-primary/5' : 'border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:bg-slate-50 dark:hover:bg-slate-800/50'}">
+                            <div class="w-10 h-10 rounded-lg flex-none flex items-center justify-center font-bold text-sm transition-colors ${isSelected ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'}">
+                                ${letter}
+                            </div>
+                            <span class="text-sm font-medium ${isSelected ? 'text-primary dark:text-white' : 'text-slate-600 dark:text-slate-300'}">${opt.substring(3)}</span>
+                        </button>
+                        `;
+            }).join('')}
+                </div>
+                
+                <div class="mt-8 flex items-center justify-between gap-4">
+                    <button onclick="prevQuizQuestion()" ${currentQuizIndex === 0 ? 'disabled' : ''} 
+                        class="px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                        Sebelumnya
+                    </button>
+                    ${currentQuizIndex === total - 1 ?
+                    `<button onclick="submitQuizFinal()" ${!quizAnswers[currentQuizIndex] || isSubmittingQuiz ? 'disabled' : ''} 
+                            class="flex-grow bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50">
+                            ${isSubmittingQuiz ? '<span class="animate-spin material-symbols-outlined">autofps_select</span>' : '<span class="material-symbols-outlined font-bold">check_circle</span>'}
+                            Selesaikan Kuis
+                        </button>` :
+                    `<button onclick="nextQuizQuestion()" ${!quizAnswers[currentQuizIndex] ? 'disabled' : ''} 
+                            class="flex-grow bg-primary hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50">
+                            Berikutnya
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>`
+                }
+                </div>
+            `;
+        }
+
+        function selectQuizAnswer(letter) {
+            quizAnswers[currentQuizIndex] = letter;
+            renderQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIndex < currentQuizSoal.length - 1) {
+                currentQuizIndex++;
+                renderQuizQuestion();
+            }
+        }
+
+        function prevQuizQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                renderQuizQuestion();
+            }
+        }
+
+        async function submitQuizFinal() {
+            if (isSubmittingQuiz) return;
+            isSubmittingQuiz = true;
+            renderQuizQuestion();
+
+            const nip = getCurrentNip();
+            // Map 0-indexed answers to 1-indexed for the API
+            const formattedAnswers = {};
+            Object.keys(quizAnswers).forEach(idx => {
+                formattedAnswers[parseInt(idx) + 1] = quizAnswers[idx];
+            });
+
+            try {
+                const result = await submitQuiz(nip, currentBabNum, formattedAnswers);
+
+                // Show result screen
+                showQuizResult(result);
+
+                // If passed, refresh progress status
+                if (result.nilai >= 70) {
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: { y: 0.6 },
+                        colors: ['#003366', '#FFCC00', '#10b981']
+                    });
+
+                    // Reload progress silently
+                    const progressData = await getMateriProgress(nip);
+                    materiProgress = progressData.progress || [];
+                    buildSidebarBabNav();
+                    if (currentBabNum === 0) showBabOverview();
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Gagal mengirim kuis: " + err.message);
+            } finally {
+                isSubmittingQuiz = false;
+            }
+        }
+
+        function showQuizResult(res) {
+            const container = document.getElementById('quiz-modal-content');
+            const isPass = res.nilai >= 70;
+
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="w-24 h-24 rounded-full ${isPass ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'} mx-auto flex items-center justify-center mb-6 scale-in">
+                        <span class="material-symbols-outlined text-6xl">${isPass ? 'workspace_premium' : 'error'}</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">${isPass ? 'Luar Biasa!' : 'Belum Berhasil'}</h2>
+                    <p class="text-slate-500 mb-8">${isPass ? 'Anda telah menyelesaikan kuis bab ini dengan baik.' : 'Skor Anda belum mencapai ambang batas kelulusan (70%).'}</p>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 mb-8 border border-slate-100 dark:border-slate-800">
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Skor Anda</p>
+                                <p class="text-2xl font-black text-primary dark:text-accent-yellow">${res.nilai}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Benar</p>
+                                <p class="text-2xl font-black text-emerald-500">${res.benar}</p>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total</p>
+                                <p class="text-2xl font-black text-slate-400">${res.total}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        ${isPass ?
+                    `<button onclick="closeQuizModal(); goBackToOverview();" class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                                Kembali ke Daftar Materi
+                            </button>` :
+                    `<button onclick="openQuizModal(currentBabNum)" class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-primary/20">
+                                Coba Lagi
+                            </button>
+                            <button onclick="closeQuizModal()" class="w-full text-slate-500 font-bold py-2 hover:text-primary transition-colors">
+                                Tutup
+                            </button>`
+                }
+                    </div>
+                </div>
+            `;
+        }
     </script>
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal"
+        class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4 sm:p-6">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+        <div
+            class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden border border-white/10 fade-in">
+            <!-- Modal Header -->
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-primary text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined font-bold">quiz</span>
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-lg leading-tight">Kuis Bab</h2>
+                        <p class="text-[10px] font-bold text-white/70 uppercase tracking-widest">Evaluasi Pemahaman</p>
+                    </div>
+                </div>
+                <button onclick="closeQuizModal()"
+                    class="w-10 h-10 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 sm:p-8">
+                <!-- Loading State -->
+                <div id="quiz-modal-loading" class="py-12 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4">
+                    </div>
+                    <p class="text-slate-500 font-bold">Sedang memuat soal kuis...</p>
+                </div>
+
+                <!-- Quiz Content -->
+                <div id="quiz-modal-content" class="hidden">
+                    <div id="quiz-question-container">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
