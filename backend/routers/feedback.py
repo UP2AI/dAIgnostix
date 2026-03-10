@@ -37,6 +37,10 @@ async def get_feedback(nip: str):
         # Determine if failed (score < 80)
         is_failed = posttest.get("nilai", 0) < 80
         
+        # Get e-learning title for more targeted feedback
+        elearning_config = db_service.get_elearning_config()
+        elearning_title = elearning_config.get("judul", "E-Learning") if elearning_config else "E-Learning"
+
         try:
             ai_generated = ai_service.generate_feedback(
                 pretest_data=pretest or {},
@@ -44,7 +48,8 @@ async def get_feedback(nip: str):
                 learning_path_data=learning_path or {},
                 materi_progress=materi_progress,
                 events=events,
-                is_failed_posttest=is_failed
+                is_failed_posttest=is_failed,
+                elearning_title=elearning_title
             )
             feedback_data = db_service.save_feedback(nip, ai_generated)
         except Exception as e:

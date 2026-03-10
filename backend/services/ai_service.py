@@ -231,11 +231,18 @@ def generate_feedback(
     materi_progress: list,
     events: list,
     is_failed_posttest: bool = False,
+    elearning_title: str = "E-Learning"
 ) -> dict:
     """Generate comprehensive AI feedback based on all user data."""
     pretest_nilai = pretest_data.get("nilai", 0)
     posttest_nilai = posttest_data.get("nilai", 0)
     profil_awal = learning_path_data.get("profil", "N/A")
+
+    # Clean the title for certificates/job suggestions (remove variations of 'elearning')
+    cleaned_title = elearning_title.lower()
+    for word in ["elearning", "e-learning", "pembelajaran digital"]:
+        cleaned_title = cleaned_title.replace(word, "")
+    cleaned_title = cleaned_title.strip().title()
 
     time_per_bab = ""
     for m in materi_progress:
@@ -246,20 +253,20 @@ def generate_feedback(
 
     # Determine focus based on pass/fail
     if is_failed_posttest:
-        focus_instruction = """
-Tugas Khusus: User BELUM LULUS post-test (nilai < 80). 
+        focus_instruction = f"""
+Tugas Khusus: User BELUM LULUS post-test (nilai < 80) pada pelatihan "{elearning_title}". 
 Fokus analisis Anda harus pada:
 1. Identifikasi bab mana yang paling lemah berdasarkan hasil post-test.
 2. Memberikan saran perbaikan yang sangat spesifik dan langkah-langkah konkret untuk dipelajari kembali agar LULUS di percobaan berikutnya.
 3. Memberikan motivasi yang kuat namun jujur bahwa kegagalan ini adalah bagian dari proses menuju kompetensi yang lebih tinggi.
-4. Hindari saran karir yang terlalu jauh (seperti sertifikasi eksternal atau kenaikan jabatan) sampai mereka benar-benar lulus. Fokus pada penguasaan materi saat ini.
+4. Fokus pada penguasaan materi saat ini.
 """
     else:
-        focus_instruction = """
-Tugas: User telah menyelesaikan pembelajaran dengan baik.
+        focus_instruction = f"""
+Tugas: User telah menyelesaikan pelatihan "{elearning_title}" dengan baik.
 Fokus analisis Anda adalah pada:
 1. Apresiasi atas capaian nilai dan perkembangan kompetensi dari pre-test ke post-test.
-2. Memberikan saran pengembangan karir yang strategis di lingkungan Kemenkeu.
+2. Memberikan saran pengembangan karir yang strategis (tidak harus di lingkungan Kemenkeu).
 3. Rekomendasi sertifikasi atau langkah lanjutan untuk menjaga momentum keahlian ini.
 """
 
@@ -273,7 +280,7 @@ Gaya Bahasa: Gunakan pendekatan motivasional. Hindari bahasa yang terlalu kaku, 
 
 Panjang Konten: Setiap nilai dalam JSON harus berupa paragraf yang tidak bertele tele, mendalam, dan deskriptif (minimal 4-6 kalimat per paragraf).
 
-Konteks Kemenkeu: Hubungkan {"perlu-nya perbaikan" if is_failed_posttest else "keberhasilan"} belajar dengan kontribusi terhadap organisasi (Kemenkeu), peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi internal.
+Konteks Organisasi: Hubungkan {"perlu-nya perbaikan" if is_failed_posttest else "keberhasilan"} belajar dengan kontribusi terhadap organisasi, peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi.
 
 Sapaan: Selalu gunakan kata "Anda".
 
@@ -281,6 +288,7 @@ Larangan: Jangan memberikan saran untuk mengubah tipe atau format materi e-learn
 
 
 DATA PEMBELAJARAN:
+- Judul Pelatihan: {elearning_title}
 - Nilai Pretest: {pretest_nilai}/100
 - Nilai Posttest: {posttest_nilai}/100
 - Profil Awal: {profil_awal}
@@ -300,7 +308,7 @@ FORMAT OUTPUT (JSON object saja, tanpa text lain):
     4. Pemelajar Gulper: Mengalokasikan waktu minimal untuk belajar dan mengonsumsi konten dengan cepat tanpa jeda. Mengutamakan efisiensi daripada kedalaman untuk mendapatkan gambaran umum dengan cepat.
   ]",
   "transformasi_profil": "[Tulis paragraf tentang perubahan status dari user. {'Karena user belum lulus, berikan feedback yang sangat membangun dan instruksi belajar kembali agar siap ujian ulang.' if is_failed_posttest else 'Gambarkan bagaimana pemahaman baru ini menjadi modal kuat untuk menjadi ahli di bidangnya.'}]",
-  "kesimpulan_strategis": "[Tulis paragraf berisi saran {'belajar ulang dan persiapan ujian' if is_failed_posttest else 'karier spesifik Kemenkeu'}. {'Sebutkan bab materi mana saja yang harus dibaca ulang secara mendalam.' if is_failed_posttest else 'Sertakan rekomendasi sertifikasi yang sesuai dengan tema pembelajaran ini ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS dan kesiapan mengambil tanggung jawab lebih strategis.'}]"
+  "kesimpulan_strategis": "[Tulis paragraf berisi saran {'belajar ulang dan persiapan ujian' if is_failed_posttest else 'pengembangan karir'}. {'Sebutkan bab materi mana saja yang harus dibaca ulang secara mendalam.' if is_failed_posttest else f'Sertakan rekomendasi sertifikasi (hilangkan kata elearning dalam judul/subjek sertifikasinya) terkait tema {cleaned_title} yang ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS dan dapat menjadi (sebutkan pekerjaan yang cocok dengan tema {cleaned_title} untuk pengembangan karir baik di instansi pemerintah maupun di industri swasta/internasional).'}]"
 }}
 
 PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
