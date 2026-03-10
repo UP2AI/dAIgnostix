@@ -82,6 +82,12 @@
     <script src="js/auth.js"></script>
     <script src="js/tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Initialize PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
@@ -215,16 +221,84 @@
                         <div class="p-5 sm:p-6 space-y-4">
                             <p id="detail-desc" class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"></p>
 
-                            <!-- PDF Section (Embedded Viewer - Clean) -->
+                            <!-- PDF Section (Custom Viewer - Mobile Friendly) -->
                             <div id="pdf-section" class="hidden">
-                                <div class="rounded-xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden">
-                                    <div id="pdf-viewer-container" class="relative bg-white dark:bg-slate-800"
+                                <div
+                                    class="rounded-xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden shadow-lg">
+                                    <div id="pdf-viewer-container"
+                                        class="relative bg-slate-100 dark:bg-slate-900 flex flex-col"
                                         style="height: 80vh; min-height: 600px;">
-                                        <iframe id="pdf-iframe" src="" class="w-full h-full border-0" title="PDF Viewer"
-                                            loading="lazy"></iframe>
+
+                                        <!-- PDF Toolbar -->
+                                        <div id="pdf-toolbar"
+                                            class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-10">
+                                            <div class="flex items-center gap-2">
+                                                <button id="prev-page"
+                                                    class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-30 transition-colors">
+                                                    <span class="material-symbols-outlined">chevron_left</span>
+                                                </button>
+                                                <span
+                                                    class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                                                    Hal <span id="page-num" class="text-primary">1</span> / <span
+                                                        id="page-count">0</span>
+                                                </span>
+                                                <button id="next-page"
+                                                    class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-30 transition-colors">
+                                                    <span class="material-symbols-outlined">chevron_right</span>
+                                                </button>
+                                            </div>
+
+                                            <div
+                                                class="hidden sm:flex items-center gap-2 border-x border-slate-200 dark:border-slate-700 px-4 mx-2">
+                                                <button id="zoom-out"
+                                                    class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                                    <span class="material-symbols-outlined text-xl">zoom_out</span>
+                                                </button>
+                                                <span id="zoom-percent"
+                                                    class="text-xs font-bold text-slate-500 w-10 text-center">100%</span>
+                                                <button id="zoom-in"
+                                                    class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                                    <span class="material-symbols-outlined text-xl">zoom_in</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <button onclick="requestFullscreenPdf()"
+                                                    class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                                    <span class="material-symbols-outlined">fullscreen</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- PDF Canvas Area -->
+                                        <div id="pdf-canvas-container"
+                                            class="flex-grow overflow-auto flex justify-center p-4 bg-slate-200/50 dark:bg-slate-900/50 scroll-smooth">
+                                            <canvas id="pdf-canvas"
+                                                class="shadow-2xl bg-white dark:bg-white transition-all duration-300 origin-top max-w-full"></canvas>
+                                        </div>
+
+                                        <!-- Loading Overlay -->
+                                        <div id="pdf-loading"
+                                            class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-20 transition-opacity duration-300">
+                                            <div
+                                                class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3">
+                                            </div>
+                                            <p
+                                                class="text-xs font-bold text-primary uppercase tracking-widest animate-pulse">
+                                                Memuat Materi...</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <p id="pdf-filename" class="hidden">materi.pdf</p>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <p id="pdf-filename"
+                                        class="text-[10px] text-slate-400 font-mono italic truncate max-w-[200px] sm:max-w-md">
+                                        materi.pdf</p>
+                                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                                        <span class="flex items-center gap-1"><span
+                                                class="material-symbols-outlined text-xs">touch_app</span> Scroll untuk
+                                            membaca</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <div id="no-pdf-section" class="hidden">
@@ -505,10 +579,12 @@
             if (bab.pdf_materi_filename || bab.pdf_filename) {
                 document.getElementById('pdf-section').classList.remove('hidden');
                 document.getElementById('no-pdf-section').classList.add('hidden');
-                document.getElementById('pdf-filename').textContent = bab.pdf_materi_filename || bab.pdf_filename;
+                const filename = bab.pdf_materi_filename || bab.pdf_filename;
+                document.getElementById('pdf-filename').textContent = filename;
                 const pdfUrl = `${API_BASE_URL}/admin/bab/${bab.id}/serve-materi-pdf`;
-                // Embed PDF in iframe with toolbar hidden to prevent download
-                document.getElementById('pdf-iframe').src = pdfUrl + '#toolbar=0&navpanes=0&statusbar=0';
+
+                // Initialize custom PDF.js viewer
+                initPdfViewer(pdfUrl);
             } else {
                 document.getElementById('pdf-section').classList.add('hidden');
                 document.getElementById('no-pdf-section').classList.remove('hidden');
@@ -532,6 +608,167 @@
 
             // Start silent study time tracking
             startStudyTimer();
+        }
+
+        // ============== PDF.JS VIEWER LOGIC ==============
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.0;
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
+
+        async function initPdfViewer(url) {
+            const loadingOverlay = document.getElementById('pdf-loading');
+            loadingOverlay.classList.remove('opacity-0', 'hidden');
+
+            pageNum = 1;
+            scale = 1.0; // Reset scale
+            updateZoomDisplay();
+
+            try {
+                // Fetch PDF using pdfjsLib
+                const loadingTask = pdfjsLib.getDocument(url);
+                pdfDoc = await loadingTask.promise;
+
+                document.getElementById('page-count').textContent = pdfDoc.numPages;
+
+                // Render first page
+                renderPage(pageNum);
+
+                // Set up event listeners (only once)
+                setupPdfEventListeners();
+
+            } catch (err) {
+                console.error("PDF.js error:", err);
+                // Fallback: If PDF.js fails, maybe try simple link or iframe
+                document.getElementById('pdf-canvas-container').innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-10 text-center">
+                        <span class="material-symbols-outlined text-4xl text-red-400 mb-2">error</span>
+                        <p class="text-slate-600 font-medium">Gagal memuat PDF secara otomatis.</p>
+                        <a href="${url}" target="_blank" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg font-bold">Buka PDF di Tab Baru</a>
+                    </div>
+                `;
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        function renderPage(num) {
+            pageRendering = true;
+
+            // Get page
+            pdfDoc.getPage(num).then((page) => {
+                const container = document.getElementById('pdf-canvas-container');
+                const containerWidth = container.clientWidth - 40; // padding
+
+                // Calculate scale to fit width if scale is 1.0 initially
+                const unscaledViewport = page.getViewport({ scale: 1 });
+                if (scale === 1.0) {
+                    scale = containerWidth / unscaledViewport.width;
+                    if (scale > 1.5) scale = 1.5; // Cap auto-scale
+                    updateZoomDisplay();
+                }
+
+                const viewport = page.getViewport({ scale: scale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                // Render PDF page into canvas context
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+
+                // Wait for rendering to finish
+                renderTask.promise.then(() => {
+                    pageRendering = false;
+                    document.getElementById('pdf-loading').classList.add('opacity-0');
+                    setTimeout(() => document.getElementById('pdf-loading').classList.add('hidden'), 300);
+
+                    if (pageNumPending !== null) {
+                        // New page rendering is pending
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            // Update page counters
+            document.getElementById('page-num').textContent = num;
+
+            // Update buttons state
+            document.getElementById('prev-page').disabled = (num <= 1);
+            document.getElementById('next-page').disabled = (num >= pdfDoc.numPages);
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function setupPdfEventListeners() {
+            // Remove old listeners to avoid duplicates
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+
+            // Clone and replace to clear listeners
+            const newPrev = prevBtn.cloneNode(true);
+            const newNext = nextBtn.cloneNode(true);
+            const newZoomIn = zoomInBtn.cloneNode(true);
+            const newZoomOut = zoomOutBtn.cloneNode(true);
+
+            prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+            nextBtn.parentNode.replaceChild(newNext, nextBtn);
+            zoomInBtn.parentNode.replaceChild(newZoomIn, zoomInBtn);
+            zoomOutBtn.parentNode.replaceChild(newZoomOut, zoomOutBtn);
+
+            newPrev.addEventListener('click', () => {
+                if (pageNum <= 1) return;
+                pageNum--;
+                queueRenderPage(pageNum);
+            });
+
+            newNext.addEventListener('click', () => {
+                if (pageNum >= pdfDoc.numPages) return;
+                pageNum++;
+                queueRenderPage(pageNum);
+            });
+
+            newZoomIn.addEventListener('click', () => {
+                scale += 0.2;
+                if (scale > 3.0) scale = 3.0;
+                updateZoomDisplay();
+                queueRenderPage(pageNum);
+            });
+
+            newZoomOut.addEventListener('click', () => {
+                scale -= 0.2;
+                if (scale < 0.5) scale = 0.5;
+                updateZoomDisplay();
+                queueRenderPage(pageNum);
+            });
+        }
+
+        function updateZoomDisplay() {
+            document.getElementById('zoom-percent').textContent = Math.round(scale * 100) + '%';
+        }
+
+        function requestFullscreenPdf() {
+            const container = document.getElementById('pdf-viewer-container');
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
         }
 
         function goBackToOverview() {
@@ -852,8 +1089,8 @@
     </script>
     <!-- QUIZ MODAL -->
     <div id="quiz-modal"
-        class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex items-center justify-center p-4 sm:p-6">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+        class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-6 py-10 sm:py-20">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeQuizModal()"></div>
         <div
             class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden border border-white/10 fade-in">
             <!-- Modal Header -->

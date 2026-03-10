@@ -281,10 +281,15 @@
                         </button>
                     </div>
                 </section>
-                <!-- Result Section -->
                 <section class="space-y-6 hidden" id="result-section">
-                    <div class="bg-primary rounded-xl shadow-xl p-8 text-center relative overflow-hidden">
-                        <div class="absolute inset-0"></div>
+                    <div class="bg-primary rounded-xl shadow-xl p-6 sm:p-10 text-center relative overflow-hidden">
+                        <!-- Decorative background -->
+                        <div class="absolute inset-0 opacity-10"
+                            style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary via-transparent to-primary/50">
+                        </div>
+
                         <div class="relative z-10 flex flex-col items-center">
                             <div
                                 class="size-20 bg-accent-yellow text-primary rounded-full flex items-center justify-center mb-4 border-4 border-yellow-200">
@@ -293,30 +298,37 @@
                             <h2 class="text-3xl font-black text-white mb-2">Post-test Selesai!</h2>
                             <p class="text-white/80 mb-6 max-w-lg mx-auto">Selamat! Anda telah
                                 menyelesaikan seluruh rangkaian evaluasi.</p>
-                            <div class="flex gap-4 justify-center mb-8">
+                            <div
+                                class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 justify-center mb-8 w-full max-w-3xl">
                                 <div
-                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm w-32">
-                                    <p class="text-xs text-white/70 font-bold uppercase tracking-widest mb-1">Nilai</p>
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm">
+                                    <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Nilai
+                                    </p>
                                     <p class="text-3xl font-black text-accent-yellow" id="result-nilai">-</p>
                                 </div>
                                 <div
-                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm w-32">
-                                    <p class="text-xs text-white/70 font-bold uppercase tracking-widest mb-1">Benar</p>
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm">
+                                    <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Benar
+                                    </p>
                                     <p class="text-3xl font-black text-green-400" id="result-benar">-<span
                                             class="text-lg text-white/50">/30</span></p>
                                 </div>
                                 <div
-                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm w-32">
-                                    <p class="text-xs text-white/70 font-bold uppercase tracking-widest mb-1">Status</p>
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm flex flex-col justify-center">
+                                    <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Status
+                                    </p>
                                     <p class="text-xl font-black uppercase" id="result-status">-</p>
                                 </div>
                                 <div
-                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm w-32">
-                                    <p class="text-xs text-white/70 font-bold uppercase tracking-widest mb-1">Percobaan
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm">
+                                    <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">
+                                        Percobaan
                                     </p>
-                                    <p class="text-3xl font-black text-amber-300" id="result-attempt"><span
-                                            id="curr-attempt">-</span><span class="text-lg text-white/50">/<span
-                                                id="max-attempt">-</span></span></p>
+                                    <p class="text-3xl font-black text-amber-300" id="result-attempt">
+                                        <span id="curr-attempt">-</span><span
+                                            class="text-lg text-white/50">/</span><span id="max-attempt"
+                                            class="text-lg text-white/50">-</span>
+                                    </p>
                                 </div>
                             </div>
                             <div class="flex gap-4 items-center justify-center">
