@@ -274,7 +274,7 @@
                                         <div id="pdf-canvas-container"
                                             class="flex-grow overflow-auto flex justify-center p-4 bg-slate-200/50 dark:bg-slate-900/50 scroll-smooth">
                                             <canvas id="pdf-canvas"
-                                                class="shadow-2xl bg-white dark:bg-white transition-all duration-300 origin-top max-w-full"></canvas>
+                                                class="shadow-2xl bg-white dark:bg-white transition-all duration-300 origin-top max-w-full h-auto"></canvas>
                                         </div>
 
                                         <!-- Loading Overlay -->
@@ -660,17 +660,21 @@
             // Get page
             pdfDoc.getPage(num).then((page) => {
                 const container = document.getElementById('pdf-canvas-container');
-                const containerWidth = container.clientWidth - 40; // padding
+                let containerWidth = container.clientWidth - 40; // padding
+                if (containerWidth <= 0) containerWidth = 320; // fallback for narrow mobile
 
                 // Calculate scale to fit width if scale is 1.0 initially
                 const unscaledViewport = page.getViewport({ scale: 1 });
                 if (scale === 1.0) {
                     scale = containerWidth / unscaledViewport.width;
                     if (scale > 1.5) scale = 1.5; // Cap auto-scale
+                    // For mobile, we usually want at least 1.0 unless it's huge
+                    if (scale < 0.6) scale = 0.6;
                     updateZoomDisplay();
                 }
 
-                const viewport = page.getViewport({ scale: scale });
+                const dpr = window.devicePixelRatio || 1;
+                const viewport = page.getViewport({ scale: scale * dpr });
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
 
@@ -1061,16 +1065,16 @@
                     <p class="text-slate-500 mb-8">Anda telah menyelesaikan kuis bab ini dengan baik.</p>
                     
                     <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 mb-8 border border-slate-100 dark:border-slate-800">
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4">
                             <div>
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Skor Anda</p>
                                 <p class="text-2xl font-black text-primary dark:text-accent-yellow">${res.nilai}</p>
                             </div>
-                            <div>
+                            <div class="border-t sm:border-t-0 sm:border-x border-slate-200 dark:border-slate-700 pt-4 sm:pt-0">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Benar</p>
                                 <p class="text-2xl font-black text-emerald-500">${benar ?? '-'}</p>
                             </div>
-                            <div>
+                            <div class="border-t sm:border-t-0 border-slate-200 dark:border-slate-700 pt-4 sm:pt-0">
                                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total</p>
                                 <p class="text-2xl font-black text-slate-400">${total ?? '-'}</p>
                             </div>
