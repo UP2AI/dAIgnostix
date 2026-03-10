@@ -62,6 +62,15 @@
             -webkit-user-select: none;
             user-select: none;
         }
+
+        #pdf-canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto !important;
+            aspect-ratio: auto;
+            /* Ensure aspect ratio is handled by internal resolution */
+        }
     </style>
     <script>
         // Check progression state from Backend
@@ -272,9 +281,8 @@
 
                                         <!-- PDF Canvas Area -->
                                         <div id="pdf-canvas-container"
-                                            class="flex-grow overflow-auto flex justify-center p-4 bg-slate-200/50 dark:bg-slate-900/50 scroll-smooth">
-                                            <canvas id="pdf-canvas"
-                                                class="shadow-2xl bg-white dark:bg-white transition-all duration-300 origin-top max-w-full h-auto"></canvas>
+                                            class="flex-grow overflow-auto text-center p-4 bg-slate-200/50 dark:bg-slate-900/50 scroll-smooth">
+                                            <canvas id="pdf-canvas" class="shadow-2xl bg-white dark:bg-white"></canvas>
                                         </div>
 
                                         <!-- Loading Overlay -->
@@ -674,14 +682,23 @@
                 }
 
                 const dpr = window.devicePixelRatio || 1;
-                const viewport = page.getViewport({ scale: scale * dpr });
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
+                const viewport = page.getViewport({ scale: scale });
+
+                // Clear the canvas to avoid artifacts
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Set internal resolution (buffer)
+                canvas.width = viewport.width * dpr;
+                canvas.height = viewport.height * dpr;
+
+                // Ensure max-width matches the current logical width
+                canvas.style.maxWidth = viewport.width + 'px';
 
                 // Render PDF page into canvas context
                 const renderContext = {
                     canvasContext: ctx,
-                    viewport: viewport
+                    viewport: viewport,
+                    transform: [dpr, 0, 0, dpr, 0, 0] // Ensure sharpness by scaling drawing
                 };
                 const renderTask = page.render(renderContext);
 
