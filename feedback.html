@@ -172,10 +172,10 @@
                 <!-- Score & Profile Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[160px]">
-                        <div class="flex justify-between items-start">
-                            <span class="text-sm font-semibold text-slate-500">Nilai Pre-test</span>
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px]">
+                        <div class="flex flex-col items-center gap-1 mb-2">
                             <span class="material-symbols-outlined text-slate-400">assignment</span>
+                            <span class="text-sm font-semibold text-slate-500">Nilai Pre-test</span>
                         </div>
                         <div>
                             <div class="text-3xl font-black text-slate-900 dark:text-white" id="fb-Pre-test">-<span
@@ -183,23 +183,23 @@
                         </div>
                     </div>
                     <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[160px]">
-                        <div class="flex justify-between items-start">
-                            <span class="text-sm font-semibold text-slate-500">Nilai Post-test</span>
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px]">
+                        <div class="flex flex-col items-center gap-1 mb-2">
                             <span class="material-symbols-outlined text-slate-400">verified</span>
+                            <span class="text-sm font-semibold text-slate-500">Nilai Post-test</span>
                         </div>
-                        <div>
+                        <div class="flex flex-col items-center">
                             <div class="text-3xl font-black text-primary dark:text-white" id="fb-Post-test">-<span
                                     class="text-sm text-slate-500 font-medium">/100</span></div>
-                            <div class="mt-2 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded inline-flex w-max shrink-0"
+                            <div class="mt-2 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded inline-flex items-center gap-1"
                                 id="fb-Post-test-badge">Memuat...</div>
                         </div>
                     </div>
                     <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[160px]">
-                        <div class="flex justify-between items-start">
-                            <span class="text-sm font-semibold text-slate-500">Profil Awal</span>
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px]">
+                        <div class="flex flex-col items-center gap-1 mb-2">
                             <span class="material-symbols-outlined text-slate-400">person_search</span>
+                            <span class="text-sm font-semibold text-slate-500">Profil Awal</span>
                         </div>
                         <div>
                             <div class="text-xl font-bold text-slate-700 dark:text-slate-300" id="fb-profil-awal">-
@@ -207,10 +207,10 @@
                         </div>
                     </div>
                     <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between min-h-[160px] border-b-4 border-b-accent-yellow">
-                        <div class="flex justify-between items-start">
-                            <span class="text-sm font-semibold text-slate-500">Profil Akhir</span>
+                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px] border-b-4 border-b-accent-yellow">
+                        <div class="flex flex-col items-center gap-1 mb-2">
                             <span class="material-symbols-outlined text-accent-yellow">military_tech</span>
+                            <span class="text-sm font-semibold text-slate-500">Profil Akhir</span>
                         </div>
                         <div>
                             <div class="text-xl font-black text-primary dark:text-accent-yellow" id="fb-profil-akhir">-
@@ -226,8 +226,7 @@
                         <span class="material-symbols-outlined text-primary">subject</span>
                         Interpretasi &amp; Rekomendasi AI
                     </h3>
-                    <div id="ai-report-container"
-                        class="prose prose-slate dark:prose-invert max-w-none space-y-4 text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    <div id="ai-report-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <!-- Loading state -->
                         <div class="flex items-center gap-3 py-8 justify-center" id="report-loading">
                             <div class="w-6 h-6 border-4 border-primary border-t-transparent rounded-full animate-spin">
@@ -480,22 +479,40 @@
                     // Update AI report
                     const container = document.getElementById('ai-report-container');
                     container.innerHTML = '';
+
+                    const createCard = (title, content, icon, colorClass = 'text-primary') => {
+                        return `
+                            <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col gap-3">
+                                <div class="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
+                                    <span class="material-symbols-outlined ${colorClass}">${icon}</span>
+                                    <span class="text-sm">${title}</span>
+                                </div>
+                                <div class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    ${content}
+                                </div>
+                            </div>
+                        `;
+                    };
+
                     if (data.analisis_perkembangan) {
-                        container.innerHTML += `<p><strong>Analisis Perkembangan Kompetensi:</strong> ${data.analisis_perkembangan}</p>`;
+                        container.innerHTML += createCard('Analisis Perkembangan', data.analisis_perkembangan, 'trending_up');
                     }
                     if (data.evaluasi_perilaku) {
-                        container.innerHTML += `<p><strong>Learning Appetite:</strong><br>${data.evaluasi_perilaku}</p>`;
+                        container.innerHTML += createCard('Learning Appetite', data.evaluasi_perilaku, 'psychology');
                     }
                     if (data.transformasi_profil) {
-                        container.innerHTML += `<p><strong>Transformasi Klasifikasi Profil:</strong><br>${data.transformasi_profil}</p>`;
+                        container.innerHTML += createCard('Transformasi Profil', data.transformasi_profil, 'published_with_changes');
                     }
                     if (data.kesimpulan_strategis) {
                         container.innerHTML += `
-                            <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800 mt-4">
-                                <h4 class="font-bold text-blue-800 dark:text-blue-300 mb-2 flex items-center gap-2">
-                                    <span class="material-symbols-outlined text-sm">lightbulb</span> Kesimpulan Strategis &amp; Next Actions
-                                </h4>
-                                <p class="text-blue-700 dark:text-blue-400">${data.kesimpulan_strategis}</p>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-xl border border-blue-100 dark:border-blue-800 flex flex-col gap-3 shadow-sm">
+                                <div class="flex items-center gap-2 text-blue-800 dark:text-blue-300 font-bold">
+                                    <span class="material-symbols-outlined">lightbulb</span>
+                                    <span class="text-sm">Kesimpulan Strategis</span>
+                                </div>
+                                <div class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed font-medium">
+                                    ${data.kesimpulan_strategis}
+                                </div>
                             </div>`;
                     }
                     if (!container.innerHTML) {
