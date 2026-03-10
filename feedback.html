@@ -179,8 +179,6 @@
                         </div>
                         <div class="text-3xl font-black text-slate-900 dark:text-white" id="fb-Pre-test">-<span
                                 class="text-sm text-slate-500 font-medium">/100</span></div>
-                        <div class="mt-2 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded inline-flex w-max shrink-0"
-                            id="fb-Pre-test-badge">Memuat...</div>
                     </div>
                     <div
                         class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
@@ -451,24 +449,20 @@
                     const preNilai = data.pretest_nilai ?? data.skor_pretest;
                     if (preNilai != null) {
                         document.getElementById('fb-Pre-test').innerHTML = `${preNilai}<span class="text-sm text-slate-500 font-medium">/100</span>`;
-                        const badge = document.getElementById('fb-Pre-test-badge');
-                        if (badge) {
-                            if (preNilai >= 75) {
-                                badge.className = 'mt-2 text-xs text-green-600 font-medium bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded inline-flex w-max shrink-0';
-                                badge.textContent = 'Baik';
-                            } else {
-                                badge.className = 'mt-2 text-xs text-red-500 font-medium bg-red-50 dark:bg-red-900/20 px-2 py-1 rounded inline-flex w-max shrink-0';
-                                badge.textContent = 'Perlu Peningkatan';
-                            }
-                        }
                     }
                     if (data.posttest_nilai != null) {
                         document.getElementById('fb-Post-test').innerHTML = `${data.posttest_nilai}<span class="text-sm text-slate-500 font-medium">/100</span>`;
                         const badge = document.getElementById('fb-Post-test-badge');
                         if (badge) {
                             const diff = data.posttest_nilai - (preNilai || 0);
-                            badge.className = 'mt-2 text-xs text-green-600 font-medium bg-green-50 dark:bg-green-900/20 px-2 py-1 rounded inline-flex w-max shrink-0 flex items-center gap-1';
-                            badge.innerHTML = `<span class="material-symbols-outlined text-[12px]">trending_up</span> ${diff >= 0 ? '+' : ''}${diff} Poin`;
+                            const isDown = diff < 0;
+                            const colorClass = isDown
+                                ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
+                                : 'text-green-600 bg-green-50 dark:bg-green-900/20';
+                            const icon = isDown ? 'trending_down' : 'trending_up';
+
+                            badge.className = `mt-2 text-xs font-medium px-2 py-1 rounded inline-flex w-max shrink-0 flex items-center gap-1 ${colorClass}`;
+                            badge.innerHTML = `<span class="material-symbols-outlined text-[12px]">${icon}</span> ${diff >= 0 ? '+' : ''}${diff} Poin`;
                         }
                     }
                     if (data.profil_awal) document.getElementById('fb-profil-awal').textContent = data.profil_awal;

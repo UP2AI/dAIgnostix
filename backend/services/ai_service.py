@@ -301,7 +301,7 @@ FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "Pemula|Menengah|Mahir",
   "analisis_perkembangan": "[Tulis paragraf tentang perbandingan skor pre-test dan post-test.{' Jika nilai masih di bawah 80, jelaskan area mana yang perlu diperkuat.' if is_failed_posttest else ' Jika ada lompatan nilai yang signifikan, tekankan pada bukti ketajaman berpikir.'}]",
-  "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori berikut berdasarkan data waktu dan jeda belajar, lalu jelaskan dalam 1 paragraf:
+  "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori berikut (masukkan juga penjelasan kategori tersebut)berdasarkan data waktu dan jeda belajar, lalu jelaskan dalam 1 paragraf. jangan men jugje negatif user jika user belum lolos, karena user memiliki preferensi/kategori belajar masing-masing:
     1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar.
     2. Pemelajar Nibbler: Menggabungkan komitmen waktu yang substansial dengan jeda yang konsisten antar sesi. Memungkinkan pemahaman komprehensif melalui kedalaman dan pengulangan. (Kategori ini digambarkan dengan warna hijau pada pojok kanan atas).
     3. Pemelajar Picky Eater: Mengalokasikan waktu keseluruhan yang lebih sedikit tetapi dengan jeda yang teratur. Fokus berinteraksi pada materi tertentu untuk merefleksikan, meninjau, dan memperkuat bahasan yang menarik/penting bagi mereka.
