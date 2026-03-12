@@ -338,7 +338,7 @@ def update_user_role(nip: str, role: str) -> dict:
 def delete_user_cascade(nip: str) -> dict:
     """Delete user and all related data."""
     tables = ["events", "materi_progress", "pretest", "posttest",
-              "learning_path", "feedback"]
+              "learning_path", "feedback", "quiz_results"]
     for t in tables:
         try:
             supabase.table(t).delete().eq("nip", nip).execute()

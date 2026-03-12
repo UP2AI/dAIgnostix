@@ -139,15 +139,14 @@
                 </section>
                 <div
                     class="mb-8 bg-primary/5 rounded-xl p-6 border border-primary/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                    <div>
-                        <h4 class="text-primary font-bold text-lg">Progres Keseluruhan</h4>
-                        <p id="progress-desc" class="text-slate-600 text-sm">Memuat progres...</p>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="w-48 h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <div id="progress-bar" class="h-full bg-accent transition-all" style="width: 0%"></div>
+                    <div class="flex-grow flex items-center gap-4">
+                        <div class="bg-primary/10 p-3 rounded-full hidden sm:flex">
+                            <span class="material-symbols-outlined text-primary text-2xl">lightbulb</span>
                         </div>
-                        <span id="progress-pct" class="text-primary font-bold">0%</span>
+                        <div>
+                            <h4 class="text-primary font-bold text-lg mb-1">Inspirasi Belajar</h4>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm italic">"Investasi dalam pengetahuan menghasilkan bunga terbaik." – Benjamin Franklin</p>
+                        </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -455,13 +454,19 @@
                     const totalSteps = 5;
                     const pct = Math.round((completedSteps / totalSteps) * 100);
 
-                    document.getElementById('progress-bar').style.width = pct + '%';
-                    document.getElementById('progress-pct').textContent = pct + '%';
+                    const progressBar = document.getElementById('progress-bar');
+                    if (progressBar) progressBar.style.width = pct + '%';
+                    
+                    const progressPct = document.getElementById('progress-pct');
+                    if (progressPct) progressPct.textContent = pct + '%';
 
-                    if (completedSteps === totalSteps) {
-                        document.getElementById('progress-desc').textContent = `Selamat! Anda telah menyelesaikan seluruh modul pembelajaran.`;
-                    } else {
-                        document.getElementById('progress-desc').textContent = `Anda telah menyelesaikan ${completedSteps} dari ${totalSteps} modul pembelajaran.`;
+                    const progressDesc = document.getElementById('progress-desc');
+                    if (progressDesc) {
+                        if (completedSteps === totalSteps) {
+                            progressDesc.textContent = `Selamat! Anda telah menyelesaikan seluruh modul pembelajaran.`;
+                        } else {
+                            progressDesc.textContent = `Anda telah menyelesaikan ${completedSteps} dari ${totalSteps} modul pembelajaran.`;
+                        }
                     }
                 }).catch(e => console.error("Failed to load dashboard data:", e));
             } else {
