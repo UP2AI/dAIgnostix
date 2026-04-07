@@ -201,6 +201,10 @@ Data User:
 - Detail per Bab:
 {detail_bab}
 
+Instruksi Penentuan Status Bab:
+1. "fokus_utama": Masukkan HANYA bab-bab di mana user menjawab BENAR di bawah 60% dari total soal pada bab tersebut. Jika nilai Pretest < 60 secara keseluruhan, bab 1, 2, dan 3 otomatis harus masuk ke fokus_utama sebagai pemahaman dasar.
+2. "opsional": Masukkan bab-bab yang mana user menjawab benar dengan sangat baik (di atas 80%).
+
 Buatkan learning path personal dengan format JSON.
 
 FORMAT OUTPUT (JSON object saja, tanpa text lain):
