@@ -542,8 +542,9 @@
                 }
             }
 
-            loadDynamicBab();
-            loadLearningPath();
+            loadDynamicBab().then(() => {
+                loadLearningPath();
+            });
         });
     </script>
 </body>
