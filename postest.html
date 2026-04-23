@@ -48,7 +48,7 @@
         });
     </script>
     <!-- API & Auth Modules -->
-    <script src="js/api.js"></script>
+    <script src="js/api.js?v=2"></script>
     <script src="js/auth.js"></script>
     <script src="js/tracker.js"></script>
 </head>
@@ -273,8 +273,7 @@
                         <div class="flex flex-wrap items-center gap-2" id="pagination-buttons"></div>
                         <button id="action-btn" onclick="doCheckpoint()"
                             class="bg-primary hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg flex items-center gap-2 transition-colors shadow-md">
-                            <span class="material-symbols-outlined">check_circle</span>
-                            Lanjut Evaluasi (Checkpoint)
+                            Lanjut ke soal 26-30
                         </button>
                     </div>
                 </section>
@@ -647,7 +646,7 @@
             if (!checkpointDone && posttestSoal.length <= 25) {
                 // Stage 1: show checkpoint button
                 actionBtn.onclick = () => doCheckpoint();
-                actionBtn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Lanjut Evaluasi (Checkpoint)';
+                actionBtn.innerHTML = 'Lanjut ke soal 26-30 <span class="material-symbols-outlined">arrow_forward</span>';
             } else {
                 // Stage 2 or all soal loaded: show submit
                 actionBtn.onclick = () => submitPosttestFn();

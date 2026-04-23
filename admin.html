@@ -942,12 +942,22 @@
                                                 </div>
                                             `).join('')}
                                         </div>
-                                        <div>
-                                            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jawaban Benar</label>
-                                            <select onchange="updateLocalQuestion(${bankIdx}, ${sIdx}, 'jawaban_benar', this.value)"
-                                                class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm font-bold text-primary">
-                                                ${['A', 'B', 'C', 'D'].map(v => `<option value="${v}" ${s.jawaban_benar === v ? 'selected' : ''}>${v}</option>`).join('')}
-                                            </select>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Jawaban Benar</label>
+                                                <select onchange="updateLocalQuestion(${bankIdx}, ${sIdx}, 'jawaban_benar', this.value)"
+                                                    class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm font-bold text-primary">
+                                                    ${['A', 'B', 'C', 'D', 'E'].map(v => `<option value="${v}" ${s.jawaban_benar === v ? 'selected' : ''}>${v}</option>`).join('')}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tingkat Kesulitan</label>
+                                                <select onchange="updateLocalQuestion(${bankIdx}, ${sIdx}, 'level', parseInt(this.value))"
+                                                    class="w-full px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-700 dark:bg-slate-800 text-sm font-bold ${s.level === 3 ? 'text-amber-600' : 'text-blue-600'}">
+                                                    <option value="2" ${s.level === 2 || !s.level ? 'selected' : ''}>Level 2 (Normal)</option>
+                                                    <option value="3" ${s.level === 3 ? 'selected' : ''}>Level 3 (HOTS)</option>
+                                                </select>
+                                            </div>
                                         </div>
                                     </div>
                                     <button onclick="removeQuestion(${bankIdx}, ${sIdx})" class="text-slate-300 hover:text-red-500 p-2 transition-colors">
@@ -982,6 +992,7 @@
                 pertanyaan: 'Pertanyaan baru...',
                 opsi: ['A. Opsi A', 'B. Opsi B', 'C. Opsi C', 'D. Opsi D'],
                 jawaban_benar: 'A',
+                level: 2,
                 bab_referensi: `Bab ${currentBankData[bankIdx].bab_nomor}`
             });
             renderBankSoal();
