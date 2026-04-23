@@ -260,8 +260,10 @@ async def generate_all_bank_soal(bab_id: int = None):
     results = []
     for b in babs:
         try:
-            # Query context for this bab
-            context = rag_service.query_materi(f"materi lengkap {b['judul']} bab {b['nomor']}", k=10)
+            # Query strict context for this bab
+            chunks = db_service.get_chunks_by_bab(b["nomor"])
+            context = "\n\n---\n\n".join([doc["content"] for doc in chunks])
+            
             if not context:
                 results.append({"bab": b["nomor"], "status": "error", "message": "Context RAG kosong"})
                 continue

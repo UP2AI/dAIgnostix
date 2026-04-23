@@ -365,6 +365,29 @@ def search_chunks(query_embedding: list, match_count: int = 10) -> list:
     return res.data
 
 
+def get_chunks_by_bab(bab_nomor: int) -> list:
+    """Get all text chunks strictly belonging to a specific bab."""
+    res = supabase.table("materi_chunks").select("content, metadata").execute()
+    if not res.data:
+        return []
+    
+    matching_chunks = []
+    target = f"bab{bab_nomor}"
+    
+    for row in res.data:
+        meta = row.get("metadata", {})
+        bab_meta = str(meta.get("bab", "")).lower().replace(" ", "")
+        filename = str(meta.get("source_file", "")).lower()
+        
+        if bab_meta == target or filename.startswith(target):
+            matching_chunks.append(row)
+            
+    # Sort logically by chunk sequence
+    matching_chunks.sort(key=lambda x: x.get("metadata", {}).get("chunk_index", 0))
+    return matching_chunks
+
+
+
 def clear_all_chunks() -> int:
     """Delete all materi_chunks (for re-indexing)."""
     res = supabase.table("materi_chunks").select("id").execute()
