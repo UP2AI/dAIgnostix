@@ -1,0 +1,93 @@
+[
+  {
+    "id": 1,
+    "platform": "Coursera",
+    "title": "Creating a Team Culture of Continuous Learning",
+    "provider": "University of Pennsylvania",
+    "level": "Intermediate",
+    "duration": null,
+    "link": "https://www.coursera.org/learn/continuous-learning-culture",
+    "thumbnail": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/http://coursera-university-assets.s3.amazonaws.com/0b/2bbb602d5c4c95b3889b602e9d1650/Wide-Penn-Logo.png",
+    "description": "Membangun budaya belajar berkelanjutan di tim dan organisasi. Relevan dengan konsep Learning Organization dalam Pembelajaran Terintegrasi.",
+    "relevansi_pilar": "Social Learning, Learning Organization",
+    "harga": "Gratis (audit) / Berbayar (sertifikat)"
+  },
+  {
+    "id": 2,
+    "platform": "Coursera",
+    "title": "Learning and Development",
+    "provider": "HRCI",
+    "level": "Beginner",
+    "duration": null,
+    "link": "https://www.coursera.org/learn/learning-and-development",
+    "thumbnail": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://coursera-course-photos.s3.amazonaws.com/b3/fb5550b1c14dbf9a119beb728bc843/Gies_Coursera-icon.png",
+    "description": "Praktik terbaik merancang pelatihan efektif di organisasi, analisis kebutuhan, dan evaluasi hasil pembelajaran.",
+    "relevansi_pilar": "Structured Learning, Evaluasi Pembelajaran",
+    "harga": "Gratis (audit) / Berbayar (sertifikat)"
+  },
+  {
+    "id": 5,
+    "platform": "Coursera",
+    "title": "Instructional Design Foundations and Applications",
+    "provider": "University of Illinois Urbana-Champaign",
+    "level": "Mixed (Beginner-Intermediate)",
+    "duration": null,
+    "link": "https://www.coursera.org/learn/instructional-design-foundations-applications",
+    "thumbnail": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera-course-photos/dc/708db0680f4794866807f05b5c817b/GFX_Coursera_Asset_Full_1200x1200.png",
+    "description": "Fondasi desain instruksional: analisis kebutuhan pembelajaran, teori pembelajaran orang dewasa, dan evaluasi.",
+    "relevansi_pilar": "Structured Learning, Desain Pembelajaran",
+    "harga": "Gratis (audit) / Berbayar (sertifikat)"
+  },
+  {
+    "id": 7,
+    "platform": "LinkedIn Learning",
+    "title": "Creating a Culture of Learning",
+    "provider": "LinkedIn Learning",
+    "level": "Intermediate",
+    "duration": null,
+    "link": "https://www.linkedin.com/learning/creating-a-culture-of-learning",
+    "thumbnail": null,
+    "description": "Membangun budaya belajar di organisasi agar setiap pegawai terlibat aktif dalam pembelajaran berkelanjutan.",
+    "relevansi_pilar": "Learning Organization, Self-Learning",
+    "harga": "Berbayar (LinkedIn Premium) / Free Trial 1 bulan"
+  },
+  {
+    "id": 11,
+    "platform": "Udemy",
+    "title": "Designing an Effective Learning and Development Strategy",
+    "provider": "Udemy Instructor",
+    "level": "Intermediate",
+    "duration": null,
+    "link": "https://www.udemy.com/courses/search/?q=learning+and+development+strategy&sort=relevance",
+    "thumbnail": null,
+    "description": "Merancang strategi L&D: menyelaraskan pelatihan dengan tujuan bisnis, membuat program pengembangan kompetensi yang berdampak.",
+    "relevansi_pilar": "Structured Learning, Evaluasi Pembelajaran",
+    "harga": "Berbayar (sering diskon)"
+  },
+  {
+    "id": 14,
+    "platform": "KLC",
+    "title": "E-learning Pengenalan Pembelajaran Terintegrasi",
+    "provider": "BPPK / Kementerian Keuangan",
+    "level": "Beginner",
+    "duration": null,
+    "link": "https://klc2.kemenkeu.go.id/course/e-learning-pengenalan-pembelajaran-terintegrasi-3a50223d/overview",
+    "thumbnail": null,
+    "description": "Kursus dasar yang memperkenalkan 4 pilar Pembelajaran Terintegrasi: Self-Learning, Structured Learning, Social Learning, Learning from Experience. KURSUS AWAL YANG SUDAH DISELESAIKAN.",
+    "relevansi_pilar": "Kursus Dasar (Sudah Selesai)",
+    "harga": "Gratis (internal Kemenkeu)"
+  },
+  {
+    "id": 20,
+    "platform": "Coursera",
+    "title": "e-Learning Ecologies: Innovative Approaches to Teaching and Learning",
+    "provider": "University of Illinois Urbana-Champaign",
+    "level": "Intermediate",
+    "duration": null,
+    "link": "https://www.coursera.org/learn/elearning",
+    "thumbnail": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://s3.amazonaws.com/coursera-course-photos/f5/d5bce0b8c311e5ad80bd52cf3e3f2e/shutterstock_163836631.jpg",
+    "description": "Pendekatan inovatif pembelajaran digital: ubiquitous learning, active knowledge making, collaborative intelligence.",
+    "relevansi_pilar": "Self-Learning, Structured Learning Digital",
+    "harga": "Gratis (audit) / Berbayar (sertifikat)"
+  }
+]

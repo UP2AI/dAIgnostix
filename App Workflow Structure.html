@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alur dan Struktur Kerja dAIgnostic Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .page-break {
+                page-break-before: always;
+            }
+        }
+
+        .mermaid {
+            background: transparent !important;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-900 p-8 md:p-16">
+
+    <div class="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8 md:p-12 border border-slate-200">
+
+        <!-- Header -->
+        <header class="mb-12 border-b border-slate-100 pb-8 relative">
+            <div class="no-print absolute top-0 right-0">
+                <button onclick="window.print()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-bold shadow-lg transition-all transform hover:scale-105 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Simpan sebagai PDF / Cetak
+                </button>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4">Alur & Struktur Kerja Aplikasi</h1>
+            <p class="text-xl text-blue-600 font-bold uppercase tracking-wider">dAIgnostic Learning</p>
+            <p class="text-slate-500 mt-2">Dibuat untuk visualisasi arsitektur dan alur kerja sistem.</p>
+        </header>
+
+        <!-- Section 1 -->
+        <section class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span
+                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm font-black">1</span>
+                Arsitektur Sistem (System Architecture)
+            </h2>
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                <pre class="mermaid">
+graph TD
+    subgraph "Frontend Layer"
+        UI["Antarmuka Pengguna/UI (HTML5, TailwindCSS)"]
+        JS["Logika Klien (Vanilla JS - api.js)"]
+    end
+
+    subgraph "Backend Layer (Python/FastAPI)"
+        API["REST API (FastAPI Routers)"]
+        SVC["Services Layer (User, Pretest, Posttest)"]
+        VA["Vector Analytics (PDF & AI Matching)"]
+    end
+
+    subgraph "External Services & Data"
+        DB[("Database Utama")]
+        VDB[("Vector Storage")]
+        AI["Google Gemini AI (LLM Service)"]
+    end
+
+    UI <--> JS
+    JS <--> API
+    API --> SVC
+    SVC <--> DB
+    SVC <--> VDB
+    VA <--> VDB
+    SVC <--> AI
+                </pre>
+            </div>
+        </section>
+
+        <!-- Section 2 -->
+        <section class="mb-16 page-break">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span
+                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm font-black">2</span>
+                Alur Kerja Pengguna (User Journey)
+            </h2>
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 overflow-x-auto">
+                <pre class="mermaid">
+sequenceDiagram
+    actor U as Pegawai (User)
+    participant F as Frontend App
+    participant B as Backend API
+    participant AI as Gemini AI Engine
+
+    U->>F: Masuk (Login) / Input NIP
+    F->>B: GET /user/{nip}/status
+    B-->>F: Kembalikan Status Saat Ini
+    
+    Note over U, AI: TAHAP 1: ASESMEN AWAL (PRETEST)
+    opt Jika belum Pretest
+        F->>U: Tampilkan Pretest (pretest.html)
+        U->>F: Submit Jawaban Pretest
+        F->>B: POST /pretest/submit
+        B->>AI: Analisis Gap Kompetensi
+        AI-->>B: Hasil Analisis & Rekomendasi
+        B-->>F: Status Sukses
+        F->>U: Arahkan ke Learning Path
+    end
+
+    Note over U, AI: TAHAP 2: PEMBELAJARAN PERSONAL
+    U->>F: Buka Dashboard (learningpath.html)
+    F->>B: GET /learning-path/{nip}
+    B-->>F: Daftar Bab & Materi
+    F->>U: Tampilkan Materi (materi.html)
+    
+    U->>F: Baca Materi & Selesaikan
+    F->>B: POST /materi/track & /complete
+
+    Note over U, AI: TAHAP 3: ASESMEN AKHIR & FEEDBACK
+    opt Jika Materi Selesai
+        F->>U: Tampilkan Posttest (postest.html)
+        U->>F: Submit Jawaban Akhir
+        F->>B: POST /posttest/submit
+        B->>AI: Evaluasi Akhir vs Pretest
+        AI-->>B: Generasi Feedback
+        B-->>F: Selesai
+        F->>U: Tampilkan Hasil & Selebrasi (feedback.html)
+    end
+                </pre>
+            </div>
+        </section>
+
+        <!-- Section 3 -->
+        <section class="mb-16 page-break">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span
+                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm font-black">3</span>
+                Alur Kerja Administrator (Admin Workflow)
+            </h2>
+            <div class="bg-slate-50 rounded-xl p-4 border border-slate-200">
+                <pre class="mermaid">
+flowchart TD
+    A(["Admin Login"]) --> B{"Pilih Menu"}
+    B -->|"Kelola Konfigurasi"| C["Atur Konfigurasi Umum"]
+    B -->|"Kelola Pengguna"| D["Lihat Progress User"]
+    B -->|"Kelola Materi/Bab"| E["Input Bab Baru"]
+    
+    E --> F["Upload Modul PDF per Bab"]
+    F --> G["POST /admin/bab/id/upload-pdf"]
+    
+    G --> H["Mengekstrak Teks dari PDF"]
+    H --> I["Melakukan Vectorisasi Text"]
+    I --> J[("Simpan di Vector Database")]
+    J --> K(["Materi Siap Digunakan AI"])
+                </pre>
+            </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+                <span
+                    class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center text-sm font-black">4</span>
+                Struktur Folder Proyek
+            </h2>
+            <div class="bg-slate-900 rounded-xl p-6 text-slate-300 font-mono text-sm leading-relaxed">
+                <div class="flex gap-4">
+                    <span class="text-blue-400">elearning_project /</span>
+                </div>
+                <div class="ml-4 border-l border-slate-700 pl-4 mt-2">
+                    <p class="flex items-center gap-2"><span class="text-yellow-500">📁 backend/</span> <span
+                            class="text-slate-500"># Server & Logika Inti</span></p>
+                    <div class="ml-4 border-l border-slate-800 pl-4 text-slate-400">
+                        <p>📁 routers/</p>
+                        <p>📁 services/</p>
+                        <p>📄 main.py</p>
+                    </div>
+                    <p class="flex items-center gap-2 mt-1"><span class="text-yellow-500">📁 js/</span> <span
+                            class="text-slate-500"># Scripts</span></p>
+                    <p class="mt-1">📄 index.html</p>
+                    <p>📄 learningpath.html</p>
+                    <p>📄 materi.html</p>
+                    <p>📄 pretest.html</p>
+                    <p>📄 postest.html</p>
+                    <p>📄 feedback.html</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Card -->
+        <footer class="mt-20 pt-10 border-t border-slate-100 grid md:grid-cols-3 gap-6">
+            <div class="bg-blue-50 p-4 rounded-xl">
+                <h4 class="font-bold text-blue-900 text-sm mb-1">Acuracy</h4>
+                <p class="text-xs text-blue-700">Penilaian dianalisis naratif oleh AI Google Gemini.</p>
+            </div>
+            <div class="bg-green-50 p-4 rounded-xl">
+                <h4 class="font-bold text-green-900 text-sm mb-1">Efficiency</h4>
+                <p class="text-xs text-green-700">Otomatisasi ekstraksi PDF ke Vector Data.</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-xl">
+                <h4 class="font-bold text-purple-900 text-sm mb-1">Modern UI</h4>
+                <p class="text-xs text-purple-700">Responsive design dengan Tailwind CSS.</p>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            securityLevel: 'loose',
+            sequence: { showSequenceNumbers: true },
+            flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Materi Pembelajaran - dAIgnostix</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent": "#FFCC00",
+                        "accent-yellow": "#FFCC00",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Prevent right-click / download on PDF viewer */
+        #pdf-viewer-container {
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        #pdf-canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto !important;
+            aspect-ratio: auto;
+            /* Ensure aspect ratio is handled by internal resolution */
+        }
+    </style>
+    <script>
+        // Check progression state from Backend
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!isLoggedIn()) return;
+            try {
+                const status = await getUserStatus(getCurrentNip());
+                if (status.progress_state < 1) {
+                    window.location.href = 'index.html';
+                }
+            } catch (err) {
+                // Ignore
+            }
+        });
+    </script>
+    <!-- API & Auth Modules -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- PDF.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Initialize PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="sticky top-0 z-[70] w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+                <div class="flex items-center gap-4"><button
+                        class="lg:hidden p-2 -ml-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+                        id="mobile-menu-btn">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="flex items-center gap-2 text-primary">
+                        <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">school</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">dAIgnostix
+                            </h2>
+                            <span
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">AI-Powered
+                                Diagnostic Tools</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex gap-2 mr-2">
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors"><span
+                                class="material-symbols-outlined">notifications</span></button>
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors"><span
+                                class="material-symbols-outlined">help</span></button>
+                    </div>
+                    <div class="hidden sm:flex flex-col items-end mr-4">
+                        <p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none" data-user-name></p>
+                        <p class="text-[11px] text-slate-500 font-medium mt-1" data-user-nip></p>
+                    </div>
+                    <div class="relative group cursor-pointer flex-none w-10 h-10">
+                        <div
+                            class="w-full h-full rounded-full bg-primary border-2 border-accent-yellow overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="User profile avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnAzKEm418PbviM00GkQ9aPeclA8s4IDUTLyWQ-pU-96O7Ise3OwG_45gaU209E-ku2l4iBc-_faiE2rpseNIYJCxPXj48MP9_K5Njz0KDxG8rNqmPTIYPv5xCKR2o2FMgdKO9FDMpf_AVB70Qdhqg7qMopeJhahTI8oXJUIw5RRGPjhf-NNz23XAJ9PVF5Rty5GPconrMaZh6DRK_C7oVkW1d8GFD5C5_2Gm0dA70K1gz2kwklHcMf33-T5A-Bn7L480yVyAurA" />
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                            class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div
+                                class="px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Akun Anda</p>
+                                <p class="text-xs font-bold text-primary dark:text-accent truncate" data-user-name></p>
+                            </div>
+                            <ul class="py-1 text-sm text-slate-700 dark:text-slate-300">
+                                <li>
+                                    <button onclick="handleLogout()"
+                                        class="w-full text-left px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 text-red-600 dark:text-red-400 font-bold transition-colors group/logout">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 group-hover/logout:bg-red-600 group-hover/logout:text-white transition-all">
+                                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                                        </div>
+                                        <div>
+                                            <p class="leading-none">Keluar Akun</p>
+                                            <p class="text-[10px] font-medium text-slate-400 mt-1">Selesaikan sesi ini
+                                            </p>
+                                        </div>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main
+            class="flex-grow flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 py-6 md:py-8 gap-6 md:gap-8">
+            <!-- Left Content Area -->
+            <div class="flex-grow space-y-8 min-w-0">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+                            <a href="index.html" class="hover:text-primary transition-colors">Beranda</a>
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            <a href="learningpath.html" class="hover:text-primary transition-colors">Learning Path</a>
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            <span class="text-primary font-semibold" id="breadcrumb-current">Materi Pembelajaran</span>
+                        </nav>
+                        <h1 id="materi-title" class="text-3xl font-black text-slate-900 dark:text-white">Memuat
+                            materi...</h1>
+                    </div>
+                    <a href="learningpath.html"
+                        class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        Kembali ke Learning Path
+                    </a>
+                </div>
+
+                <!-- BAB OVERVIEW (shows when no specific bab selected) -->
+                <div id="bab-overview" class="space-y-4 fade-in">
+                    <div
+                        class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                                <span class="material-symbols-outlined text-xl">menu_book</span>
+                            </div>
+                            <h3 class="text-xl font-bold text-slate-900 dark:text-white">Daftar Bab</h3>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-5">Pilih bab untuk melihat materi dan menandai sebagai
+                            selesai.</p>
+                        <div id="bab-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <p class="text-slate-400 col-span-2">Memuat daftar bab...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BAB DETAIL (shows when a specific bab is selected) -->
+                <div id="bab-detail" class="hidden fade-in space-y-6">
+                    <!-- PDF Viewer / Info Section -->
+                    <section
+                        class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                        <div class="flex items-center gap-3 p-5 border-b border-slate-100 dark:border-slate-800">
+                            <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                                <span class="material-symbols-outlined text-xl">description</span>
+                            </div>
+                            <h4 id="detail-title" class="text-xl font-bold text-slate-900 dark:text-white">Bab</h4>
+                        </div>
+
+                        <div class="p-5 sm:p-6 space-y-4">
+                            <p id="detail-desc" class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"></p>
+
+                            <!-- PDF Section (Custom Viewer - Mobile Friendly) -->
+                            <div id="pdf-section" class="hidden">
+                                <div
+                                    class="rounded-xl border-2 border-slate-200 dark:border-slate-700 overflow-hidden shadow-lg">
+                                    <div id="pdf-viewer-container"
+                                        class="relative bg-slate-100 dark:bg-slate-900 flex flex-col"
+                                        style="height: 80vh; min-height: 600px;">
+
+                                        <!-- PDF Toolbar -->
+                                        <div id="pdf-toolbar"
+                                            class="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 z-10">
+                                            <div class="flex items-center gap-2">
+                                                <button id="prev-page"
+                                                    class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-30 transition-colors">
+                                                    <span class="material-symbols-outlined">chevron_left</span>
+                                                </button>
+                                                <span
+                                                    class="text-xs sm:text-sm font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                                                    Hal <span id="page-num" class="text-primary">1</span> / <span
+                                                        id="page-count">0</span>
+                                                </span>
+                                                <button id="next-page"
+                                                    class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 disabled:opacity-30 transition-colors">
+                                                    <span class="material-symbols-outlined">chevron_right</span>
+                                                </button>
+                                            </div>
+
+                                            <div
+                                                class="hidden sm:flex items-center gap-2 border-x border-slate-200 dark:border-slate-700 px-4 mx-2">
+                                                <button id="zoom-out"
+                                                    class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                                    <span class="material-symbols-outlined text-xl">zoom_out</span>
+                                                </button>
+                                                <span id="zoom-percent"
+                                                    class="text-xs font-bold text-slate-500 w-10 text-center">100%</span>
+                                                <button id="zoom-in"
+                                                    class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                                    <span class="material-symbols-outlined text-xl">zoom_in</span>
+                                                </button>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <button onclick="requestFullscreenPdf()"
+                                                    class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400 transition-colors">
+                                                    <span class="material-symbols-outlined">fullscreen</span>
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- PDF Canvas Area -->
+                                        <div id="pdf-canvas-container"
+                                            class="flex-grow overflow-auto text-center p-4 bg-slate-200/50 dark:bg-slate-900/50 scroll-smooth">
+                                            <canvas id="pdf-canvas" class="shadow-2xl bg-white dark:bg-white"></canvas>
+                                        </div>
+
+                                        <!-- Loading Overlay -->
+                                        <div id="pdf-loading"
+                                            class="absolute inset-0 flex flex-col items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm z-20 transition-opacity duration-300">
+                                            <div
+                                                class="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin mb-3">
+                                            </div>
+                                            <p
+                                                class="text-xs font-bold text-primary uppercase tracking-widest animate-pulse">
+                                                Memuat Materi...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 flex items-center justify-between">
+                                    <p id="pdf-filename"
+                                        class="text-[10px] text-slate-400 font-mono italic truncate max-w-[200px] sm:max-w-md">
+                                        materi.pdf</p>
+                                    <div class="flex items-center gap-2 text-[10px] font-bold text-slate-500">
+                                        <span class="flex items-center gap-1"><span
+                                                class="material-symbols-outlined text-xs">touch_app</span> Scroll untuk
+                                            membaca</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="no-pdf-section" class="hidden">
+                                <div
+                                    class="bg-amber-50 dark:bg-amber-900/10 rounded-xl p-5 border border-amber-200 dark:border-amber-800/30">
+                                    <div class="flex items-center gap-3">
+                                        <span class="material-symbols-outlined text-amber-500 text-2xl">info</span>
+                                        <p class="text-sm text-amber-700 dark:text-amber-400 font-medium">Materi PDF
+                                            untuk bab ini belum tersedia. Hubungi admin.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="px-5 py-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/50 dark:bg-slate-800/30">
+                            <button onclick="goBackToOverview()"
+                                class="text-primary font-bold text-sm hover:underline flex items-center gap-1">
+                                <span class="material-symbols-outlined text-lg">arrow_back</span>
+                                Kembali ke Daftar Bab
+                            </button>
+                            <button onclick="finishMateri()"
+                                class="bg-primary hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg flex items-center gap-2 transition-colors shadow-md group">
+                                <span
+                                    class="material-symbols-outlined group-hover:scale-110 transition-transform">check_circle</span>
+                                Tandai Sebagai Selesai
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[55] hidden lg:hidden transition-opacity opacity-0"
+                id="sidebar-overlay"></div>
+            <aside
+                class="fixed inset-y-0 left-0 z-[60] w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:w-80 lg:shrink-0 lg:border-none transition-transform duration-300 ease-in-out h-full overflow-y-auto lg:h-auto lg:overflow-visible overscroll-contain"
+                id="sidebar">
+                <div
+                    class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm lg:sticky lg:top-24 w-full">
+                    <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-primary/5">
+                        <h2 class="font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">list_alt</span> Navigasi Belajar
+                        </h2>
+                    </div>
+                    <nav class="p-2 space-y-1" id="sidebar-nav">
+                        <a href="index.html" data-page="index.html"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-xl">home</span><span
+                                class="text-sm font-medium">Home</span>
+                        </a>
+                        <a href="pretest.html" data-page="pretest.html"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-xl">assignment</span><span
+                                class="text-sm font-medium">Pre-test</span>
+                        </a>
+                        <a href="learningpath.html" data-page="learningpath.html"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-xl">route</span><span
+                                class="text-sm font-medium">Learning Path</span>
+                        </a>
+                        <a href="materi.html" data-page="materi.html"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-md font-bold transition-colors">
+                            <span class="material-symbols-outlined text-xl">menu_book</span><span
+                                class="text-sm">Materi</span>
+                        </a>
+                        <a href="postest.html" data-page="postest.html"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-xl">verified</span><span
+                                class="text-sm font-medium">Post-test</span>
+                        </a>
+                        <a href="feedback.html" data-page="feedback.html"
+                            class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors">
+                            <span class="material-symbols-outlined text-xl">forum</span><span
+                                class="text-sm font-medium">Feedback</span>
+                        </a>
+                        <div class="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
+                        <!-- Dynamic bab navigation inserted here -->
+                        <div id="sidebar-bab-nav" class="space-y-1"></div>
+                    </nav>
+                    <div class="p-4 mt-2">
+                        <div class="bg-primary rounded-lg p-4 text-white relative overflow-hidden group">
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-8xl">help_outline</span>
+                            </div>
+                            <p class="text-xs font-semibold uppercase text-accent mb-1 tracking-wider">Bantuan</p>
+                            <h5 class="font-bold mb-3 text-sm">Butuh bantuan teknis?</h5>
+                            <button
+                                class="w-full bg-white text-primary text-xs py-2 rounded-md font-bold hover:bg-yellow-400 hover:text-slate-900 transition-colors">
+                                Hubungi Helpdesk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+        <footer
+            class="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 px-6 md:px-12 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto flex flex-col justify-center items-center gap-6 text-center">
+                <div class="flex flex-col items-center items-center text-primary/60 dark:text-slate-500">
+                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2026 Unit Peningkatan dan
+                        Pengembangan Aktivitas Instruksional</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // ============== STATE ==============
+        let allBab = [];
+        let materiProgress = [];
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentBabNum = parseInt(urlParams.get('bab') || '0'); // 0 = show overview
+
+        // ============== LOAD DATA ==============
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Sidebar toggle
+            const btn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            function toggleSidebar() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => overlay.classList.add('hidden'), 300);
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', toggleSidebar);
+                overlay.addEventListener('click', toggleSidebar);
+            }
+
+            // Load bab list from API
+            try {
+                const data = await getPublicConfig();
+                allBab = data.bab || [];
+
+                // Load materi progress if logged in
+                if (isLoggedIn()) {
+                    try {
+                        const status = await getUserStatus(getCurrentNip());
+                        const state = status.progress_state;
+                        const progressData = await getMateriProgress(getCurrentNip());
+                        materiProgress = progressData.progress || [];
+
+                        // Lock/Unlock sidebar based on state
+                        const sidebarLinks = document.querySelectorAll('#sidebar nav a');
+                        sidebarLinks.forEach(link => {
+                            const page = link.getAttribute('data-page');
+                            if (page === 'learningpath.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                            if (page === 'materi.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                            if (page === 'postest.html' && state < 2) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                            if (page === 'feedback.html' && state < 3) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        });
+                    } catch (e) {
+                        console.error('Failed to load progress', e);
+                    }
+                }
+
+                if (allBab.length === 0) {
+                    document.getElementById('materi-title').textContent = 'Materi Belum Tersedia';
+                    document.getElementById('bab-cards').innerHTML = `
+                        <div class="col-span-2 bg-amber-50 dark:bg-amber-900/10 rounded-xl p-6 text-center border border-amber-200">
+                            <span class="material-symbols-outlined text-amber-500 text-3xl mb-2">info</span>
+                            <p class="text-amber-700 font-medium">Admin belum menambahkan bab materi. Silakan hubungi admin.</p>
+                        </div>`;
+                    return;
+                }
+
+                // Build sidebar bab navigation
+                buildSidebarBabNav();
+
+                // If a specific bab is requested
+                if (currentBabNum > 0) {
+                    const bab = allBab.find(b => b.nomor === currentBabNum);
+                    if (bab) {
+                        showBabDetail(bab);
+                    } else {
+                        showBabOverview();
+                    }
+                } else {
+                    showBabOverview();
+                }
+            } catch (err) {
+                console.error('Failed to load bab list:', err);
+                document.getElementById('bab-cards').innerHTML = `
+                    <p class="text-red-500 col-span-2">Gagal memuat data: ${err.message}</p>`;
+            }
+        });
+
+        // ============== SIDEBAR BAB NAV ==============
+        function buildSidebarBabNav() {
+            const container = document.getElementById('sidebar-bab-nav');
+            container.innerHTML = allBab.map(b => {
+                const isActive = currentBabNum === b.nomor;
+                const progress = materiProgress.find(p => p.bab === `bab${b.nomor}`);
+                const isFinished = progress && progress.finished;
+
+                return `
+                <a href="materi.html?bab=${b.nomor}"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition-colors ${isActive ? 'bg-primary/10 text-primary font-bold' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary'}">
+                    <span class="w-6 h-6 rounded-md ${isFinished ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-slate-700 text-slate-500'} text-xs font-bold flex items-center justify-center">
+                        ${isFinished ? '✓' : b.nomor}
+                    </span>
+                    <span class="text-sm truncate">${b.judul}</span>
+                </a>`;
+            }).join('');
+        }
+
+        // ============== BAB OVERVIEW ==============
+        function showBabOverview() {
+            document.getElementById('materi-title').textContent = 'Materi Pembelajaran';
+            document.getElementById('breadcrumb-current').textContent = 'Materi';
+            document.getElementById('bab-overview').classList.remove('hidden');
+            document.getElementById('bab-detail').classList.add('hidden');
+
+            const cardsContainer = document.getElementById('bab-cards');
+            cardsContainer.innerHTML = allBab.map(b => {
+                const progress = materiProgress.find(p => p.bab === `bab${b.nomor}`);
+                const isFinished = progress && progress.finished;
+                const timeMin = progress ? Math.round((progress.time_spent_seconds || 0) / 60) : 0;
+
+                return `
+                <a href="materi.html?bab=${b.nomor}"
+                    class="group relative flex flex-col bg-white dark:bg-slate-800 border-2 ${isFinished ? 'border-emerald-300 dark:border-emerald-700' : 'border-slate-200 dark:border-slate-700'} rounded-xl overflow-hidden hover:shadow-lg transition-all">
+                    <div class="h-2 w-full ${isFinished ? 'bg-emerald-500' : 'bg-primary'}"></div>
+                    <div class="p-5 flex flex-col h-full">
+                        <div class="flex items-center gap-3 mb-3">
+                            <div class="w-10 h-10 rounded-lg ${isFinished ? 'bg-emerald-100 text-emerald-600' : 'bg-primary/10 text-primary'} font-extrabold text-sm flex items-center justify-center border ${isFinished ? 'border-emerald-200' : 'border-primary/20'}">
+                                ${isFinished ? '✓' : b.nomor}
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold text-slate-900 dark:text-white text-sm truncate">${b.judul}</h4>
+                                ${isFinished ? '<span class="text-xs text-emerald-600 font-semibold">✓ Selesai</span>' : `<span class="text-xs text-slate-400">${timeMin > 0 ? timeMin + ' menit' : 'Belum dimulai'}</span>`}
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mb-3 flex-grow leading-relaxed line-clamp-2">${b.deskripsi || 'Klik untuk membuka materi bab ini.'}</p>
+                        <div class="flex items-center gap-2 mt-auto">
+                            ${(b.pdf_materi_filename || b.pdf_filename) ? '<span class="text-xs bg-red-50 text-red-600 px-2 py-0.5 rounded-full font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-xs">picture_as_pdf</span> PDF</span>' : ''}
+                            ${b.pdf_materi_filename ? '<span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold">Materi</span>' : ''}
+                            ${b.indexed ? '<span class="text-xs bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-semibold">Indexed</span>' : ''}
+                        </div>
+                    </div>
+                </a>`;
+            }).join('');
+        }
+
+        // ============== BAB DETAIL ==============
+        let studySeconds = 0;
+        let studyTimerInterval = null;
+        let isActivelyReading = false;
+        let lastActivityTime = Date.now();
+        let timeTrackerInterval = null;
+        const IDLE_TIMEOUT = 60000; // 60 seconds of inactivity = idle
+
+        function showBabDetail(bab) {
+            document.getElementById('materi-title').textContent = `Bab ${bab.nomor}: ${bab.judul}`;
+            document.getElementById('breadcrumb-current').textContent = `Bab ${bab.nomor}`;
+            document.getElementById('detail-title').textContent = `Bab ${bab.nomor}: ${bab.judul}`;
+            document.getElementById('detail-desc').textContent = bab.deskripsi || 'Deskripsi tidak tersedia untuk bab ini.';
+
+            document.getElementById('bab-overview').classList.add('hidden');
+            document.getElementById('bab-detail').classList.remove('hidden');
+
+            // Show PDF section or no-PDF section
+            // Use serve-materi-pdf endpoint (returns pdf_materi_filename or fallback to pdf_filename)
+            if (bab.pdf_materi_filename || bab.pdf_filename) {
+                document.getElementById('pdf-section').classList.remove('hidden');
+                document.getElementById('no-pdf-section').classList.add('hidden');
+                const filename = bab.pdf_materi_filename || bab.pdf_filename;
+                document.getElementById('pdf-filename').textContent = filename;
+                const pdfUrl = `${API_BASE_URL}/admin/bab/${bab.id}/serve-materi-pdf`;
+
+                // Initialize custom PDF.js viewer
+                initPdfViewer(pdfUrl);
+            } else {
+                document.getElementById('pdf-section').classList.add('hidden');
+                document.getElementById('no-pdf-section').classList.remove('hidden');
+            }
+
+            currentBabNum = bab.nomor;
+            buildSidebarBabNav();
+
+            // Mark bab as complete immediately on access
+            const nip = getCurrentNip();
+            if (nip) {
+                completeBab(nip, `bab${bab.nomor}`).then(() => {
+                    // Update local progress set silently
+                    const prog = materiProgress.find(p => p.bab === `bab${bab.nomor}`);
+                    if (prog) prog.finished = true;
+                    else materiProgress.push({ bab: `bab${bab.nomor}`, finished: true });
+                    // Refresh sidebar to show checkmark
+                    buildSidebarBabNav();
+                }).catch(err => console.error("Error marking bab complete:", err));
+            }
+
+            // Start silent study time tracking
+            startStudyTimer();
+        }
+
+        // ============== PDF.JS VIEWER LOGIC ==============
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        let scale = 1.0;
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
+
+        async function initPdfViewer(url) {
+            const loadingOverlay = document.getElementById('pdf-loading');
+            loadingOverlay.classList.remove('opacity-0', 'hidden');
+
+            pageNum = 1;
+            scale = 1.0; // Reset scale
+            updateZoomDisplay();
+
+            try {
+                // Fetch PDF using pdfjsLib
+                const loadingTask = pdfjsLib.getDocument(url);
+                pdfDoc = await loadingTask.promise;
+
+                document.getElementById('page-count').textContent = pdfDoc.numPages;
+
+                // Render first page
+                renderPage(pageNum);
+
+                // Set up event listeners (only once)
+                setupPdfEventListeners();
+
+            } catch (err) {
+                console.error("PDF.js error:", err);
+                // Fallback: If PDF.js fails, maybe try simple link or iframe
+                document.getElementById('pdf-canvas-container').innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-10 text-center">
+                        <span class="material-symbols-outlined text-4xl text-red-400 mb-2">error</span>
+                        <p class="text-slate-600 font-medium">Gagal memuat PDF secara otomatis.</p>
+                        <a href="${url}" target="_blank" class="mt-4 px-4 py-2 bg-primary text-white rounded-lg font-bold">Buka PDF di Tab Baru</a>
+                    </div>
+                `;
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        function renderPage(num) {
+            pageRendering = true;
+
+            // Get page
+            pdfDoc.getPage(num).then((page) => {
+                const container = document.getElementById('pdf-canvas-container');
+                let containerWidth = container.clientWidth - 40; // padding
+                if (containerWidth <= 0) containerWidth = 320; // fallback for narrow mobile
+
+                // Calculate scale to fit width if scale is 1.0 initially
+                const unscaledViewport = page.getViewport({ scale: 1 });
+                if (scale === 1.0) {
+                    scale = containerWidth / unscaledViewport.width;
+                    if (scale > 1.5) scale = 1.5; // Cap auto-scale
+                    // For mobile, we usually want at least 1.0 unless it's huge
+                    if (scale < 0.6) scale = 0.6;
+                    updateZoomDisplay();
+                }
+
+                const dpr = window.devicePixelRatio || 1;
+                const viewport = page.getViewport({ scale: scale });
+
+                // Clear the canvas to avoid artifacts
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Set internal resolution (buffer)
+                canvas.width = viewport.width * dpr;
+                canvas.height = viewport.height * dpr;
+
+                // Ensure max-width matches the current logical width
+                canvas.style.maxWidth = viewport.width + 'px';
+
+                // Render PDF page into canvas context
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport,
+                    transform: [dpr, 0, 0, dpr, 0, 0] // Ensure sharpness by scaling drawing
+                };
+                const renderTask = page.render(renderContext);
+
+                // Wait for rendering to finish
+                renderTask.promise.then(() => {
+                    pageRendering = false;
+                    document.getElementById('pdf-loading').classList.add('opacity-0');
+                    setTimeout(() => document.getElementById('pdf-loading').classList.add('hidden'), 300);
+
+                    if (pageNumPending !== null) {
+                        // New page rendering is pending
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            // Update page counters
+            document.getElementById('page-num').textContent = num;
+
+            // Update buttons state
+            document.getElementById('prev-page').disabled = (num <= 1);
+            document.getElementById('next-page').disabled = (num >= pdfDoc.numPages);
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function setupPdfEventListeners() {
+            // Remove old listeners to avoid duplicates
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            const zoomInBtn = document.getElementById('zoom-in');
+            const zoomOutBtn = document.getElementById('zoom-out');
+
+            // Clone and replace to clear listeners
+            const newPrev = prevBtn.cloneNode(true);
+            const newNext = nextBtn.cloneNode(true);
+            const newZoomIn = zoomInBtn.cloneNode(true);
+            const newZoomOut = zoomOutBtn.cloneNode(true);
+
+            prevBtn.parentNode.replaceChild(newPrev, prevBtn);
+            nextBtn.parentNode.replaceChild(newNext, nextBtn);
+            zoomInBtn.parentNode.replaceChild(newZoomIn, zoomInBtn);
+            zoomOutBtn.parentNode.replaceChild(newZoomOut, zoomOutBtn);
+
+            newPrev.addEventListener('click', () => {
+                if (pageNum <= 1) return;
+                pageNum--;
+                queueRenderPage(pageNum);
+            });
+
+            newNext.addEventListener('click', () => {
+                if (pageNum >= pdfDoc.numPages) return;
+                pageNum++;
+                queueRenderPage(pageNum);
+            });
+
+            newZoomIn.addEventListener('click', () => {
+                scale += 0.2;
+                if (scale > 3.0) scale = 3.0;
+                updateZoomDisplay();
+                queueRenderPage(pageNum);
+            });
+
+            newZoomOut.addEventListener('click', () => {
+                scale -= 0.2;
+                if (scale < 0.5) scale = 0.5;
+                updateZoomDisplay();
+                queueRenderPage(pageNum);
+            });
+        }
+
+        function updateZoomDisplay() {
+            document.getElementById('zoom-percent').textContent = Math.round(scale * 100) + '%';
+        }
+
+        function requestFullscreenPdf() {
+            const container = document.getElementById('pdf-viewer-container');
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
+        }
+
+        function goBackToOverview() {
+            stopStudyTimer();
+            currentBabNum = 0;
+            window.history.pushState({}, '', 'materi.html');
+            showBabOverview();
+            buildSidebarBabNav();
+        }
+
+        // ============== SILENT STUDY TIME TRACKER WITH EVENT LISTENERS ==============
+        function markActive() {
+            lastActivityTime = Date.now();
+            isActivelyReading = true;
+        }
+
+        function startStudyTimer() {
+            stopStudyTimer(); // Clear any existing
+            isActivelyReading = true;
+            lastActivityTime = Date.now();
+
+            // Tick every second silently — only count if user is actively reading
+            studyTimerInterval = setInterval(() => {
+                if (!document.hidden && isActivelyReading && (Date.now() - lastActivityTime < IDLE_TIMEOUT)) {
+                    studySeconds++;
+                }
+            }, 1000);
+
+            // Send accumulated time to backend every 10 seconds
+            timeTrackerInterval = setInterval(async () => {
+                if (isLoggedIn() && currentBabNum > 0) {
+                    try {
+                        await trackTime(getCurrentNip(), `bab${currentBabNum}`, 10);
+                    } catch (e) {
+                        console.error('Failed to track time', e);
+                    }
+                }
+            }, 10000);
+
+            // --- Event Listeners for activity detection ---
+            // Mouse & keyboard activity on the whole page
+            document.addEventListener('mousemove', markActive);
+            document.addEventListener('scroll', markActive, true);
+            document.addEventListener('keydown', markActive);
+            document.addEventListener('click', markActive);
+            document.addEventListener('touchstart', markActive);
+
+            // Visibility change (tab switch / minimize)
+            document.addEventListener('visibilitychange', handleVisibilityChange);
+
+            // Window focus/blur
+            window.addEventListener('focus', () => { isActivelyReading = true; markActive(); });
+            window.addEventListener('blur', () => { isActivelyReading = false; });
+        }
+
+        function handleVisibilityChange() {
+            if (document.hidden) {
+                isActivelyReading = false;
+            } else {
+                isActivelyReading = true;
+                markActive();
+            }
+        }
+
+        function stopStudyTimer() {
+            if (studyTimerInterval) { clearInterval(studyTimerInterval); studyTimerInterval = null; }
+            if (timeTrackerInterval) { clearInterval(timeTrackerInterval); timeTrackerInterval = null; }
+            document.removeEventListener('mousemove', markActive);
+            document.removeEventListener('scroll', markActive, true);
+            document.removeEventListener('keydown', markActive);
+            document.removeEventListener('click', markActive);
+            document.removeEventListener('touchstart', markActive);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        }
+
+        // Send final time when user leaves the page
+        window.addEventListener('beforeunload', () => {
+            if (isLoggedIn() && currentBabNum > 0) {
+                // Use sendBeacon for reliable delivery on page unload
+                const url = `${API_BASE_URL}/materi/${getCurrentNip()}/time`;
+                const data = JSON.stringify({ bab: `bab${currentBabNum}`, seconds: 5 });
+                navigator.sendBeacon(url, new Blob([data], { type: 'application/json' }));
+            }
+        });
+
+        // ============== FINISH MATERI ==============
+        async function finishMateri() {
+            stopStudyTimer();
+            const nip = getCurrentNip();
+            if (nip && currentBabNum > 0) {
+                // Open Quiz Modal instead of redirect
+                openQuizModal(currentBabNum);
+            }
+        }
+
+        // ============== QUIZ MODAL LOGIC ==============
+        let currentQuizSoal = [];
+        let currentQuizIndex = 0;
+        let quizAnswers = {};
+        let isSubmittingQuiz = false;
+
+        async function openQuizModal(babNum) {
+            const modal = document.getElementById('quiz-modal');
+            const content = document.getElementById('quiz-modal-content');
+            const loading = document.getElementById('quiz-modal-loading');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            document.body.style.overflow = 'hidden';
+
+            loading.classList.remove('hidden');
+            content.classList.add('hidden');
+
+            try {
+                const data = await getQuiz(getCurrentNip(), babNum);
+                currentQuizSoal = data.soal || [];
+                currentQuizIndex = 0;
+                quizAnswers = {};
+
+                if (currentQuizSoal.length === 0) {
+                    throw new Error("Tidak ada soal tersedia untuk bab ini.");
+                }
+
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+                // Ensure container exists (it might have been overwritten by showQuizResult)
+                content.innerHTML = '<div id="quiz-question-container"></div>';
+                renderQuizQuestion();
+            } catch (err) {
+                console.error(err);
+                alert("Gagal memuat kuis: " + err.message);
+                closeQuizModal();
+            }
+        }
+
+        function closeQuizModal() {
+            const modal = document.getElementById('quiz-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function renderQuizQuestion() {
+            const container = document.getElementById('quiz-question-container');
+            const q = currentQuizSoal[currentQuizIndex];
+            const total = currentQuizSoal.length;
+
+            const progressPercent = ((currentQuizIndex + 1) / total) * 100;
+
+            container.innerHTML = `
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold text-primary uppercase tracking-wider">Pertanyaan ${currentQuizIndex + 1} dari ${total}</span>
+                        <span class="text-xs font-bold text-slate-400">${Math.round(progressPercent)}%</span>
+                    </div>
+                    <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary transition-all duration-300" style="width: ${progressPercent}%"></div>
+                    </div>
+                </div>
+                
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6 leading-relaxed">${q.pertanyaan}</h3>
+                
+                <div class="space-y-3">
+                    ${q.opsi.map((opt, idx) => {
+                const letter = String.fromCharCode(65 + idx); // A, B, C, D
+                const isSelected = quizAnswers[currentQuizIndex] === letter;
+
+                // Robustly clean option text: remove "A. ", "A) ", "A: " if present
+                let cleanOpt = opt;
+                const prefixMatch = opt.match(/^[A-E][.\)\:]\s*/i);
+                if (prefixMatch) {
+                    cleanOpt = opt.substring(prefixMatch[0].length);
+                }
+
+                return `
+                        <button onclick="selectQuizAnswer('${letter}')" 
+                            class="w-full text-left p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-4 group ${isSelected ? 'border-primary bg-primary/5' : 'border-slate-100 dark:border-slate-800 hover:border-primary/30 hover:bg-slate-50 dark:hover:bg-slate-800/50'}">
+                            <div class="w-10 h-10 rounded-lg flex-none flex items-center justify-center font-bold text-sm transition-colors ${isSelected ? 'bg-primary text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500 group-hover:bg-primary/10 group-hover:text-primary'}">
+                                ${letter}
+                            </div>
+                            <span class="text-sm font-medium ${isSelected ? 'text-primary dark:text-white' : 'text-slate-600 dark:text-slate-300'}">${cleanOpt}</span>
+                        </button>
+                        `;
+            }).join('')}
+                </div>
+                
+                <div class="mt-8 flex items-center justify-between gap-4">
+                    <button onclick="prevQuizQuestion()" ${currentQuizIndex === 0 ? 'disabled' : ''} 
+                        class="px-6 py-3 rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold text-sm text-slate-500 hover:bg-slate-50 transition-colors disabled:opacity-30 disabled:pointer-events-none">
+                        Sebelumnya
+                    </button>
+                    ${currentQuizIndex === total - 1 ?
+                    `<button onclick="submitQuizFinal()" ${!quizAnswers[currentQuizIndex] || isSubmittingQuiz ? 'disabled' : ''} 
+                            class="flex-grow bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 disabled:opacity-50">
+                            ${isSubmittingQuiz ? '<span class="animate-spin material-symbols-outlined">autofps_select</span>' : '<span class="material-symbols-outlined font-bold">check_circle</span>'}
+                            Selesaikan Kuis
+                        </button>` :
+                    `<button onclick="nextQuizQuestion()" ${!quizAnswers[currentQuizIndex] ? 'disabled' : ''} 
+                            class="flex-grow bg-primary hover:bg-slate-800 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 disabled:opacity-50">
+                            Berikutnya
+                            <span class="material-symbols-outlined">arrow_forward</span>
+                        </button>`
+                }
+                </div>
+            `;
+        }
+
+        function selectQuizAnswer(letter) {
+            quizAnswers[currentQuizIndex] = letter;
+            renderQuizQuestion();
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIndex < currentQuizSoal.length - 1) {
+                currentQuizIndex++;
+                renderQuizQuestion();
+            }
+        }
+
+        function prevQuizQuestion() {
+            if (currentQuizIndex > 0) {
+                currentQuizIndex--;
+                renderQuizQuestion();
+            }
+        }
+
+        async function submitQuizFinal() {
+            if (isSubmittingQuiz) return;
+            isSubmittingQuiz = true;
+            renderQuizQuestion();
+
+            const nip = getCurrentNip();
+            // Map 0-indexed answers to 1-indexed for the API
+            const formattedAnswers = {};
+            Object.keys(quizAnswers).forEach(idx => {
+                formattedAnswers[parseInt(idx) + 1] = quizAnswers[idx];
+            });
+
+            try {
+                const result = await submitQuiz(nip, currentBabNum, formattedAnswers);
+
+                // Show result screen
+                showQuizResult(result);
+
+                // Reload progress silently to reflect completion (though it should be done on access)
+                const progressData = await getMateriProgress(nip);
+                materiProgress = progressData.progress || [];
+                buildSidebarBabNav();
+                if (currentBabNum === 0) showBabOverview();
+
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#003366', '#FFCC00', '#10b981']
+                });
+            } catch (err) {
+                console.error(err);
+                alert("Gagal mengirim kuis: " + err.message);
+            } finally {
+                isSubmittingQuiz = false;
+            }
+        }
+
+        function showQuizResult(res) {
+            const container = document.getElementById('quiz-modal-content');
+
+            // Fallback for benar/total if API doesn't provide them directly
+            let benar = res.benar;
+            let total = res.total;
+            if (benar === undefined && res.soal) {
+                benar = res.soal.filter(s => {
+                    const u = (s.jawaban_user || "").trim().toUpperCase();
+                    const b = (s.jawaban_benar || "").trim().toUpperCase();
+                    return u === b && u !== "";
+                }).length;
+            }
+            if (total === undefined && res.soal) {
+                total = res.soal.length;
+            }
+
+            container.innerHTML = `
+                <div class="text-center py-8">
+                    <div class="w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center mb-6 scale-in">
+                        <span class="material-symbols-outlined text-6xl">workspace_premium</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Selesai!</h2>
+                    <p class="text-slate-500 mb-8">Anda telah menyelesaikan kuis bab ini dengan baik.</p>
+                    
+                    <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-6 mb-8 border border-slate-100 dark:border-slate-800">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-4">
+                            <div>
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Skor Anda</p>
+                                <p class="text-2xl font-black text-primary dark:text-accent-yellow">${res.nilai}</p>
+                            </div>
+                            <div class="border-t sm:border-t-0 sm:border-x border-slate-200 dark:border-slate-700 pt-4 sm:pt-0">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Benar</p>
+                                <p class="text-2xl font-black text-emerald-500">${benar ?? '-'}</p>
+                            </div>
+                            <div class="border-t sm:border-t-0 border-slate-200 dark:border-slate-700 pt-4 sm:pt-0">
+                                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total</p>
+                                <p class="text-2xl font-black text-slate-400">${total ?? '-'}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <button onclick="closeQuizModal(); goBackToOverview();" class="w-full bg-primary text-white font-bold py-4 rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Kembali ke Daftar Materi
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal"
+        class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300 flex flex-col items-center justify-start overflow-y-auto p-4 sm:p-6 py-10 sm:py-20">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-md" onclick="closeQuizModal()"></div>
+        <div
+            class="relative w-full max-w-xl bg-white dark:bg-slate-900 rounded-3xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.3)] overflow-hidden border border-white/10 fade-in">
+            <!-- Modal Header -->
+            <div
+                class="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-primary text-white">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                        <span class="material-symbols-outlined font-bold">quiz</span>
+                    </div>
+                    <div>
+                        <h2 class="font-extrabold text-lg leading-tight">Kuis Bab</h2>
+                        <p class="text-[10px] font-bold text-white/70 uppercase tracking-widest">Evaluasi Pemahaman</p>
+                    </div>
+                </div>
+                <button onclick="closeQuizModal()"
+                    class="w-10 h-10 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 sm:p-8">
+                <!-- Loading State -->
+                <div id="quiz-modal-loading" class="py-12 flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mb-4">
+                    </div>
+                    <p class="text-slate-500 font-bold">Sedang memuat soal kuis...</p>
+                </div>
+
+                <!-- Quiz Content -->
+                <div id="quiz-modal-content" class="hidden">
+                    <div id="quiz-question-container">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

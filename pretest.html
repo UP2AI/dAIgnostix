@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+
+<html lang="id">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Pre-test - dAIgnostix</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent": "#FFCC00",
+                        "accent-yellow": "#FFCC00",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }</script>
+    <!-- API & Auth Modules -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tracker.js"></script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="sticky top-0 z-[70] w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+                <div class="flex items-center gap-4"><button
+                        class="lg:hidden p-2 -ml-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+                        id="mobile-menu-btn">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="flex items-center gap-2 text-primary">
+                        <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">school</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">dAIgnostix
+                            </h2>
+                            <span
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">AI-Powered
+                                Diagnostic Tools</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex gap-2 mr-2">
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+                            <span class="material-symbols-outlined">help</span>
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex flex-col items-end mr-4">
+                        <p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none" data-user-name></p>
+                        <p class="text-[11px] text-slate-500 font-medium mt-1">NIP <span data-user-nip></span></p>
+                    </div>
+                    <div class="relative group cursor-pointer flex-none w-10 h-10">
+                        <div class="w-full h-full rounded-full bg-primary border-2 border-accent overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="User profile avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnAzKEm418PbviM00GkQ9aPeclA8s4IDUTLyWQ-pU-96O7Ise3OwG_45gaU209E-ku2l4iBc-_faiE2rpseNIYJCxPXj48MP9_K5Njz0KDxG8rNqmPTIYPv5xCKR2o2FMgdKO9FDMpf_AVB70Qdhqg7qMopeJhahTI8oXJUIw5RRGPjhf-NNz23XAJ9PVF5Rty5GPconrMaZh6DRK_C7oVkW1d8GFD5C5_2Gm0dA70K1gz2kwklHcMf33-T5A-Bn7L480yVyAurA" />
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                            class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div
+                                class="px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Akun Anda</p>
+                                <p class="text-xs font-bold text-primary dark:text-accent truncate" data-user-name></p>
+                            </div>
+                            <ul class="py-1 text-sm text-slate-700 dark:text-slate-300">
+                                <li>
+                                    <button onclick="handleLogout()"
+                                        class="w-full text-left px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 text-red-600 dark:text-red-400 font-bold transition-colors group/logout">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 group-hover/logout:bg-red-600 group-hover/logout:text-white transition-all">
+                                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                                        </div>
+                                        <div>
+                                            <p class="leading-none">Keluar Akun</p>
+                                            <p class="text-[10px] font-medium text-slate-400 mt-1">Selesaikan sesi ini
+                                            </p>
+                                        </div>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main
+            class="flex-grow flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 py-6 md:py-8 gap-6 md:gap-8">
+            <div class="flex-grow space-y-8 min-w-0">
+                <!-- Page Title & Navigation Back -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
+                            <span>Beranda</span>
+                            <span class="material-symbols-outlined text-sm">chevron_right</span>
+                            <span class="text-primary font-semibold">Pre-test</span>
+                        </nav>
+                        <h1 class="text-3xl font-black text-slate-900 dark:text-white">Pre-test: Evaluasi Kemampuan Awal
+                        </h1>
+                    </div>
+                    <button onclick="window.location.href='index.html'"
+                        class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-primary text-primary font-bold hover:bg-primary hover:text-white transition-colors">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                        Kembali ke Home
+                    </button>
+                </div>
+                <!-- Briefing Section -->
+                <section id="briefing-section"
+                    class="bg-white dark:bg-slate-900 rounded-xl border-t-8 border-accent-yellow shadow-xl p-8 relative overflow-hidden">
+                    <div class="flex flex-col lg:flex-row gap-8 items-stretch">
+                        <!-- AI Hero Feature Card -->
+                        <div
+                            class="lg:w-1/3 bg-slate-900 text-white p-6 rounded-xl flex flex-col justify-between relative overflow-hidden group">
+                            <div
+                                class="absolute -right-4 -top-4 w-32 h-32 bg-accent-yellow/10 rounded-full blur-3xl group-hover:bg-accent-yellow/20 transition-colors">
+                            </div>
+                            <div>
+                                <div
+                                    class="inline-flex items-center gap-2 bg-accent-yellow text-primary px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter mb-4">
+                                    <span class="material-symbols-outlined text-xs">auto_awesome</span>
+                                    Hero Feature
+                                </div>
+                                <h4 class="text-2xl font-black leading-tight mb-2">Powered by AI Integration</h4>
+                                <p class="text-slate-400 text-sm leading-relaxed">
+                                    Ujian ini menggunakan kumpulan soal yang telah divalidasi dan disesuaikan dengan
+                                    materi pembelajaran terkini.
+                                </p>
+                            </div>
+                            <div class="mt-6 flex items-center gap-3">
+                                <div
+                                    class="size-10 rounded-lg bg-accent-yellow flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined font-bold">fact_check</span>
+                                </div>
+                                <span class="text-xs font-bold text-accent-yellow">Bank Soal Terverifikasi</span>
+                            </div>
+                        </div>
+                        <!-- Briefing Text & Actions -->
+                        <div class="flex-1 flex flex-col">
+                            <div class="flex items-start gap-4 mb-6">
+                                <div class="bg-primary/10 p-3 rounded-full text-primary shrink-0">
+                                    <span class="material-symbols-outlined">info</span>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-black text-slate-900 dark:text-white mb-2">Briefing
+                                        Pre-test
+                                    </h3>
+                                    <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+                                        Ujian ini bertujuan untuk mengukur kemampuan awal Anda sebelum memasuki materi
+                                        inti. Hasil dari pre-test ini akan digunakan sebagai baseline perkembangan
+                                        pembelajaran Anda.
+                                    </p>
+                                </div>
+                            </div>
+                            <ul
+                                class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700 dark:text-slate-300 mb-8">
+                                <li
+                                    class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                    <span class="material-symbols-outlined text-primary">timer</span>
+                                    <span>Waktu pengerjaan: <strong class="text-primary font-bold">60
+                                            menit</strong></span>
+                                </li>
+                                <li
+                                    class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                    <span class="material-symbols-outlined text-primary">description</span>
+                                    <span>Jumlah soal: <strong class="text-primary font-bold">30 butir</strong></span>
+                                </li>
+                                <li
+                                    class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                    <span class="material-symbols-outlined text-primary">wifi</span>
+                                    <span>Pastikan koneksi internet stabil</span>
+                                </li>
+                                <li
+                                    class="flex items-center gap-3 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg border border-slate-100 dark:border-slate-800">
+                                    <span class="material-symbols-outlined text-primary">lock_reset</span>
+                                    <span>Hanya dapat dikerjakan 1 kali</span>
+                                </li>
+                            </ul>
+                            <div class="mt-auto">
+                                <button id="btn-start-Pre-test"
+                                    class="w-full sm:w-auto bg-primary hover:bg-slate-800 text-white font-black py-4 px-10 rounded-lg flex items-center justify-center gap-3 shadow-xl transition-all hover:translate-y-[-2px] active:scale-95 group"
+                                    onclick="startPretest()">
+                                    SIAP MULAI UJIAN
+                                    <span
+                                        class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Loading Section -->
+                <section class="hidden" id="loading-section">
+                    <div
+                        class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-xl p-12 text-center">
+                        <div class="flex flex-col items-center gap-4">
+                            <div class="relative">
+                                <div class="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
+                                <div
+                                    class="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin absolute inset-0">
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Memuat soal...</h3>
+                                <p class="text-slate-500 text-sm">Mohon tunggu, database soal sedang disiapkan untuk
+                                    Anda.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <!-- Questions Section (dynamically populated) -->
+                <section class="space-y-6 hidden" id="questions-section">
+                    <div class="sticky top-20 z-40 bg-primary text-white p-4 rounded-xl shadow-lg flex items-center justify-between border-b-4 border-accent-yellow mb-6"
+                        id="timer-container">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-accent-yellow">timer</span>
+                            <span class="font-bold uppercase tracking-wider text-sm">Sisa Waktu Pengerjaan</span>
+                        </div>
+                        <div class="text-2xl font-black font-mono text-accent-yellow" id="countdown">60:00</div>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white" id="page-title">Daftar Soal</h2>
+                    </div>
+                    <div class="space-y-4" id="questions-container"></div>
+                    <!-- Pagination -->
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 py-6"
+                        id="pagination-nav">
+                        <div class="flex flex-wrap items-center gap-2" id="pagination-buttons"></div>
+                        <button onclick="submitPretest()"
+                            class="bg-primary hover:bg-slate-800 text-white font-bold py-3 px-8 rounded-lg flex items-center gap-2 transition-colors shadow-md">
+                            <span class="material-symbols-outlined">send</span>
+                            Kumpulkan Jawaban
+                        </button>
+                    </div>
+                </section>
+                <section class="space-y-6 hidden" id="result-section">
+                    <div class="bg-primary rounded-xl shadow-xl p-6 sm:p-10 text-center relative overflow-hidden">
+                        <!-- Decorative background -->
+                        <div class="absolute inset-0 opacity-10"
+                            style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;">
+                        </div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-primary via-transparent to-primary/50">
+                        </div>
+
+                        <div class="relative z-10 flex flex-col items-center">
+                            <div
+                                class="size-20 bg-accent-yellow text-primary rounded-full flex items-center justify-center mb-4 border-4 border-yellow-200">
+                                <span class="material-symbols-outlined text-4xl">emoji_events</span>
+                            </div>
+                            <h2 class="text-3xl font-black text-white mb-2">Pre-test Selesai!</h2>
+                            <p class="text-white/80 mb-6 max-w-lg mx-auto">Terima kasih telah
+                                mengerjakan Pre-test. Berikut adalah ringkasan hasil Anda.</p>
+                            <div class="grid grid-cols-2 gap-3 sm:gap-4 justify-center mb-8 w-full max-w-sm mx-auto">
+                                <div
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm">
+                                    <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Nilai
+                                    </p>
+                                    <p class="text-3xl font-black text-accent-yellow" id="result-nilai">-</p>
+                                </div>
+                                <div
+                                    class="bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20 shadow-sm">
+                                    <p class="text-[10px] text-white/70 font-bold uppercase tracking-widest mb-1">Benar
+                                    </p>
+                                    <p class="text-3xl font-black text-green-400" id="result-benar">-<span
+                                            class="text-lg text-white/50">/30</span></p>
+                                </div>
+                            </div>
+                            <button onclick="window.location.href='learningpath.html'"
+                                class="bg-accent-yellow hover:bg-yellow-500 text-primary font-bold py-3 px-8 rounded-lg flex items-center gap-2 transition-colors shadow-md mx-auto">
+                                <span class="material-symbols-outlined">route</span> Lanjut ke Learning Path
+                            </button>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-4">Ulasan Jawaban</h3>
+                    <div class="space-y-4" id="review-container"></div>
+                </section>
+            </div>
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[55] hidden lg:hidden transition-opacity opacity-0"
+                id="sidebar-overlay"></div>
+            <aside
+                class="fixed inset-y-0 left-0 z-[60] w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:w-80 lg:shrink-0 lg:border-none transition-transform duration-300 ease-in-out h-full overflow-y-auto lg:h-auto lg:overflow-visible overscroll-contain"
+                id="sidebar">
+                <div
+                    class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm lg:sticky lg:top-24 w-full">
+                    <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-primary/5">
+                        <h2 class="font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">list_alt</span>
+                            Navigasi Belajar
+                        </h2>
+                    </div>
+                    <nav class="p-2 space-y-1">
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="index.html" href="index.html">
+                            <span class="material-symbols-outlined text-xl">home</span>
+                            <span class="text-sm">Home</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-md font-bold"
+                            data-page="pretest.html" href="pretest.html">
+                            <span class="material-symbols-outlined text-xl">assignment</span>
+                            <span class="text-sm">Pre-test</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="learningpath.html" href="learningpath.html">
+                            <span class="material-symbols-outlined text-xl">route</span>
+                            <span class="text-sm">Learning Path</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="materi.html" href="materi.html">
+                            <span class="material-symbols-outlined text-xl">menu_book</span>
+                            <span class="text-sm">Materi Pembelajaran</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="postest.html" href="postest.html">
+                            <span class="material-symbols-outlined text-xl">verified</span>
+                            <span class="text-sm">Post-test</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="feedback.html" href="feedback.html">
+                            <span class="material-symbols-outlined text-xl">forum</span>
+                            <span class="text-sm">Ulasan & Feedback</span>
+                        </a>
+                    </nav>
+                    <div class="p-4 mt-2">
+                        <div class="bg-primary rounded-lg p-4 text-white relative overflow-hidden group">
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-8xl">help_outline</span>
+                            </div>
+                            <p class="text-xs font-semibold uppercase text-accent mb-1 tracking-wider">Bantuan</p>
+                            <h5 class="font-bold mb-3 text-sm">Butuh bantuan teknis?</h5>
+                            <button
+                                class="w-full bg-white text-primary text-xs py-2 rounded-md font-bold hover:bg-yellow-400 hover:text-slate-900 transition-colors">
+                                Hubungi Helpdesk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+        <footer
+            class="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 px-6 md:px-12 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto flex flex-col justify-center items-center gap-6 text-center">
+                <div class="flex flex-col items-center items-center text-primary/60 dark:text-slate-500">
+                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2026 Unit Peningkatan dan
+                        Pengembangan Aktivitas Instruksional</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- Header -->
+    <!-- Main Content Area -->
+    <!-- Footer -->
+    <script>
+        function startTimer(duration) {
+            var timer = duration, minutes, seconds;
+            var display = document.querySelector('#countdown');
+            var interval = setInterval(async function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    await customAlert('Waktu telah habis. Jawaban akan otomatis dikumpulkan.', 'Waktu Habis');
+                    submitPretest();
+                }
+            }, 1000);
+        }
+    </script>
+    <script id="sidebar-script">
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            function toggleSidebar() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    // Open
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                    }, 10);
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                } else {
+                    // Close
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 300);
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', toggleSidebar);
+                overlay.addEventListener('click', toggleSidebar);
+            }
+
+            // Defer sidebar links UI update until API returns, but allow basic nav locally
+            const nip = getCurrentNip();
+            if (isLoggedIn() && nip) {
+                getUserStatus(nip).then(status => {
+                    const state = status.progress_state;
+                    const sidebarLinks = document.querySelectorAll('#sidebar nav a');
+                    sidebarLinks.forEach(link => {
+                        const page = link.getAttribute('data-page');
+                        if (page === 'learningpath.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'materi.html' && state < 1) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'postest.html' && state < 2) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                        if (page === 'feedback.html' && state < 3) { link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none'); }
+                    });
+                }).catch(e => console.error('Failed to sync sidebar permissions', e));
+            }
+        });
+
+        // ========== Pre-test API INTEGRATION ==========
+        let pretestSoal = [];
+        let currentPage = 0;
+        const ITEMS_PER_PAGE = 5;
+        let jawaban = {};
+
+        async function startPretest() {
+            const nip = getCurrentNip();
+            if (!nip) { createLoginModal(); return; }
+
+            document.getElementById('briefing-section').classList.add('hidden');
+            document.getElementById('loading-section').classList.remove('hidden');
+
+            try {
+                const data = await getPretest(nip);
+                pretestSoal = data.soal || [];
+
+                // If already completed, show results directly
+                if (data.completed) {
+                    showPretestResult(data.nilai, pretestSoal);
+                    return;
+                }
+
+                document.getElementById('loading-section').classList.add('hidden');
+                document.getElementById('questions-section').classList.remove('hidden');
+                renderPage(0);
+                startTimer(3600);
+            } catch (err) {
+                document.getElementById('loading-section').innerHTML = `
+                    <div class="bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-200 dark:border-red-800 p-8 text-center">
+                        <span class="material-symbols-outlined text-red-500 text-4xl mb-2">error</span>
+                        <h3 class="text-xl font-bold text-red-700 dark:text-red-400 mb-2">Gagal memuat soal</h3>
+                        <p class="text-red-600 dark:text-red-300 text-sm">${err.message}</p>
+                        <button onclick="startPretest()" class="mt-4 bg-primary text-white px-6 py-2 rounded-lg font-bold">Coba Lagi</button>
+                    </div>`;
+            }
+        }
+
+        function renderPage(page) {
+            currentPage = page;
+            const start = page * ITEMS_PER_PAGE;
+            const end = Math.min(start + ITEMS_PER_PAGE, pretestSoal.length);
+            const totalPages = Math.ceil(pretestSoal.length / ITEMS_PER_PAGE);
+
+            document.getElementById('page-title').textContent = `Daftar Soal (${start + 1}-${end} dari ${pretestSoal.length})`;
+
+            // Render questions
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            for (let i = start; i < end; i++) {
+                const s = pretestSoal[i];
+                const saved = jawaban[s.nomor] || '';
+                let opsiHTML = '';
+                for (let j = 0; j < s.opsi.length; j++) {
+                    const opsi = s.opsi[j];
+                    const val = String.fromCharCode(65 + j); // A, B, C, D
+                    const isSelected = saved === val;
+
+                    // Clean option text robustly
+                    let cleanOpt = opsi;
+                    const prefixMatch = opsi.match(/^[A-E][.\)\:]\s*/i);
+                    if (prefixMatch) {
+                        cleanOpt = opsi.substring(prefixMatch[0].length);
+                    }
+
+                    opsiHTML += `
+                        <label class="flex items-center gap-3 p-3 rounded-lg border ${isSelected ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-700'} hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors">
+                            <input class="text-primary focus:ring-primary" name="q${s.nomor}" type="radio" value="${val}" ${isSelected ? 'checked' : ''}
+                                onchange="jawaban[${s.nomor}]='${val}'" />
+                            <span class="${isSelected ? 'font-medium text-primary' : ''}">${cleanOpt}</span>
+                        </label>`;
+                }
+                container.innerHTML += `
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+                        <div class="flex justify-between items-start mb-3">
+                            <p class="font-bold text-primary">Pertanyaan ${s.nomor}</p>
+                            <span class="text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded tracking-wider uppercase">${s.bab_referensi || 'Umum'}</span>
+                        </div>
+                        <p class="text-slate-800 dark:text-slate-200 mb-4">${s.pertanyaan}</p>
+                        <div class="space-y-2">${opsiHTML}</div>
+                    </div>`;
+            }
+
+            // Render pagination buttons
+            const pagBtns = document.getElementById('pagination-buttons');
+            pagBtns.innerHTML = '';
+            for (let p = 0; p < totalPages; p++) {
+                const s = p * ITEMS_PER_PAGE + 1;
+                const e = Math.min(s + ITEMS_PER_PAGE - 1, pretestSoal.length);
+                const isActive = p === currentPage;
+                pagBtns.innerHTML += `
+                    <button onclick="renderPage(${p})"
+                        class="w-auto px-3 h-12 rounded-lg font-bold flex items-center justify-center text-sm ${isActive ? 'bg-primary text-white ring-4 ring-primary/20' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-primary'}">${s}-${e}</button>`;
+            }
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        async function submitPretest() {
+            const nip = getCurrentNip();
+            const total = pretestSoal.length;
+            const answered = Object.keys(jawaban).length;
+
+            if (answered < total) {
+                const confirmed = await customConfirm(`Anda baru menjawab ${answered} dari ${total} soal. Yakin ingin mengumpulkan?`, 'Peringatan');
+                if (!confirmed) return;
+            }
+
+            // Convert jawaban keys to string
+            const jawabanStr = {};
+            for (const [k, v] of Object.entries(jawaban)) {
+                jawabanStr[String(k)] = v;
+            }
+
+            try {
+                const result = await submitPretestAPI(nip, jawabanStr);
+                showPretestResult(result.nilai, result.soal, result.benar);
+            } catch (err) {
+                await customAlert('Gagal mengirim jawaban: ' + err.message, 'Error');
+            }
+        }
+
+        // Helper to call API
+        async function submitPretestAPI(nip, jawaban) {
+            return apiCall(`/pretest/${nip}/submit`, 'POST', { jawaban });
+        }
+
+        function showPretestResult(nilai, soal, benar) {
+            if (!benar && benar !== 0) {
+                benar = soal.filter(s => s.jawaban_user === s.jawaban_benar).length;
+            }
+
+            // Removed localStorage tracking; backend maintains the single source of truth
+
+            document.getElementById('loading-section').classList.add('hidden');
+            document.getElementById('questions-section').classList.add('hidden');
+            document.getElementById('result-section').classList.remove('hidden');
+            document.getElementById('result-nilai').textContent = nilai;
+            document.getElementById('result-benar').innerHTML = `${benar}<span class="text-lg text-slate-400">/${soal.length}</span>`;
+
+            // Render review
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+            for (const s of soal) {
+                const isCorrect = (s.jawaban_user || "").trim().toUpperCase() === (s.jawaban_benar || "").trim().toUpperCase();
+
+                // Find full text by letter index
+                const getOptText = (letter) => {
+                    if (!letter) return null;
+                    const idx = letter.charCodeAt(0) - 65;
+                    let opt = s.opsi[idx] || letter;
+                    const prefixMatch = opt.match(/^[A-E][.\)\:]\s*/i);
+                    return prefixMatch ? opt.substring(prefixMatch[0].length) : opt;
+                };
+
+                const correctOpsi = getOptText(s.jawaban_benar) || s.jawaban_benar;
+                const userOpsi = getOptText(s.jawaban_user) || s.jawaban_user || 'Tidak dijawab';
+
+                reviewContainer.innerHTML += `
+                    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-800">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex flex-col gap-1">
+                                <p class="font-bold text-primary leading-none">Pertanyaan ${s.nomor}</p>
+                                <span class="text-[9px] font-bold text-slate-400 tracking-wider">${s.bab_referensi || 'Umum'}</span>
+                            </div>
+                            <span class="${isCorrect ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'} text-xs font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                                <span class="material-symbols-outlined text-[14px]">${isCorrect ? 'check_circle' : 'cancel'}</span> ${isCorrect ? 'Benar' : 'Salah'}
+                            </span>
+                        </div>
+                        <p class="text-slate-800 dark:text-slate-200 mb-4">${s.pertanyaan}</p>
+                        <div class="p-4 rounded-lg ${isCorrect ? 'bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800'} mb-3">
+                            <p class="text-sm font-medium ${isCorrect ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}"><span class="font-bold">Jawaban Anda:</span> ${userOpsi}</p>
+                        </div>
+                        ${!isCorrect ? `<div class="p-4 rounded-lg bg-green-50 dark:bg-green-900/10 border border-green-200 dark:border-green-800">
+                            <p class="text-sm font-medium text-green-800 dark:text-green-300"><span class="font-bold">Jawaban Benar:</span> ${correctOpsi}</p>
+                        </div>` : ''}
+                    </div>`;
+            }
+            window.scrollTo(0, 0);
+        }
+
+        // Check if Pre-test already completed on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Sembunyikan briefing page di awal dan tampilkan loading untuk cegah flickering
+            document.getElementById('briefing-section').classList.add('hidden');
+            document.getElementById('loading-section').classList.remove('hidden');
+            const loadingH3 = document.getElementById('loading-section').querySelector('h3');
+            const origH3Text = loadingH3.textContent;
+            loadingH3.textContent = 'Memeriksa status ujian...';
+
+            const nip = getCurrentNip();
+            if (!nip) {
+                document.getElementById('loading-section').classList.add('hidden');
+                document.getElementById('briefing-section').classList.remove('hidden');
+                return;
+            }
+            try {
+                const data = await getPretest(nip);
+                if (data && data.completed) {
+                    pretestSoal = data.soal || [];
+                    showPretestResult(data.nilai, data.soal);
+                } else {
+                    document.getElementById('loading-section').classList.add('hidden');
+                    document.getElementById('briefing-section').classList.remove('hidden');
+                    loadingH3.textContent = origH3Text;
+                }
+            } catch (e) {
+                document.getElementById('loading-section').classList.add('hidden');
+                document.getElementById('briefing-section').classList.remove('hidden');
+                loadingH3.textContent = origH3Text;
+            }
+        });
+    </script>
+</body>
+
+</html>

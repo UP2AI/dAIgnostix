@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dAIgnostic – Adaptive Intelligent Learning System</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f6f8fa;
+      color: #1f2328;
+      line-height: 1.7;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: linear-gradient(135deg, #ffffff 0%, #f0f6ff 100%);
+      border: 1px solid #d0d7de;
+      border-radius: 12px;
+      margin-bottom: 2.5rem;
+    }
+    .header h1 { font-size: 2.4rem; color: #0969da; margin-bottom: 0.5rem; }
+    .header p  { color: #57606a; font-size: 1.05rem; }
+
+    /* ── Badge strip ── */
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1.2rem;
+    }
+    .badge {
+      background: #eaf0fb;
+      border: 1px solid #d0d7de;
+      border-radius: 20px;
+      padding: 0.25rem 0.85rem;
+      font-size: 0.82rem;
+      color: #0969da;
+    }
+
+    /* ── Section ── */
+    section { margin-bottom: 2.5rem; }
+
+    h2 {
+      font-size: 1.45rem;
+      color: #1f2328;
+      border-bottom: 1px solid #d0d7de;
+      padding-bottom: 0.45rem;
+      margin-bottom: 1.2rem;
+    }
+    h3 { font-size: 1.1rem; color: #1f2328; margin: 1.2rem 0 0.6rem; }
+
+    p { margin-bottom: 0.8rem; color: #57606a; }
+
+    /* ── Feature cards ── */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s;
+    }
+    .feature-card:hover { border-color: #0969da; }
+    .feature-card h3 { margin: 0 0 0.4rem; font-size: 0.95rem; color: #0969da; }
+    .feature-card p  { margin: 0; font-size: 0.88rem; color: #57606a; }
+
+    /* ── Chart wrapper ── */
+    .chart-card {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      overflow-x: auto;
+    }
+    .chart-card h3 { margin-bottom: 1rem; color: #1f2328; }
+    .mermaid { display: flex; justify-content: center; }
+
+    /* ── Tech table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #ffffff;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #d0d7de;
+    }
+    th {
+      background: #f6f8fa;
+      color: #1f2328;
+      text-align: left;
+      padding: 0.7rem 1rem;
+      font-size: 0.9rem;
+    }
+    td {
+      padding: 0.65rem 1rem;
+      border-top: 1px solid #d0d7de;
+      color: #57606a;
+      font-size: 0.9rem;
+    }
+    td code {
+      background: #f0f6ff;
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-size: 0.85rem;
+      color: #0969da;
+    }
+    tr:hover td { background: #f6f8fa; }
+
+    /* ── Setup steps ── */
+    .steps { counter-reset: step; }
+    .step {
+      background: #ffffff;
+      border: 1px solid #d0d7de;
+      border-left: 3px solid #0969da;
+      border-radius: 0 10px 10px 0;
+      padding: 1rem 1.2rem 1rem 1.5rem;
+      margin-bottom: 1rem;
+      counter-increment: step;
+    }
+    .step h3::before {
+      content: counter(step) ". ";
+      color: #0969da;
+    }
+    .step h3 { margin: 0 0 0.5rem; font-size: 1rem; color: #1f2328; }
+    pre {
+      background: #f6f8fa;
+      border: 1px solid #d0d7de;
+      border-radius: 6px;
+      padding: 0.8rem 1rem;
+      overflow-x: auto;
+      margin-top: 0.6rem;
+    }
+    pre code { color: #0550ae; font-size: 0.88rem; font-family: "Fira Code", monospace; }
+
+    /* ── Mermaid global overrides ── */
+    /* Sequence: actor boxes */
+    .mermaid svg .actor { fill: #2563eb !important; stroke: #1d4ed8 !important; }
+    .mermaid svg text.actor { fill: #ffffff !important; font-weight: 600 !important; }
+    .mermaid svg .actor-line { stroke: #93c5fd !important; }
+    /* Sequence: message text */
+    .mermaid svg .messageText { fill: #1e3a8a !important; font-weight: 500 !important; }
+    /* Sequence: activation */
+    .mermaid svg .activation0,
+    .mermaid svg .activation1 { fill: #bfdbfe !important; stroke: #2563eb !important; }
+    /* Sequence: note */
+    .mermaid svg .note { fill: #fef3c7 !important; stroke: #d97706 !important; }
+    .mermaid svg .noteText { fill: #1f2328 !important; }
+    /* Graph: rect nodes → blue */
+    .mermaid svg .node rect { fill: #2563eb !important; stroke: #1d4ed8 !important; }
+    /* Graph: rounded rect → yellow */
+    .mermaid svg .node .label-container { fill: #fbbf24 !important; stroke: #d97706 !important; }
+    /* Graph: diamond/rhombus → yellow */
+    .mermaid svg .node polygon { fill: #fbbf24 !important; stroke: #d97706 !important; }
+    /* Graph: cylinder (database) → yellow */
+    .mermaid svg .node path { fill: #fbbf24 !important; stroke: #d97706 !important; }
+    /* Graph: all node text */
+    .mermaid svg .nodeLabel { color: #ffffff !important; font-weight: 600 !important; }
+    /* Edge labels - foreignObject (newer mermaid) */
+    .mermaid svg .edgeLabel foreignObject div {
+      background: #fef9c3 !important; color: #1f2328 !important;
+      border-radius: 4px; padding: 1px 5px;
+    }
+    /* Edge labels - SVG text (fallback) */
+    .mermaid svg .edgeLabel { background: #fef9c3 !important; }
+    .mermaid svg .edgeLabel rect { fill: #fef9c3 !important; stroke: #d97706 !important; }
+    .mermaid svg .edgeLabel span { color: #1f2328 !important; font-weight: 500 !important; }
+    .mermaid svg .edgeLabel text { fill: #1f2328 !important; font-weight: 500 !important; }
+    /* Arrow/edge label text directly on SVG */
+    .mermaid svg text.edgeLabel { fill: #1f2328 !important; }
+    .mermaid svg .edge-label-wrapper text { fill: #1f2328 !important; }
+    /* Catch-all: any text inside edgeLabel group */
+    .mermaid svg g.edgeLabel text tspan { fill: #1f2328 !important; font-weight: 500 !important; }
+
+
+  
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #57606a;
+      font-size: 0.85rem;
+      border-top: 1px solid #d0d7de;
+      margin-top: 3rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── Header ── -->
+  <header class="header">
+    <h1>🎓 dAIgnostic</h1>
+    <p>Adaptive Intelligent Learning System (AILS)</p>
+    <p style="margin-top:0.5rem;font-size:0.9rem;">
+      Sistem manajemen pembelajaran modern berbasis <strong style="color:#0969da;">AI</strong>
+      &amp; <strong style="color:#0969da;">RAG</strong> untuk pengalaman belajar yang dipersonalisasi.
+    </p>
+    <div class="badges">
+      <span class="badge">Python 3.10+</span>
+      <span class="badge">FastAPI</span>
+      <span class="badge">Google Gemini AI</span>
+      <span class="badge">LangChain</span>
+      <span class="badge">Supabase</span>
+      <span class="badge">Tailwind CSS</span>
+    </div>
+  </header>
+
+  <!-- ── Fitur ── -->
+  <section>
+    <h2>🌟 Fitur Utama</h2>
+    <div class="features">
+      <div class="feature-card">
+        <h3>Adaptive Learning Path</h3>
+        <p>Jalur belajar yang disesuaikan secara otomatis berdasarkan kemampuan awal Anda.</p>
+      </div>
+      <div class="feature-card">
+        <h3>AI-Generated Assessment</h3>
+        <p>Soal Pretest dan Posttest yang dihasilkan secara cerdas dari materi PDF asli.</p>
+      </div>
+      <div class="feature-card">
+        <h3>RAG Implementation</h3>
+        <p>AI menjawab berdasarkan sumber materi valid, meminimalisir "halusinasi" informasi.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Smart Feedback</h3>
+        <p>Laporan analisis perkembangan kompetensi dan saran karir yang mendalam menggunakan AI.</p>
+      </div>
+      <div class="feature-card">
+        <h3>Learning Behavior Analytics</h3>
+        <p>Melacak pola belajar Anda (Nibbler, Big Eater, dsb) untuk evaluasi yang lebih baik.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Arsitektur ── -->
+  <section>
+    <h2>🏗️ Arsitektur Sistem</h2>
+    <div class="chart-card">
+      <h3>Frontend &amp; Backend</h3>
+      <div class="mermaid">
+flowchart TD
+    subgraph Frontend
+        HTML["HTML &amp; Tailwind CSS"]
+        JS["JavaScript (Logic)"]
+    end
+
+    subgraph Backend
+        API["FastAPI (Python)"]
+        AI["Gemini AI (LLM)"]
+        RAG["RAG Engine (LangChain)"]
+    end
+
+    subgraph Data
+        DB[("Supabase (DB &amp; Vector)")]
+        Files[("PDF Storage")]
+    end
+
+    HTML --- JS
+    JS --- API
+    API --- AI
+    API --- RAG
+    RAG --- DB
+    API --- DB
+    DB --- Files
+      </div>
+    </div>
+  </section>
+
+  <!-- ── User Pathway ── -->
+  <section>
+    <h2>🛤️ Alur Perjalanan Pengguna</h2>
+    <div class="chart-card">
+      <h3>User Pathway</h3>
+      <div class="mermaid">
+sequenceDiagram
+    participant U as User (Siswa)
+    participant H as Dashboard / Home
+    participant P as Pretest (AI)
+    participant LP as Learning Path
+    participant M as Materi Bab
+    participant PT as Posttest (AI)
+    participant F as Smart Feedback
+
+    U->>H: Login (NIP & Nama)
+    H->>P: Mulai Pretest
+    P-->>U: Mengerjakan Soal AI
+    U->>LP: Lihat Jalur Belajar Personal
+    LP->>M: Pelajari Modul (Unlock berurutan)
+    M->>PT: Ujian Akhir
+    PT->>F: Lihat Analisis & Feedback AI
+    F->>U: Selesai & Sertifikasi
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Admin Flow ── -->
+  <section>
+    <h2>🛠️ Alur Admin (Manajemen Materi)</h2>
+    <div class="chart-card">
+      <h3>Pengelolaan Konten</h3>
+      <div class="mermaid">
+graph LR
+    A[Admin] -->|Upload PDF| B(Backend API)
+    B -->|Save File| C[(Storage)]
+    B -->|Extract Text| D{Chunking & Embedding}
+    D -->|Convert to Vector| E[(Vector DB / pgvector)]
+    E -->|Materi Siap| F[AI Question Generator]
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AI Logic ── -->
+  <section>
+    <h2>🤖 Alur Logika AI</h2>
+    <div class="chart-card">
+      <h3>1. Generasi Bank Soal (Admin Flow)</h3>
+      <p style="font-size:0.9rem;margin-bottom:1rem;">Admin menyiapkan bank soal menggunakan AI agar ujian berjalan cepat tanpa menunggu proses AI setiap saat.</p>
+      <div class="mermaid">
+flowchart LR
+    RAG{RAG Engine} --- PDF[(PDF Materi)]
+    RAG --- Gemini(Google Gemini AI)
+    Gemini --- Bank[(Bank Soal DB)]
+    Bank --- User[User Test Session]
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>2. Analisis Personal (Learning Path &amp; Feedback)</h3>
+      <p style="font-size:0.9rem;margin-bottom:1rem;">AI bekerja secara dinamis menganalisis data unik setiap user setelah ujian selesai.</p>
+      <div class="mermaid">
+flowchart TD
+    Data[Data Pretest/Posttest/Events] --- Prompt{Prompt Strategis}
+    Prompt --- Gemini(Google Gemini AI)
+    Gemini --- DB[(Database)]
+    DB --- UI[Halaman Feedback/Path]
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Setup ── -->
+  <section>
+    <h2>🚀 Panduan Setup</h2>
+    <div class="steps">
+      <div class="step">
+        <h3>Persiapan Lingkungan</h3>
+        <p>Pastikan Anda sudah menginstal:</p>
+        <ul style="margin-left:1.2rem;color:#57606a;font-size:0.9rem;">
+          <li>Python 3.10+</li>
+          <li>Akun Supabase (Gratis)</li>
+          <li>API Key Google Gemini AI</li>
+        </ul>
+      </div>
+      <div class="step">
+        <h3>Setup Backend</h3>
+        <p>Buka folder <code style="color:#0969da;background:#f0f6ff;padding:0.1rem 0.3rem;border-radius:4px;">backend</code>, salin <code style="color:#0969da;background:#f0f6ff;padding:0.1rem 0.3rem;border-radius:4px;">.env.example</code> menjadi <code style="color:#0969da;background:#f0f6ff;padding:0.1rem 0.3rem;border-radius:4px;">.env</code>, lalu masukkan API Key dan URL Supabase Anda.</p>
+        <pre><code>pip install -r requirements.txt
+uvicorn main:app --reload</code></pre>
+      </div>
+      <div class="step">
+        <h3>Setup Frontend</h3>
+        <p>Buka <code style="color:#0969da;background:#f0f6ff;padding:0.1rem 0.3rem;border-radius:4px;">js/api.js</code> dan sesuaikan <code style="color:#0969da;background:#f0f6ff;padding:0.1rem 0.3rem;border-radius:4px;">API_URL</code> dengan alamat backend Anda.</p>
+        <pre><code>// Default
+const API_URL = "http://localhost:8000";</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tech Stack ── -->
+  <section>
+    <h2>📦 Tech Stack</h2>
+    <table>
+      <thead>
+        <tr><th>Komponen</th><th>Teknologi</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Frontend</td><td><code>HTML5</code> <code>Tailwind CSS</code> <code>Vanilla JS</code></td></tr>
+        <tr><td>API Server</td><td><code>Python</code> <code>FastAPI</code></td></tr>
+        <tr><td>AI Model</td><td><code>Google Gemini 3.1 Flash Lite Preview</code></td></tr>
+        <tr><td>RAG Engine</td><td><code>LangChain</code> <code>ChromaDB/pgvector</code></td></tr>
+        <tr><td>Database</td><td><code>Supabase (PostgreSQL)</code></td></tr>
+        <tr><td>Cloud Storage</td><td><code>Supabase Storage</code> (untuk PDF)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+
+  </footer>
+
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor: '#2563eb',
+      primaryTextColor: '#ffffff',
+      primaryBorderColor: '#1d4ed8',
+      lineColor: '#1d4ed8',
+      secondaryColor: '#fbbf24',
+      secondaryTextColor: '#1f2328',
+      secondaryBorderColor: '#d97706',
+      tertiaryColor: '#fde68a',
+      tertiaryTextColor: '#1f2328',
+      tertiaryBorderColor: '#d97706',
+      background: '#ffffff',
+      mainBkg: '#2563eb',
+      nodeBorder: '#1d4ed8',
+      clusterBkg: '#eff6ff',
+      clusterBorder: '#93c5fd',
+      titleColor: '#1f2328',
+      edgeLabelBackground: '#fef9c3',
+      labelColor: '#1f2328',
+      labelBackground: '#fef9c3',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '14px',
+      /* sequence diagram */
+      actorBkg: '#2563eb',
+      actorBorder: '#1d4ed8',
+      actorTextColor: '#ffffff',
+      actorLineColor: '#1d4ed8',
+      signalColor: '#1d4ed8',
+      signalTextColor: '#1f2328',
+      labelBoxBkgColor: '#fbbf24',
+      labelBoxBorderColor: '#d97706',
+      labelTextColor: '#1f2328',
+      loopTextColor: '#1f2328',
+      noteBorderColor: '#d97706',
+      noteBkgColor: '#fef3c7',
+      noteTextColor: '#1f2328',
+      activationBorderColor: '#1d4ed8',
+      activationBkgColor: '#bfdbfe',
+      sequenceNumberColor: '#ffffff'
+    }
+  });
+
+  // Post-render CSS fixes for full contrast
+  document.addEventListener('DOMContentLoaded', () => {
+    const observer = new MutationObserver(() => {
+      // ── Sequence diagram actors ──
+      document.querySelectorAll('.actor').forEach(el => {
+        el.style.fill = '#2563eb';
+        el.style.stroke = '#1d4ed8';
+      });
+      document.querySelectorAll('.actor-line').forEach(el => {
+        el.style.stroke = '#93c5fd';
+      });
+      document.querySelectorAll('text.actor').forEach(el => {
+        el.style.fill = '#ffffff';
+        el.style.fontWeight = '600';
+      });
+      // message labels on arrows
+      document.querySelectorAll('.messageText').forEach(el => {
+        el.style.fill = '#1e3a8a';
+        el.style.fontWeight = '500';
+      });
+      // activation boxes
+      document.querySelectorAll('.activation0, .activation1, .activation2').forEach(el => {
+        el.style.fill = '#bfdbfe';
+        el.style.stroke = '#2563eb';
+      });
+
+      // ── Graph nodes: round rect (B backend api, etc) ──
+      document.querySelectorAll('.node rect, .node polygon').forEach(el => {
+        if (!el.closest('.cluster')) {
+          el.style.fill = '#2563eb';
+          el.style.stroke = '#1d4ed8';
+        }
+      });
+      document.querySelectorAll('.node circle, .node ellipse').forEach(el => {
+        el.style.fill = '#fbbf24';
+        el.style.stroke = '#d97706';
+      });
+      // cylinder shapes (storage)
+      document.querySelectorAll('.node path').forEach(el => {
+        el.style.fill = '#fbbf24';
+        el.style.stroke = '#d97706';
+      });
+      // all node labels white on blue, dark on yellow
+      document.querySelectorAll('.nodeLabel, .label').forEach(el => {
+        const parent = el.closest('.node');
+        if (parent) {
+          const shape = parent.querySelector('circle, ellipse, path');
+          el.style.color = shape ? '#1f2328' : '#ffffff';
+        }
+      });
+      // edge labels
+      document.querySelectorAll('.edgeLabel .label').forEach(el => {
+        el.style.background = '#fef9c3';
+        el.style.color = '#1f2328';
+        el.style.padding = '1px 4px';
+        el.style.borderRadius = '3px';
+      });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+  });
+</script>
+</body>
+</html>

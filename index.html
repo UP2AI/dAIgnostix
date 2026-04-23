@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dashboard - dAIgnostix</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800;900&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#003366",
+                        "accent": "#FFCC00",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#0f1923",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Public Sans', sans-serif;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <!-- API & Auth Modules -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/tracker.js"></script>
+</head>
+
+<body class="font-display bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <header
+            class="sticky top-0 z-[70] w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 md:px-8 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+                <div class="flex items-center gap-4"><button
+                        class="lg:hidden p-2 -ml-2 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none"
+                        id="mobile-menu-btn">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <div class="flex items-center gap-2 text-primary">
+                        <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
+                            <span class="material-symbols-outlined text-white text-2xl">school</span>
+                        </div>
+                        <div class="flex flex-col">
+                            <h2 class="text-xl font-bold leading-none tracking-tight dark:text-white">dAIgnostix
+                            </h2>
+                            <span
+                                class="text-[10px] font-semibold uppercase tracking-widest text-primary/70 dark:text-slate-400">AI-Powered
+                                Diagnostic Tools</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:flex gap-2 mr-2">
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+                            <span class="material-symbols-outlined">notifications</span>
+                        </button>
+                        <button
+                            class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 transition-colors">
+                            <span class="material-symbols-outlined">help</span>
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex flex-col items-end mr-4">
+                        <p class="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none" data-user-name></p>
+                        <p class="text-[11px] text-slate-500 font-medium mt-1">NIP <span data-user-nip></span></p>
+                    </div>
+                    <div class="relative group cursor-pointer flex-none w-10 h-10">
+                        <div class="w-full h-full rounded-full bg-primary border-2 border-accent overflow-hidden">
+                            <img class="w-full h-full object-cover" data-alt="User profile avatar"
+                                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAnAzKEm418PbviM00GkQ9aPeclA8s4IDUTLyWQ-pU-96O7Ise3OwG_45gaU209E-ku2l4iBc-_faiE2rpseNIYJCxPXj48MP9_K5Njz0KDxG8rNqmPTIYPv5xCKR2o2FMgdKO9FDMpf_AVB70Qdhqg7qMopeJhahTI8oXJUIw5RRGPjhf-NNz23XAJ9PVF5Rty5GPconrMaZh6DRK_C7oVkW1d8GFD5C5_2Gm0dA70K1gz2kwklHcMf33-T5A-Bn7L480yVyAurA" />
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                            class="absolute right-0 mt-3 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.2)] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[100] border border-slate-200 dark:border-slate-700 overflow-hidden">
+                            <div
+                                class="px-4 py-3 border-b border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Akun Anda</p>
+                                <p class="text-xs font-bold text-primary dark:text-accent truncate" data-user-name></p>
+                            </div>
+                            <ul class="py-1 text-sm text-slate-700 dark:text-slate-300">
+                                <li>
+                                    <button onclick="handleLogout()"
+                                        class="w-full text-left px-4 py-3 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center gap-3 text-red-600 dark:text-red-400 font-bold transition-colors group/logout">
+                                        <div
+                                            class="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 group-hover/logout:bg-red-600 group-hover/logout:text-white transition-all">
+                                            <span class="material-symbols-outlined text-[18px]">logout</span>
+                                        </div>
+                                        <div>
+                                            <p class="leading-none">Keluar Akun</p>
+                                            <p class="text-[10px] font-medium text-slate-400 mt-1">Selesaikan sesi ini
+                                            </p>
+                                        </div>
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <main
+            class="flex-grow flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 py-6 md:py-8 gap-6 md:gap-8">
+            <div class="flex-grow space-y-8 min-w-0">
+                <section class="mb-10">
+                    <h1 id="elearning-title"
+                        class="text-4xl font-extrabold text-primary dark:text-slate-100 tracking-tight mb-2">
+                        E-Learning</h1>
+                    <p id="elearning-desc" class="text-slate-600 dark:text-slate-400 text-lg">Lanjutkan perjalanan
+                        pengembangan
+                        kompetensi Anda hari ini.</p>
+                </section>
+                <div
+                    class="mb-8 bg-primary/5 rounded-xl p-6 border border-primary/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                    <div class="flex-grow flex items-center gap-4">
+                        <div class="bg-primary/10 p-3 rounded-full hidden sm:flex">
+                            <span class="material-symbols-outlined text-primary text-2xl">lightbulb</span>
+                        </div>
+                        <div>
+                            <h4 class="text-primary font-bold text-lg mb-1">Inspirasi Belajar</h4>
+                            <p class="text-slate-600 dark:text-slate-400 text-sm italic">"Investasi dalam pengetahuan menghasilkan bunga terbaik." – Benjamin Franklin</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div
+                        class="group relative flex flex-col bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                        <div class="h-2.5 w-full bg-primary"></div>
+                        <div class="p-6 flex flex-col h-full">
+                            <div
+                                class="mb-4 text-primary bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center border border-primary/20">
+                                <span class="material-symbols-outlined text-3xl">assignment</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
+                                Pre-test</h3>
+                            <p
+                                class="text-slate-700 dark:text-slate-300 text-sm font-medium mb-6 flex-grow leading-relaxed">
+                                Ukur pemahaman awal Anda sebelum memulai modul pembelajaran ini.</p>
+                            <a href="pretest.html" id="btn-pretest"
+                                class="w-full bg-primary text-white py-3 rounded-lg font-bold text-sm hover:bg-slate-800 transition-colors flex items-center justify-center gap-2 shadow-sm text-center">
+                                Mulai Sekarang
+                                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div
+                        class="group relative flex flex-col bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                        <div class="h-2.5 w-full bg-primary"></div>
+                        <div class="p-6 flex flex-col h-full">
+                            <div
+                                class="mb-4 text-primary bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center border border-primary/20">
+                                <span class="material-symbols-outlined text-3xl">map</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
+                                Learning Path</h3>
+                            <p
+                                class="text-slate-700 dark:text-slate-300 text-sm font-medium mb-6 flex-grow leading-relaxed">
+                                Alur pembelajaran terstruktur yang dirancang khusus untuk Anda.</p>
+                            <a href="#" id="btn-learningpath"
+                                class="w-full bg-primary/5 text-primary/30 py-3 rounded-lg font-bold text-sm cursor-not-allowed flex items-center justify-center gap-2 border border-primary/10 pointer-events-none text-center">
+                                Lihat Jalur
+                                <span class="material-symbols-outlined text-sm">route</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div
+                        class="group relative flex flex-col bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                        <div class="h-2.5 w-full bg-primary"></div>
+                        <div class="p-6 flex flex-col h-full">
+                            <div
+                                class="mb-4 text-primary bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center border border-primary/20">
+                                <span class="material-symbols-outlined text-3xl">menu_book</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Materi
+                                Pembelajaran</h3>
+                            <p
+                                class="text-slate-700 dark:text-slate-300 text-sm font-medium mb-6 flex-grow leading-relaxed">
+                                Akses video, dokumen, dan interaktif untuk mendukung belajar Anda.</p>
+                            <a href="#" id="btn-materi"
+                                class="w-full bg-primary/5 text-primary/30 py-3 rounded-lg font-bold text-sm cursor-not-allowed flex items-center justify-center gap-2 border border-primary/10 pointer-events-none text-center">
+                                Buka Library
+                                <span class="material-symbols-outlined text-sm">library_books</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div
+                        class="group relative flex flex-col bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                        <div class="h-2.5 w-full bg-primary"></div>
+                        <div class="p-6 flex flex-col h-full">
+                            <div
+                                class="mb-4 text-primary/40 bg-primary/5 w-14 h-14 rounded-xl flex items-center justify-center border border-primary/10">
+                                <span class="material-symbols-outlined text-3xl">verified</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">
+                                Post-test</h3>
+                            <p
+                                class="text-slate-500 dark:text-slate-400 text-sm font-medium mb-6 flex-grow leading-relaxed">
+                                Uji kompetensi akhir dan dapatkan pengakuan atas pembelajaran Anda.</p>
+                            <a href="#" id="btn-postest"
+                                class="w-full bg-primary/5 text-primary/30 py-3 rounded-lg font-bold text-sm cursor-not-allowed flex items-center justify-center gap-2 border border-primary/10 pointer-events-none text-center">
+                                Belum Terbuka
+                                <span class="material-symbols-outlined text-sm">lock</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div
+                        class="group relative flex flex-col bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-all">
+                        <div class="h-2.5 w-full bg-primary"></div>
+                        <div class="p-6 flex flex-col h-full">
+                            <div
+                                class="mb-4 text-primary bg-primary/10 w-14 h-14 rounded-xl flex items-center justify-center border border-primary/20">
+                                <span class="material-symbols-outlined text-3xl">forum</span>
+                            </div>
+                            <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tight">Ulasan
+                                & Feedback</h3>
+                            <p
+                                class="text-slate-700 dark:text-slate-300 text-sm font-medium mb-6 flex-grow leading-relaxed">
+                                Ulasan dan feedback pembelajaran yang telah dilaksanakan</p>
+                            <a href="#" id="btn-feedback"
+                                class="w-full bg-primary/5 text-primary/30 py-3 rounded-lg font-bold text-sm cursor-not-allowed flex items-center justify-center gap-2 border border-primary/10 pointer-events-none text-center">
+                                Lihat Feedback
+                                <span class="material-symbols-outlined text-sm">rate_review</span>
+                            </a>
+                        </div>
+                    </div>
+                    <div
+                        class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-xl p-8 bg-slate-50 dark:bg-slate-900/50">
+                        <span class="material-symbols-outlined text-slate-400 text-4xl mb-2">add_circle</span>
+                        <p class="text-slate-500 text-sm font-medium">Tambah Program</p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[55] hidden lg:hidden transition-opacity opacity-0"
+                id="sidebar-overlay"></div>
+            <aside
+                class="fixed inset-y-0 left-0 z-[60] w-[280px] bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transform -translate-x-full lg:translate-x-0 lg:static lg:w-80 lg:shrink-0 lg:border-none transition-transform duration-300 ease-in-out h-full overflow-y-auto lg:h-auto lg:overflow-visible overscroll-contain"
+                id="sidebar">
+                <div
+                    class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm lg:sticky lg:top-24 w-full">
+                    <div class="p-5 border-b border-slate-100 dark:border-slate-800 bg-primary/5">
+                        <h2 class="font-bold text-primary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-xl">list_alt</span>
+                            Navigasi Belajar
+                        </h2>
+                    </div>
+                    <nav class="p-2 space-y-1">
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-md font-bold"
+                            data-page="index.html" href="index.html">
+                            <span class="material-symbols-outlined text-xl">home</span>
+                            <span class="text-sm">Home</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="pretest.html" href="pretest.html">
+                            <span class="material-symbols-outlined text-xl">assignment</span>
+                            <span class="text-sm">Pre-test</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="learningpath.html" href="learningpath.html">
+                            <span class="material-symbols-outlined text-xl">route</span>
+                            <span class="text-sm">Learning Path</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="materi.html" href="materi.html">
+                            <span class="material-symbols-outlined text-xl">menu_book</span>
+                            <span class="text-sm">Materi Pembelajaran</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="postest.html" href="postest.html">
+                            <span class="material-symbols-outlined text-xl">verified</span>
+                            <span class="text-sm">Post-test</span>
+                        </a>
+                        <a class="nav-link flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-primary transition-colors"
+                            data-page="feedback.html" href="feedback.html">
+                            <span class="material-symbols-outlined text-xl">forum</span>
+                            <span class="text-sm">Ulasan & Feedback</span>
+                        </a>
+                    </nav>
+                    <div class="p-4 mt-2">
+                        <div class="bg-primary rounded-lg p-4 text-white relative overflow-hidden group">
+                            <div
+                                class="absolute -right-4 -bottom-4 opacity-10 group-hover:scale-110 transition-transform">
+                                <span class="material-symbols-outlined text-8xl">help_outline</span>
+                            </div>
+                            <p class="text-xs font-semibold uppercase text-accent mb-1 tracking-wider">Bantuan</p>
+                            <h5 class="font-bold mb-3 text-sm">Butuh bantuan teknis?</h5>
+                            <button
+                                class="w-full bg-white text-primary text-xs py-2 rounded-md font-bold hover:bg-yellow-400 hover:text-slate-900 transition-colors">
+                                Hubungi Helpdesk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+        <footer
+            class="mt-auto py-8 border-t border-slate-200 dark:border-slate-800 px-6 md:px-12 bg-white dark:bg-slate-900">
+            <div class="max-w-7xl mx-auto flex flex-col justify-center items-center gap-6 text-center">
+                <div class="flex flex-col items-center items-center text-primary/60 dark:text-slate-500">
+                    <p class="text-sm font-semibold text-slate-600 dark:text-slate-500">© 2026 Unit Peningkatan dan
+                        Pengembangan Aktivitas Instruksional</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script id="sidebar-script">
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('mobile-menu-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            function toggleSidebar() {
+                if (sidebar.classList.contains('-translate-x-full')) {
+                    // Open
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebar.classList.add('translate-x-0');
+                    overlay.classList.remove('hidden');
+                    setTimeout(() => {
+                        overlay.classList.remove('opacity-0');
+                    }, 10);
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                } else {
+                    // Close
+                    sidebar.classList.add('-translate-x-full');
+                    sidebar.classList.remove('translate-x-0');
+                    overlay.classList.add('opacity-0');
+                    setTimeout(() => {
+                        overlay.classList.add('hidden');
+                    }, 300);
+                    document.body.style.overflow = '';
+                }
+            }
+
+            if (btn && sidebar && overlay) {
+                btn.addEventListener('click', toggleSidebar);
+                overlay.addEventListener('click', toggleSidebar);
+            }
+
+            // --- Progression Logic (Dashboard) ---
+            const sidebarLinks = document.querySelectorAll('#sidebar nav a');
+            const btnLearningPath = document.getElementById('btn-learningpath');
+            const btnMateri = document.getElementById('btn-materi');
+            const btnPostest = document.getElementById('btn-postest');
+            const btnFeedback = document.getElementById('btn-feedback');
+
+            // Default state (locked)
+            btnLearningPath.href = '#';
+            btnMateri.href = '#';
+            btnPostest.href = '#';
+            btnFeedback.href = '#';
+
+            function applyUIPermissions(status) {
+                // Determine completion explicitly from database status
+                const pretestDone = status.progress_state >= 1;
+                const materiDone = status.progress_state >= 2;
+                const posttestDone = status.progress_state >= 3;
+
+                sidebarLinks.forEach(link => {
+                    const page = link.getAttribute('data-page');
+                    if ((page === 'learningpath.html' || page === 'materi.html') && !pretestDone) {
+                        link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none');
+                    }
+                    if (page === 'postest.html' && !pretestDone) {
+                        link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none');
+                    }
+                    if (page === 'feedback.html' && !posttestDone) {
+                        link.href = '#'; link.classList.add('opacity-50', 'pointer-events-none');
+                    }
+                });
+
+                if (pretestDone) {
+                    btnLearningPath.href = 'learningpath.html';
+                    btnLearningPath.classList.remove('bg-primary/5', 'text-primary/30', 'border-primary/10', 'cursor-not-allowed', 'pointer-events-none');
+                    btnLearningPath.classList.add('bg-primary', 'text-white', 'hover:bg-slate-800');
+
+                    btnMateri.href = 'materi.html';
+                    btnMateri.classList.remove('bg-primary/5', 'text-primary/30', 'border-primary/10', 'cursor-not-allowed', 'pointer-events-none');
+                    btnMateri.classList.add('bg-primary', 'text-white', 'hover:bg-slate-800');
+                }
+
+                if (pretestDone) {
+                    btnPostest.href = 'postest.html';
+                    btnPostest.classList.remove('bg-primary/5', 'text-primary/30', 'border-primary/10', 'cursor-not-allowed', 'pointer-events-none');
+                    btnPostest.classList.add('bg-primary', 'text-white', 'hover:bg-slate-800');
+                    btnPostest.innerHTML = `Mulai Post-test <span class="material-symbols-outlined text-sm">verified</span>`;
+                }
+
+                if (posttestDone) {
+                    btnFeedback.href = 'feedback.html';
+                    btnFeedback.classList.remove('bg-primary/5', 'text-primary/30', 'border-primary/10', 'cursor-not-allowed', 'pointer-events-none');
+                    btnFeedback.classList.add('bg-primary', 'text-white', 'hover:bg-slate-800');
+                }
+            }
+
+            // --- Sync progress from API and Render Dashboard ---
+            if (isLoggedIn()) {
+                Promise.all([
+                    getUserStatus(getCurrentNip()),
+                    getPublicConfig()
+                ]).then(([status, data]) => {
+                    // Update User Info
+                    document.querySelectorAll('[data-user-name]').forEach(el => el.textContent = getCurrentNama());
+                    document.querySelectorAll('[data-user-nip]').forEach(el => el.textContent = getCurrentNip());
+
+                    applyUIPermissions(status);
+
+                    // Optional: remove old localStorage artifacts
+                    localStorage.removeItem('progressState');
+
+                    const config = data.config;
+                    if (config && config.judul) {
+                        document.getElementById('elearning-title').textContent = config.judul;
+                    }
+                    if (config && config.deskripsi) {
+                        document.getElementById('elearning-desc').textContent = config.deskripsi;
+                    }
+
+                    // Update progress bar based on explicit 5-step calculation (Database absolute truth)
+                    let completedSteps = 0;
+
+                    if (status.progress_state >= 1) completedSteps++; // 1. Pre-test selesai
+                    if (status.lp_accessed) completedSteps++;         // 2. Learning path diakses
+                    if (status.progress_state >= 2) completedSteps++; // 3. Semua materi selesai
+                    if (status.progress_state >= 3) completedSteps++; // 4. Post-test selesai
+                    if (status.fb_accessed) completedSteps++;         // 5. Feedback diakses
+
+                    const totalSteps = 5;
+                    const pct = Math.round((completedSteps / totalSteps) * 100);
+
+                    const progressBar = document.getElementById('progress-bar');
+                    if (progressBar) progressBar.style.width = pct + '%';
+                    
+                    const progressPct = document.getElementById('progress-pct');
+                    if (progressPct) progressPct.textContent = pct + '%';
+
+                    const progressDesc = document.getElementById('progress-desc');
+                    if (progressDesc) {
+                        if (completedSteps === totalSteps) {
+                            progressDesc.textContent = `Selamat! Anda telah menyelesaikan seluruh modul pembelajaran.`;
+                        } else {
+                            progressDesc.textContent = `Anda telah menyelesaikan ${completedSteps} dari ${totalSteps} modul pembelajaran.`;
+                        }
+                    }
+                }).catch(e => console.error("Failed to load dashboard data:", e));
+            } else {
+                getPublicConfig().then(data => {
+                    const config = data.config;
+                    if (config && config.judul) {
+                        document.getElementById('elearning-title').textContent = config.judul;
+                    }
+                    if (config && config.deskripsi) {
+                        document.getElementById('elearning-desc').textContent = config.deskripsi;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
