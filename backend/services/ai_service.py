@@ -352,7 +352,7 @@ PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
     return result
 
 
-def generate_bank_soal_questions(context: str, bab_nomor: int, bab_judul: str, jumlah_level2: int = 10, jumlah_level3: int = 5) -> list:
+def generate_bank_soal_questions(context: str, bab_nomor: int, bab_judul: str, jumlah_level2: int = 15, jumlah_level3: int = 5) -> list:
     """
     Generate a bank of MCQ questions for a specific chapter.
     Produces two levels:

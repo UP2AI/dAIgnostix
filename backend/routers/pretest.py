@@ -40,8 +40,9 @@ async def get_pretest(nip: str):
              raise HTTPException(status_code=500, detail="Bank soal kosong. Silakan hubungi admin.")
 
         final_soal = []
-        # Prepare pools
-        pools = {b['bab_nomor']: list(b['soal']) for b in chapters}
+        # Prepare pools: Select ONLY Level 2 questions. 
+        # (Exclude Level 3 HOTS since pretest is for baseline assessment)
+        pools = {b['bab_nomor']: [s for s in b['soal'] if s.get('level', 2) == 2] for b in chapters}
         for b_id in pools:
             random.shuffle(pools[b_id])
 
