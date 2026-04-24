@@ -418,73 +418,15 @@ Ketentuan Penulisan:
 FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "{kategori}",
-  "analisis_perkembangan": "[Paragraf mendalam yang WAJIB menyebut: (1) nilai pretest {pretest_nilai} vs posttest {posttest_nilai}, (2) delta spesifik per bab, (3) bab terkuat dan terlemah berdasarkan data. {'Jelaskan mengapa nilai belum mencapai 80 dan pada bagian materi mana pemahaman masih kurang.' if is_failed_posttest else 'Jika ada bab yang meningkat tajam, sebut sebagai bukti pemahaman mendalam.'} Jangan generalisasi.]",
-  "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori (sebut nama kategorinya dan jelaskan): 1. Big Eater: banyak waktu sedikit/tanpa jeda, 2. Nibbler: waktu substansial dengan jeda konsisten, 3. Picky Eater: waktu sedikit tapi jeda teratur, 4. Gulper: waktu minimal tanpa jeda. WAJIB gunakan data durasi belajar spesifik per bab ({time_per_bab.strip()}) untuk mendukung klasifikasi. Sebutkan angka menitnya.]",
-  "transformasi_profil": "[Paragraf tentang perubahan profil dari '{profil_awal}' ke '{kategori}'. WAJIB gabungkan: (1) deskripsi profil awal dari pretest, (2) apa yang berubah/tidak berubah setelah post-test, (3) {'instruksi spesifik belajar kembali menyebut bab dan topik yang perlu diulang berdasarkan data akurasi.' if is_failed_posttest else 'bukti kemajuan yang spesifik dari data, bukan generalisasi.'} {'Jika ini percobaan ke-'+str(attempts)+', identifikasi apakah pola kesalahan yang sama berulang.' if attempts > 1 else ''}]",
-  "kesimpulan_strategis": "[{'Sebutkan secara SANGAT SPESIFIK: bab apa yang harus dibaca ulang, topik apa yang perlu diperdalam, dan bagaimana mempersiapkan diri untuk ujian ulang.' if is_failed_posttest else f'Sertakan: (1) rekomendasi sertifikasi konkret terkait {cleaned_title} (nama sertifikasi, platform, link jika ada), (2) profesi yang relevan di pemerintahan dan swasta, (3) saran update portofolio di HRIS.'}] "
-        focus_instruction = f"""
-Tugas Khusus: User BELUM LULUS post-test (nilai < 80) pada pelatihan "{elearning_title}". 
-Kategori kompetensi akhir (ditentukan oleh sistem): {kategori}. {kategori_desc}
-{jalur_desc}
-Fokus analisis Anda harus pada:
-1. Identifikasi bab mana yang paling lemah berdasarkan hasil post-test.
-2. Memberikan saran perbaikan yang sangat spesifik dan langkah-langkah konkret untuk dipelajari kembali agar LULUS di percobaan berikutnya.
-3. Memberikan motivasi yang kuat namun jujur bahwa kegagalan ini adalah bagian dari proses menuju kompetensi yang lebih tinggi.
-4. Fokus pada penguasaan materi saat ini.
-"""
-    else:
-        focus_instruction = f"""
-Tugas: User telah menyelesaikan pelatihan "{elearning_title}" dengan baik.
-Kategori kompetensi akhir (ditentukan oleh sistem): {kategori}. {kategori_desc}
-{jalur_desc}
-Fokus analisis Anda adalah pada:
-1. Apresiasi atas capaian nilai dan perkembangan kompetensi dari pre-test ke post-test.
-2. {'Karena user mencapai level Mahir (Expert), tekankan bukti kemampuan berpikir tingkat tinggi dan kesiapan untuk tantangan yang lebih kompleks.' if kategori == 'Mahir' else 'Memberikan saran pengembangan karir yang strategis (tidak harus di lingkungan Kemenkeu).'}
-3. Rekomendasi sertifikasi atau langkah lanjutan untuk menjaga momentum keahlian ini.
-"""
-
-    prompt = f"""Role: Anda adalah seorang Spesialis Pengembangan SDM dan analis hasil Pembelajaran Digital di lingkungan Kementerian Keuangan.
-
-{focus_instruction}
-
-Ketentuan Penulisan:
-
-Gaya Bahasa: Gunakan pendekatan motivasional. Hindari bahasa yang terlalu kaku, namun tetap jaga profesionalitas ASN.
-
-Panjang Konten: Setiap nilai dalam JSON harus berupa paragraf yang tidak bertele tele, mendalam, dan deskriptif (minimal 4-6 kalimat per paragraf).
-
-Konteks Organisasi: Hubungkan {"perlu-nya perbaikan" if is_failed_posttest else "keberhasilan"} belajar dengan kontribusi terhadap organisasi, peningkatan kredibilitas di unit kerja, dan pemanfaatan fasilitas pengembangan kompetensi.
-
-Sapaan: Selalu gunakan kata "Anda".
-
-Larangan: Jangan memberikan saran untuk mengubah tipe atau format materi e-learning yang diberikan penyelenggara. Fokus pada pengembangan diri user, jangan lebay atau berlebih-lebihan dalam memotivasi user.
-
-PENTING: Nilai profil_akhir di output JSON HARUS sama persis dengan kategori yang ditentukan oleh sistem: "{kategori}". Jangan mengubahnya.
-
-DATA PEMBELAJARAN:
-- Judul Pelatihan: {elearning_title}
-- Nilai Pretest: {pretest_nilai}/100
-- Nilai Posttest: {posttest_nilai}/100
-- Profil Awal: {profil_awal}
-- Kategori Akhir (dari sistem): {kategori}
-- Jalur Adaptive Test: {jalur or 'N/A'}
-- Learning Path yang diberikan: fokus di {learning_path_data.get('bab_fokus', [])}
-- Waktu belajar per bab:
-{time_per_bab}
-- Event Tracking (sample): {events_summary}
-
-FORMAT OUTPUT (JSON object saja, tanpa text lain):
-{{
-  "profil_akhir": "{kategori}",
-  "analisis_perkembangan": "[Tulis paragraf tentang perbandingan skor pre-test dan post-test.{' Jika nilai masih di bawah 80, jelaskan area mana yang perlu diperkuat.' if is_failed_posttest else ' Jika ada lompatan nilai yang signifikan, tekankan pada bukti ketajaman berpikir.'}]",
-  "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori berikut (masukkan juga penjelasan kategori tersebut) berdasarkan data waktu dan jeda belajar, lalu jelaskan dalam 1 paragraf. jangan men jugje negatif user jika user belum lolos, karena user memiliki preferensi/kategori belajar masing-masing:
-    1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar.
+  "analisis_perkembangan": "Tulis paragraf mendalam tentang nilai pretest vs posttest, delta per-bab, bab terkuat dan terlemah.",
+  "evaluasi_perilaku": "Klasifikasikan pola belajar user (Big Eater/Nibbler/Picky Eater/Gulper) berdasarkan data waktu belajar per bab. Sebutkan angka menit per bab dan jelaskan alasan klasifikasi.
+   1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar.
     2. Pemelajar Nibbler: Menggabungkan komitmen waktu yang substansial dengan jeda yang konsisten antar sesi. Memungkinkan pemahaman komprehensif melalui kedalaman dan pengulangan. (Kategori ini digambarkan dengan warna hijau pada pojok kanan atas).
     3. Pemelajar Picky Eater: Mengalokasikan waktu keseluruhan yang lebih sedikit tetapi dengan jeda yang teratur. Fokus berinteraksi pada materi tertentu untuk merefleksikan, meninjau, dan memperkuat bahasan yang menarik/penting bagi mereka.
     4. Pemelajar Gulper: Mengalokasikan waktu minimal untuk belajar dan mengonsumsi konten dengan cepat tanpa jeda. Mengutamakan efisiensi daripada kedalaman untuk mendapatkan gambaran umum dengan cepat.
-  ]",
-  "transformasi_profil": "[Tulis paragraf tentang perubahan status dari profil awal ke kategori akhir ({kategori}). {'Karena user belum lulus, berikan feedback yang sangat membangun dan instruksi belajar kembali agar siap ujian ulang.' if is_failed_posttest else 'Gambarkan bagaimana pemahaman baru ini menjadi modal kuat untuk menjadi ahli di bidangnya.'}]",
-  "kesimpulan_strategis": "[Tulis paragraf berisi saran {'belajar ulang dan persiapan ujian' if is_failed_posttest else 'pengembangan karir'}. {'Sebutkan bab materi mana saja yang harus dibaca ulang secara mendalam.' if is_failed_posttest else f'Sertakan rekomendasi sertifikasi (hilangkan kata elearning dalam judul/subjek sertifikasinya) terkait tema {cleaned_title} yang ada di internet beserta link nya yang bisa diikuti user. Sarankan untuk memperbarui portofolio di HRIS dan dapat menjadi (sebutkan pekerjaan yang cocok dengan tema {cleaned_title} untuk pengembangan karir baik di instansi pemerintah maupun di industri swasta/internasional).'}]"
+",
+  "transformasi_profil": "Tulis paragraf perubahan profil dari {profil_awal} ke {kategori}. Gabungkan deskripsi profil awal, perubahan setelah post-test, dan bukti konkret dari data akurasi.",
+  "kesimpulan_strategis": "Tulis rekomendasi konkret dan spesifik: bab yang perlu diulang/diperkuat, sertifikasi terkait {cleaned_title}, profesi yang relevan, dan saran HRIS."
 }}
 
 PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.
