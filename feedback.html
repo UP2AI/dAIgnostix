@@ -472,6 +472,20 @@
                             badge.className = `mt-2 text-xs font-medium px-2 py-1 rounded inline-flex w-max shrink-0 flex items-center gap-1 ${colorClass}`;
                             badge.innerHTML = `<span class="material-symbols-outlined text-[12px]">${icon}</span> ${diff >= 0 ? '+' : ''}${diff} Poin`;
                         }
+
+                        // --- SKILL TREE TRIGGER LOGIC ---
+                        // Trigger if user passed (>= 80)
+                        if (data.posttest_nilai >= 80) {
+                            getPublicConfig().then(config => {
+                                const judul = config.judul || "E-Learning";
+                                // Animate in after 1.5 seconds, and let it stay permanently
+                                setTimeout(() => {
+                                    if (typeof showSkillTreeToast === 'function') {
+                                        showSkillTreeToast(judul);
+                                    }
+                                }, 1500); 
+                            }).catch(err => console.error("Gagal load config for skill tree", err));
+                        }
                     }
                     if (data.profil_awal) document.getElementById('fb-profil-awal').textContent = data.profil_awal;
                     if (data.profil_akhir) {
@@ -684,7 +698,212 @@
 
             loadFeedback();
         });
+
+        // Skill Tree Modal Logic
+        function showSkillTreeToast(elearningTitle) {
+            const toast = document.getElementById('skill-tree-toast');
+            const titleEl = document.getElementById('skill-tree-title');
+            if (titleEl) titleEl.textContent = elearningTitle || 'E-Learning';
+            if (toast) toast.classList.remove('translate-y-full', 'opacity-0');
+        }
+
+        function closeSkillTreeToast() {
+            const toast = document.getElementById('skill-tree-toast');
+            toast.classList.add('translate-y-full', 'opacity-0');
+        }
+
+        function openSkillTreeModal() {
+            const modal = document.getElementById('skill-tree-modal');
+            const overlay = document.getElementById('skill-tree-overlay');
+            modal.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+            // Trigger animation
+            setTimeout(() => {
+                modal.classList.remove('opacity-0', 'scale-95');
+                overlay.classList.remove('opacity-0');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSkillTreeModal() {
+            const modal = document.getElementById('skill-tree-modal');
+            const overlay = document.getElementById('skill-tree-overlay');
+            modal.classList.add('opacity-0', 'scale-95');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                overlay.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = '';
+        }
     </script>
+
+    <!-- Toast Notification (Permanent Huge Floating Widget) -->
+    <div id="skill-tree-toast" class="fixed bottom-6 right-6 w-[350px] max-w-[90vw] bg-primary border border-white/20 rounded-2xl shadow-2xl p-5 transform translate-y-full opacity-0 transition-all duration-700 ease-out z-[90] flex gap-4 items-center group cursor-pointer hover:shadow-[0_10px_30px_rgba(0,51,102,0.4)] hover:-translate-y-1" onclick="openSkillTreeModal()">
+        <div class="bg-white/10 rounded-full p-3 shrink-0 text-white group-hover:bg-accent-yellow group-hover:text-primary transition-colors">
+            <span class="material-symbols-outlined text-[28px] animate-pulse">account_tree</span>
+        </div>
+        <div class="flex-1">
+            <h4 class="text-[13px] font-bold text-white mb-1 leading-snug">Selamat, Anda telah menyelesaikan 1 Kompetensi.</h4>
+            <p class="text-[11px] text-accent-yellow font-medium leading-snug">Buka rekomendasi kompetensi Anda di sini.</p>
+        </div>
+        <div class="shrink-0 bg-white/10 border border-white/10 rounded-xl p-1.5 group-hover:bg-accent-yellow transition-all text-white group-hover:text-primary">
+            <span class="material-symbols-outlined text-xl">chevron_right</span>
+        </div>
+    </div>
+
+    <!-- Skill Tree Modal -->
+    <div id="skill-tree-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[95] hidden opacity-0 transition-opacity duration-300" onclick="closeSkillTreeModal()"></div>
+    <div id="skill-tree-modal" class="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-[100] w-[95vw] max-w-6xl max-h-[90vh] md:max-h-[85vh] bg-white dark:bg-slate-900 md:rounded-2xl shadow-2xl flex flex-col hidden opacity-0 scale-95 transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700">
+        <!-- Modal Header -->
+        <div class="p-6 md:p-8 bg-gradient-to-r from-primary to-slate-800 text-white relative shrink-0">
+            <div class="absolute top-4 right-4">
+                <button onclick="closeSkillTreeModal()" class="text-white/70 hover:text-white bg-white/10 rounded-full p-1.5 transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="flex items-center gap-4 mb-3">
+                <div class="bg-white/20 p-3 rounded-xl backdrop-blur-sm">
+                    <span class="material-symbols-outlined text-3xl text-accent-yellow">account_tree</span>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-black text-accent-yellow tracking-tight">Peta Kompetensi (Skill Tree)</h2>
+                    <p class="text-sm text-slate-300 font-medium opacity-90">Fungsional Pengembang Teknologi Pembelajaran</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal Body / Tree Rendering -->
+        <div class="p-6 md:p-8 overflow-y-auto overflow-x-auto bg-slate-50 flex-1 relative custom-scrollbar">
+            <div class="min-w-[900px] w-full pb-10 pt-2 select-none flex flex-col items-center">
+                
+                <!-- Root Node -->
+                <div class="bg-primary text-white rounded-xl py-4 px-12 text-center shadow-md relative z-10 w-max border-2 border-primary/20">
+                    <h3 class="font-bold text-lg tracking-wide text-accent-yellow drop-shadow-sm">PTP Ahli Pertama</h3>
+                    <p class="text-blue-100 text-xs mt-0.5">Kompetensi Dasar & Fondasi</p>
+                    <div class="absolute -bottom-8 left-1/2 w-px h-8 bg-slate-300 -translate-x-1/2"></div>
+                </div>
+                
+                <div class="h-8"></div>
+                
+                <!-- 4 Columns Container -->
+                <div class="flex gap-6 relative w-full justify-center">
+                    
+                    <!-- Horizontal Line -->
+                    <div class="absolute top-0 left-[12.5%] right-[12.5%] h-px bg-slate-300 z-0"></div>
+
+                    <!-- Column 1: Dasar & Regulasi -->
+                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                        <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
+                        <!-- Header -->
+                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                            <h4 class="font-bold text-[13px]">Dasar & Regulasi</h4>
+                            <p class="text-slate-500 text-[10px] mt-0.5">Fondasi Ilmu</p>
+                        </div>
+                        <!-- Items (Completed) -->
+                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">E-learning Pembelajaran Terintegrasi</span>
+                        </div>
+                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Andragogi & Teori Belajar Dewasa</span>
+                        </div>
+                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Kebijakan & Regulasi Diklat (Kemenkeu)</span>
+                        </div>
+                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Analisis Kebutuhan Diklat (AKD) Dasar</span>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Desain Pembelajaran -->
+                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                        <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
+                        <!-- Header -->
+                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                            <h4 class="font-bold text-[13px]">Desain Pembelajaran</h4>
+                            <p class="text-slate-500 text-[10px] mt-0.5">Rancang & Kembang</p>
+                        </div>
+                        <!-- Items (Available) -->
+                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Tujuan Pembelajaran (ABCD)</span>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Kurikulum & Silabus Dasar</span>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-primary hover:shadow-md transition-all group relative overflow-hidden">
+                            <div class="w-1.5 h-1.5 rounded-full bg-accent-yellow animate-pulse mt-1.5 shrink-0"></div>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Desain Instruksional ADDIE (Dasar)</span>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penyusunan Modul & Bahan Ajar</span>
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Teknologi Pembelajaran -->
+                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                        <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
+                        <!-- Header -->
+                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                            <h4 class="font-bold text-[13px]">Teknologi Belajar</h4>
+                            <p class="text-slate-500 text-[10px] mt-0.5">Media & Digital</p>
+                        </div>
+                        <!-- Items -->
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pengenalan LMS & E-Learning</span>
+                        </div>
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Media Pembelajaran Interaktif</span>
+                        </div>
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penggunaan Authoring Tool</span>
+                        </div>
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pengelolaan Kelas Daring</span>
+                        </div>
+                    </div>
+
+                    <!-- Column 4: Evaluasi Pembelajaran -->
+                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                        <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
+                        <!-- Header -->
+                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                            <h4 class="font-bold text-[13px]">Evaluasi Pembelajaran</h4>
+                            <p class="text-slate-500 text-[10px] mt-0.5">Ukur & Tindak Lanjut</p>
+                        </div>
+                        <!-- Items -->
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Evaluasi Level 1 (Reaksi)</span>
+                        </div>
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Evaluasi Level 2 (Pemahaman)</span>
+                        </div>
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penyusunan Perangkat Asesmen</span>
+                        </div>
+                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
+                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pelaporan Data Evaluasi</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
