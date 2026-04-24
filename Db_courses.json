@@ -1,5 +1,44 @@
 [
   {
+    "id": 21,
+    "platform": "KLC",
+    "title": "Manajemen Strategis Ekosistem Belajar Kemenkeu",
+    "provider": "BPPK / Kementerian Keuangan",
+    "level": "Intermediate",
+    "duration": null,
+    "link": "https://klc2.kemenkeu.go.id",
+    "thumbnail": "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600&auto=format&fit=crop",
+    "description": "Pelatihan tentang bagaimana membangun dan mengelola ekosistem belajar berkelanjutan antar unit di lingkungan Kementerian Keuangan.",
+    "relevansi_pilar": "Social Learning, Learning Organization",
+    "harga": "Gratis (internal Kemenkeu)"
+  },
+  {
+    "id": 22,
+    "platform": "KLC",
+    "title": "Evaluasi Dampak Pembelajaran Level Lanjut",
+    "provider": "BPPK / Kementerian Keuangan",
+    "level": "Advanced",
+    "duration": null,
+    "link": "https://klc2.kemenkeu.go.id",
+    "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop",
+    "description": "Pengukuran tingkat lanjut ROI dari sebuah program pelatihan dengan metodologi komprehensif, untuk menakar efektivitas corporate university.",
+    "relevansi_pilar": "Structured Learning, Evaluasi Pembelajaran",
+    "harga": "Gratis (internal Kemenkeu)"
+  },
+  {
+    "id": 23,
+    "platform": "KLC",
+    "title": "Corporate University Blueprint: Masterclass",
+    "provider": "BPPK / Kementerian Keuangan",
+    "level": "Advanced",
+    "duration": null,
+    "link": "https://klc2.kemenkeu.go.id",
+    "thumbnail": "https://images.unsplash.com/photo-1503694978374-8a2fa686963a?q=80&w=600&auto=format&fit=crop",
+    "description": "Pemahaman mendalam mengenai arsitektur Corpu, penjajaran strategis antara tujuan bisnis dan L&D, serta implementasi pembelajaran terintegrasi makro.",
+    "relevansi_pilar": "Learning Organization, Structured Learning",
+    "harga": "Gratis (internal Kemenkeu)"
+  },
+  {
     "id": 1,
     "platform": "Coursera",
     "title": "Creating a Team Culture of Continuous Learning",

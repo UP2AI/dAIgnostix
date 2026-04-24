@@ -419,14 +419,22 @@ FORMAT OUTPUT (JSON object saja, tanpa text lain):
 {{
   "profil_akhir": "{kategori}",
   "analisis_perkembangan": "Tulis paragraf mendalam tentang nilai pretest vs posttest, delta per-bab, bab terkuat dan terlemah.",
-  "evaluasi_perilaku": "Klasifikasikan pola belajar user (Big Eater/Nibbler/Picky Eater/Gulper) berdasarkan data waktu belajar per bab. Sebutkan angka menit per bab dan jelaskan alasan klasifikasi.
-   1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar.
-    2. Pemelajar Nibbler: Menggabungkan komitmen waktu yang substansial dengan jeda yang konsisten antar sesi. Memungkinkan pemahaman komprehensif melalui kedalaman dan pengulangan. (Kategori ini digambarkan dengan warna hijau pada pojok kanan atas).
-    3. Pemelajar Picky Eater: Mengalokasikan waktu keseluruhan yang lebih sedikit tetapi dengan jeda yang teratur. Fokus berinteraksi pada materi tertentu untuk merefleksikan, meninjau, dan memperkuat bahasan yang menarik/penting bagi mereka.
-    4. Pemelajar Gulper: Mengalokasikan waktu minimal untuk belajar dan mengonsumsi konten dengan cepat tanpa jeda. Mengutamakan efisiensi daripada kedalaman untuk mendapatkan gambaran umum dengan cepat.
-",
+  "evaluasi_perilaku": "Klasifikasikan pola belajar user (Big Eater/Nibbler/Picky Eater/Gulper) berdasarkan data waktu belajar per bab. Sebutkan angka menit per bab dan jelaskan alasan klasifikasi. 1. Pemelajar Big Eater: Mengalokasikan sejumlah besar waktu untuk belajar secara intensif dengan sedikit atau tanpa jeda belajar. 2. Pemelajar Nibbler: Menggabungkan komitmen waktu yang substansial dengan jeda yang konsisten antar sesi. 3. Pemelajar Picky Eater: Mengalokasikan waktu keseluruhan yang lebih sedikit tetapi dengan jeda yang teratur. 4. Pemelajar Gulper: Mengalokasikan waktu minimal tanpa jeda.",
   "transformasi_profil": "Tulis paragraf perubahan profil dari {profil_awal} ke {kategori}. Gabungkan deskripsi profil awal, perubahan setelah post-test, dan bukti konkret dari data akurasi.",
-  "kesimpulan_strategis": "Tulis rekomendasi konkret dan spesifik: bab yang perlu diulang/diperkuat, sertifikasi terkait {cleaned_title}, profesi yang relevan, dan saran HRIS."
+  "kesimpulan_strategis": "Tulis rekomendasi konkret yang bisa LANGSUNG dilakukan oleh user sendiri tanpa memerlukan bantuan admin atau pihak lain: (1) bab/topik spesifik yang perlu dipelajari ulang berdasarkan data akurasi, (2) sertifikasi publik terkait {cleaned_title} yang bisa diikuti secara mandiri di internet beserta nama platform dan link-nya, (3) profesi yang relevan di instansi pemerintah dan swasta/internasional. DILARANG merekomendasikan hal-hal yang membutuhkan persetujuan/bantuan admin, atasan, atau HRIS seperti meminta akses modul atau meminta admin memberikan sesuatu.",
+  "rekomendasi_ai_courses": [
+    {{
+      "title": "Nama Spesifik Sertifikasi / Course (maks 60 char)",
+      "platform": "Platform (contoh: Coursera, edX, KLC, Google, Microsoft, AWS)",
+      "provider": "Penyelenggara (Universitas / Instansi)",
+      "level": "Pilih salah satu: Advanced / Intermediate / Beginner menyesuaikan level profil {kategori}",
+      "link": "URL valid ke kursus/sertifikasi tersebut atau URL google search keywordnya",
+      "description": "Alasan 1 kalimat MENGAPA AI merekomendasikan ini berdasarkan data analisis user.",
+      "harga": "Perkiraan harga (contoh: Berbayar, Gratis, dsb)",
+      "relevansi_pilar": "Pilar Pembelajaran terkait"
+    }},
+    "...maksimal buatkan 2 rekomendasi saja..."
+  ]
 }}
 
 PENTING: Output HANYA JSON object, tanpa penjelasan tambahan.

@@ -138,7 +138,7 @@
         </header>
         <main
             class="flex-grow flex flex-col lg:flex-row max-w-7xl mx-auto w-full px-4 sm:px-6 md:px-8 py-6 md:py-8 gap-6 md:gap-8">
-            <div class="flex-grow space-y-8 min-w-0">
+            <div class="flex-grow space-y-8 min-w-0 main-content-area">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
                         <nav class="flex items-center gap-2 text-sm text-slate-500 mb-1">
@@ -510,17 +510,38 @@
                         container.innerHTML += createCard('Transformasi Profil', data.transformasi_profil, 'published_with_changes');
                     }
                     if (data.kesimpulan_strategis) {
-                        container.innerHTML += `
-                            <div class="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-xl border border-blue-100 dark:border-blue-800 flex flex-col gap-3 shadow-sm">
-                                <div class="flex items-center gap-2 text-blue-800 dark:text-blue-300 font-bold">
-                                    <span class="material-symbols-outlined">lightbulb</span>
-                                    <span class="text-sm">Saran Strategis dan Next Actions</span>
+                        const saranCard = document.createElement('div');
+                        saranCard.className = 'bg-blue-50 dark:bg-blue-900/20 p-5 rounded-xl border border-blue-100 dark:border-blue-800 flex flex-col gap-4 shadow-sm';
+                        saranCard.innerHTML = `
+                            <div class="flex items-center gap-2 text-blue-800 dark:text-blue-300 font-bold">
+                                <span class="material-symbols-outlined">lightbulb</span>
+                                <span class="text-sm">Saran Strategis dan Next Actions</span>
+                            </div>
+                            <div class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed font-medium">
+                                ${data.kesimpulan_strategis}
+                            </div>
+                            <div class="border-t border-blue-200 dark:border-blue-700/50 pt-4">
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="material-symbols-outlined text-blue-500 text-base">auto_stories</span>
+                                    <span class="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase tracking-wider">Kursus Lanjutan yang Direkomendasikan</span>
                                 </div>
-                                <div class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed font-medium">
-                                    ${data.kesimpulan_strategis}
+                                <div id="courses-scroll-container" class="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory -mx-1 px-1" style="scrollbar-width:thin;scrollbar-color:#93c5fd transparent;">
+                                    <div class="flex items-center justify-center w-full py-4 text-blue-400 text-sm">
+                                        <div class="w-4 h-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin mr-2"></div>
+                                        Memuat kursus...
+                                    </div>
                                 </div>
                             </div>`;
+                        container.appendChild(saranCard);
+
+                        // Load courses inside this card — pass profil_akhir and AI dynamic courses
+                        await loadCourseRecommendations(
+                            saranCard.querySelector('#courses-scroll-container'),
+                            data.profil_akhir || data.kategori || 'Menengah',
+                            data.rekomendasi_ai_courses || []
+                        );
                     }
+
                     if (!container.innerHTML) {
                         container.innerHTML = '<p class="text-slate-400 text-center py-4">Belum ada data feedback. Selesaikan Pre-test dan Post-test terlebih dahulu.</p>';
                     }
@@ -531,6 +552,125 @@
                             <p class="text-red-600 mt-2">${err.message}</p>
                             <button onclick="loadFeedback()" class="mt-4 bg-primary text-white px-6 py-2 rounded-lg font-bold">Coba Lagi</button>
                         </div>`;
+                }
+            }
+
+            async function loadCourseRecommendations(targetContainer, profilAkhir = 'Menengah', aiCourses = []) {
+                if (!targetContainer) return;
+
+                // ---- PEMULA: no external courses, suggest retake ----
+                if (profilAkhir === 'Pemula') {
+                    targetContainer.closest('.border-t')?.querySelector('div')?.remove(); // remove sub-heading
+                    targetContainer.outerHTML = `
+                        <div class="mt-2 p-4 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 flex items-start gap-3">
+                            <span class="material-symbols-outlined text-orange-500 shrink-0 mt-0.5">restart_alt</span>
+                            <div>
+                                <p class="text-xs font-bold text-orange-700 dark:text-orange-400 mb-1">Fokus: Kuasai Dulu Dasar-dasarnya</p>
+                                <p class="text-xs text-orange-600 dark:text-orange-300 leading-relaxed">
+                                    Sebelum ke kursus lanjutan, kami sarankan Anda untuk mengulang kembali E-Learning Pengenalan Pembelajaran Terintegrasi di KLC hingga benar-benar memahami seluruh konsep dan berhasil lulus post-test.
+                                </p>
+                                <a href="https://klc2.kemenkeu.go.id/course/e-learning-pengenalan-pembelajaran-terintegrasi-3a50223d/overview"
+                                    target="_blank" rel="noopener noreferrer"
+                                    class="mt-3 inline-flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition-colors">
+                                    <span class="material-symbols-outlined" style="font-size:13px">open_in_new</span>
+                                    Kembali ke E-Learning KLC
+                                </a>
+                            </div>
+                        </div>`;
+                    return;
+                }
+
+                const platformColors = {
+                    'Coursera': { bg: 'bg-blue-600', text: 'text-white', icon: '🎓' },
+                    'LinkedIn Learning': { bg: 'bg-[#0077B5]', text: 'text-white', icon: '💼' },
+                    'Udemy': { bg: 'bg-orange-500', text: 'text-white', icon: '📚' },
+                    'KLC': { bg: 'bg-green-600', text: 'text-white', icon: '🏛️' },
+                    'AI Recommendation': { bg: 'bg-gradient-to-r from-purple-600 to-indigo-600', text: 'text-white', icon: '✨' },
+                };
+
+                const levelColors = {
+                    'Beginner': 'bg-emerald-100 text-emerald-700',
+                    'Intermediate': 'bg-indigo-100 text-indigo-700',
+                    'Mixed (Beginner-Intermediate)': 'bg-purple-100 text-purple-700',
+                    'Advanced': 'bg-red-100 text-red-700',
+                };
+
+                try {
+                    const res = await fetch('Db_courses.json');
+                    const courses = await res.json();
+
+                    // ---- Filter berdasarkan profil secara ketat ----
+                    let recommended = [];
+                    if (profilAkhir === 'Mahir') {
+                        // Mahir HANYA melihat course tingkat Advanced
+                        recommended = courses.filter(c => c.id !== 14 && c.level === 'Advanced');
+                    } else {
+                        // Menengah HANYA melihat course tingkat Intermediate / Mixed
+                        recommended = courses.filter(c => c.id !== 14 && (c.level === 'Intermediate' || c.level === 'Mixed (Beginner-Intermediate)'));
+                    }
+
+                    if (recommended.length === 0 && aiCourses.length === 0) {
+                        targetContainer.innerHTML = '<p class="text-xs text-blue-400 py-2">Tidak ada kursus yang sesuai dengan profil Anda saat ini.</p>';
+                        return;
+                    }
+
+                    targetContainer.innerHTML = '';
+
+                    // Flag AI courses to display them uniquely
+                    const allCourses = [
+                        ...aiCourses.map(c => ({ ...c, isAi: true })),
+                        ...recommended.map(c => ({ ...c, isAi: false }))
+                    ];
+
+                    allCourses.forEach(course => {
+                        const isAi = course.isAi;
+                        // Use provided platform color, otherwise fallback
+                        let plt = platformColors[course.platform];
+                        if (!plt) {
+                            plt = isAi ? platformColors['AI Recommendation'] : { bg: 'bg-slate-500', text: 'text-white', icon: '🌐' };
+                        }
+                        
+                        const lvl = levelColors[course.level] || 'bg-slate-100 text-slate-600';
+                        
+                        // For AI dynamic ones, maybe no thumbnail, fallback to styled background
+                        const thumb = course.thumbnail
+                            ? `<img src="${course.thumbnail}" alt="${course.title}" class="w-full h-24 object-cover rounded-t-lg" onerror="this.parentElement.querySelector('.fallback-thumb').style.display='flex';this.style.display='none'">
+                               <div class="fallback-thumb w-full h-24 rounded-t-lg items-center justify-center text-4xl bg-gradient-to-br from-blue-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 hidden">${plt.icon}</div>`
+                            : `<div class="w-full h-24 rounded-t-lg flex items-center justify-center text-4xl bg-gradient-to-br ${isAi ? 'from-purple-100 to-indigo-100 text-indigo-500' : 'from-blue-50 to-blue-100'} dark:from-slate-800 dark:to-slate-700">${plt.icon}</div>`;
+
+                        const aiBadge = isAi ? `<div class="absolute top-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1"><span class="text-yellow-400">✨</span> Rekomendasi Personal AI</div>` : '';
+
+                        const card = document.createElement('div');
+                        card.className = `relative group snap-start shrink-0 w-56 bg-white dark:bg-slate-800 rounded-lg ${isAi ? 'border-2 border-indigo-200 dark:border-indigo-500 shadow-md' : 'border border-blue-100 dark:border-slate-700 shadow-sm'} hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col cursor-pointer`;
+                        card.innerHTML = `
+                            ${thumb}
+                            ${aiBadge}
+                            <div class="p-3 flex flex-col gap-1.5 flex-1">
+                                <div class="flex items-center gap-1 flex-wrap">
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${plt.bg} ${plt.text}">${typeof course.platform === 'string' ? course.platform.substring(0,20) : 'Platform'}</span>
+                                    <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${lvl}">${course.level}</span>
+                                </div>
+                                <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:${isAi ? 'text-indigo-600' : 'text-primary'} transition-colors">${course.title}</h4>
+                                <p class="text-[10px] text-slate-400 dark:text-slate-500 capitalize line-clamp-1">${course.provider || 'Sertifikasi / Kursus'}</p>
+                                <p class="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3 flex-1 mt-0.5 break-words whitespace-normal border-t ${isAi ? 'border-indigo-50' : 'border-slate-50'} pt-1.5">${course.description}</p>
+                                <a href="${course.link}" target="_blank" rel="noopener noreferrer"
+                                    class="mt-1 flex items-center justify-center gap-1 ${isAi ? 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600' : 'bg-primary hover:bg-blue-700'} text-white text-[10px] font-bold px-2 py-1.5 rounded-md transition-colors w-full">
+                                    <span class="material-symbols-outlined" style="font-size:12px">${isAi ? 'travel_explore' : 'open_in_new'}</span>
+                                    ${isAi ? 'Cari / Buka' : 'Buka Kursus'}
+                                </a>
+                            </div>`;
+                        targetContainer.appendChild(card);
+                    });
+
+                    // Add "scroll hint" fade if many cards
+                    if (recommended.length > 2) {
+                        targetContainer.insertAdjacentHTML('afterend',
+                            `<p class="text-[10px] text-blue-400 dark:text-blue-600 text-right mt-1">← Geser untuk lihat semua kursus →</p>`
+                        );
+                    }
+                } catch (err) {
+                    targetContainer.innerHTML = `<p class="text-xs text-blue-400 py-2">Gagal memuat rekomendasi kursus.</p>`;
+                    console.warn('Gagal memuat rekomendasi kursus:', err);
                 }
             }
 
