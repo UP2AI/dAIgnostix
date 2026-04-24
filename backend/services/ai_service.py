@@ -237,16 +237,22 @@ def generate_feedback(
     is_failed_posttest: bool = False,
     elearning_title: str = "E-Learning",
     kategori: str = "Menengah",
-    jalur: str = None
+    jalur: str = None,
+    quiz_results: list = None,
+    user_nama: str = None,
 ) -> dict:
-    """Generate comprehensive AI feedback based on all user data.
+    """Generate comprehensive, personalized AI feedback from all user data.
     
     kategori is determined by the branching gate system (Pemula/Menengah/Mahir).
     jalur is 'A' or 'B' from the adaptive test checkpoint.
+    quiz_results is a list of quiz_result dicts {bab_nomor, nilai, soal}.
     """
     pretest_nilai = pretest_data.get("nilai", 0)
     posttest_nilai = posttest_data.get("nilai", 0)
     profil_awal = learning_path_data.get("profil", "N/A")
+    profil_awal_penjabaran = learning_path_data.get("penjabaran", "")
+    quiz_results = quiz_results or []
+    attempts = posttest_data.get("attempts", 1) or 1
 
     # Clean the title for certificates/job suggestions (remove variations of 'elearning')
     cleaned_title = elearning_title.lower()
@@ -254,9 +260,81 @@ def generate_feedback(
         cleaned_title = cleaned_title.replace(word, "")
     cleaned_title = cleaned_title.strip().title()
 
+    # ---- PER-BAB ACCURACY ANALYSIS from posttest soal ----
+    # Group soal by bab_referensi and calculate accuracy
+    posttest_soal = posttest_data.get("soal", [])
+    bab_stats = {}  # { bab_referensi: {benar, total, salah_topik: [pertanyaan]} }
+    for s in posttest_soal:
+        bab = s.get("bab_referensi", "Tidak Diketahui")
+        if bab not in bab_stats:
+            bab_stats[bab] = {"benar": 0, "total": 0, "salah_soal": []}
+        bab_stats[bab]["total"] += 1
+        jawaban_user = s.get("jawaban_user", "").strip().upper()
+        jawaban_benar = s.get("jawaban_benar", "").strip().upper()
+        if jawaban_user == jawaban_benar:
+            bab_stats[bab]["benar"] += 1
+        else:
+            # Save the question text for context (truncated)
+            bab_stats[bab]["salah_soal"].append(s.get("pertanyaan", "")[:100])
+
+    bab_performance_lines = []
+    weakest_bab = None
+    weakest_pct = 100
+    for bab, stats in sorted(bab_stats.items()):
+        pct = round((stats["benar"] / stats["total"]) * 100) if stats["total"] > 0 else 0
+        status = "✓ Baik" if pct >= 70 else ("⚠ Perlu Perhatian" if pct >= 50 else "✗ Lemah")
+        wrong_preview = "; ".join(stats["salah_soal"][:3])  # max 3 wrong Qs preview
+        bab_performance_lines.append(
+            f"  - {bab}: {stats['benar']}/{stats['total']} benar ({pct}%) [{status}]"
+            + (f'\n      Contoh pertanyaan yang salah: "{wrong_preview}"' if wrong_preview else "")
+        )
+        if pct < weakest_pct:
+            weakest_pct = pct
+            weakest_bab = bab
+    bab_performance_text = "\n".join(bab_performance_lines) if bab_performance_lines else "  (data soal tidak tersedia)"
+
+    # ---- PRETEST vs POSTTEST BAB COMPARISON ----
+    pretest_soal = pretest_data.get("soal", [])
+    pretest_bab_stats = {}
+    for s in pretest_soal:
+        bab = s.get("bab_referensi", "Tidak Diketahui")
+        if bab not in pretest_bab_stats:
+            pretest_bab_stats[bab] = {"benar": 0, "total": 0}
+        pretest_bab_stats[bab]["total"] += 1
+        if s.get("jawaban_user", "").strip().upper() == s.get("jawaban_benar", "").strip().upper():
+            pretest_bab_stats[bab]["benar"] += 1
+
+    bab_delta_lines = []
+    for bab in bab_stats:
+        post_pct = round((bab_stats[bab]["benar"] / bab_stats[bab]["total"]) * 100) if bab_stats[bab]["total"] > 0 else 0
+        if bab in pretest_bab_stats and pretest_bab_stats[bab]["total"] > 0:
+            pre_pct = round((pretest_bab_stats[bab]["benar"] / pretest_bab_stats[bab]["total"]) * 100)
+            delta = post_pct - pre_pct
+            arrow = "↑" if delta > 0 else ("↓" if delta < 0 else "→")
+            bab_delta_lines.append(f"  - {bab}: Pre={pre_pct}% → Post={post_pct}% ({arrow}{abs(delta)}%)")
+        else:
+            bab_delta_lines.append(f"  - {bab}: Pre=N/A → Post={post_pct}%")
+    bab_delta_text = "\n".join(bab_delta_lines) if bab_delta_lines else "  (perbandingan tidak tersedia)"
+
+    # ---- QUIZ RESULTS PER BAB ----
+    quiz_summary = ""
+    if quiz_results:
+        quiz_lines = []
+        for qr in quiz_results:
+            bab_no = qr.get("bab_nomor", "?")
+            nilai_quiz = qr.get("nilai", 0)
+            status_q = "Lulus" if nilai_quiz >= 70 else "Belum Lulus"
+            quiz_lines.append(f"  - Bab {bab_no}: {nilai_quiz}/100 [{status_q}]")
+        quiz_summary = "\n".join(quiz_lines)
+    else:
+        quiz_summary = "  (tidak ada data kuis bab)"
+
+    # ---- TIME ANALYSIS ----
     time_per_bab = ""
+    total_study_minutes = 0
     for m in materi_progress:
         minutes = round(m.get("time_spent_seconds", 0) / 60, 1)
+        total_study_minutes += minutes
         time_per_bab += f"  - {m.get('bab', 'N/A')}: {minutes} menit\n"
 
     events_summary = json.dumps(events[:50], default=str, ensure_ascii=False)
@@ -278,6 +356,72 @@ def generate_feedback(
 
     # Determine focus based on pass/fail
     if is_failed_posttest:
+        focus_instruction = f"""Tugas Khusus: User BELUM LULUS post-test (nilai < 80) pada pelatihan "{elearning_title}".
+Kategori kompetensi akhir (ditentukan oleh sistem): {kategori}. {kategori_desc}
+{jalur_desc}
+Fokus analisis Anda harus pada:
+1. Identifikasi TEPAT bab mana yang paling lemah berdasarkan data akurasi per-bab di bawah.
+2. Sebutkan KONKRET topik/soal yang salah dijawab.
+3. Jika ini percobaan ke-{attempts} (bukan percobaan pertama), tunjukkan pola kesalahan yang berulang.
+4. Berikan langkah belajar ulang yang sangat spesifik dan realistis."""
+    else:
+        focus_instruction = f"""Tugas: User telah menyelesaikan pelatihan "{elearning_title}" dengan baik (percobaan ke-{attempts}).
+Kategori kompetensi akhir (ditentukan oleh sistem): {kategori}. {kategori_desc}
+{jalur_desc}
+Fokus analisis Anda:
+1. Sebutkan bab mana yang menjadi kekuatan dan mana yang masih perlu diperkuat menggunakan DATA AKURASI PER-BAB.
+2. {'Karena user mencapai level Mahir (Expert via Jalur B), tekankan bukti kemampuan berpikir tingkat tinggi.' if kategori == 'Mahir' else 'Apresiasi peningkatan dari pre-test ke post-test berdasarkan data delta per-bab.'}
+3. Rekomendasi pengembangan karir dan sertifikasi yang relevan dengan tema pelatihan."""
+
+    prompt = f"""Role: Anda adalah seorang Spesialis Pengembangan SDM berbasis data di Kementerian Keuangan. Anda SANGAT DILARANG memberikan feedback generik. Seluruh feedback harus bersumber dari DATA SPESIFIK USER di bawah ini.
+
+{focus_instruction}
+
+Ketentuan Penulisan:
+- Gaya Bahasa: Motivasional namun berbasis fakta dan data. Profesional sebagai ASN.
+- Panjang Konten: Setiap paragraf mendalam (minimal 4-6 kalimat), mengutip angka dan fakta spesifik dari data.
+- Larangan: JANGAN membuat pernyataan umum seperti "Anda perlu belajar lebih keras". Selalu sebut BAB SPESIFIK, TOPIK SPESIFIK, dan ANGKA SPESIFIK.
+- Sapaan: Selalu gunakan kata "Anda".
+- Larangan 2: Jangan memberikan saran untuk mengubah tipe atau format materi e-learning yang diberikan penyelenggara.
+- PENTING: Nilai profil_akhir di output JSON HARUS sama persis dengan kategori yang ditentukan oleh sistem: "{kategori}".
+
+=== DATA SPESIFIK USER ===
+[Profil Dasar]
+- Nama: {user_nama or 'Peserta'}
+- Judul Pelatihan: {elearning_title}
+- Percobaan Post-test ke: {attempts} kali
+- Profil Awal (dari Pretest): {profil_awal} — {profil_awal_penjabaran}
+- Kategori Akhir (dari sistem): {kategori}
+- Jalur Adaptive Test: {jalur or 'N/A'}
+- Learning Path yang diberikan: fokus di {learning_path_data.get('bab_fokus', [])}
+
+[Nilai]
+- Nilai Pretest: {pretest_nilai}/100
+- Nilai Posttest: {posttest_nilai}/100 {'(TIDAK LULUS, nilai minimum 80)' if is_failed_posttest else '(LULUS)'}
+
+[Akurasi Per-Bab di Post-test — INI UTAMA]
+{bab_performance_text}
+{f'>> Bab paling lemah: {weakest_bab} ({weakest_pct}% benar)' if weakest_bab else ''}
+
+[Perbandingan Pre-test vs Post-test per Bab]
+{bab_delta_text}
+
+[Nilai Kuis Bab]
+{quiz_summary}
+
+[Waktu Belajar per Bab]
+{time_per_bab}Total waktu belajar: {round(total_study_minutes, 1)} menit
+
+[Event Tracking (50 events terakhir)]
+{events_summary}
+
+FORMAT OUTPUT (JSON object saja, tanpa text lain):
+{{
+  "profil_akhir": "{kategori}",
+  "analisis_perkembangan": "[Paragraf mendalam yang WAJIB menyebut: (1) nilai pretest {pretest_nilai} vs posttest {posttest_nilai}, (2) delta spesifik per bab, (3) bab terkuat dan terlemah berdasarkan data. {'Jelaskan mengapa nilai belum mencapai 80 dan pada bagian materi mana pemahaman masih kurang.' if is_failed_posttest else 'Jika ada bab yang meningkat tajam, sebut sebagai bukti pemahaman mendalam.'} Jangan generalisasi.]",
+  "evaluasi_perilaku": "[Klasifikasikan pola belajar user ke dalam salah satu dari 4 kategori (sebut nama kategorinya dan jelaskan): 1. Big Eater: banyak waktu sedikit/tanpa jeda, 2. Nibbler: waktu substansial dengan jeda konsisten, 3. Picky Eater: waktu sedikit tapi jeda teratur, 4. Gulper: waktu minimal tanpa jeda. WAJIB gunakan data durasi belajar spesifik per bab ({time_per_bab.strip()}) untuk mendukung klasifikasi. Sebutkan angka menitnya.]",
+  "transformasi_profil": "[Paragraf tentang perubahan profil dari '{profil_awal}' ke '{kategori}'. WAJIB gabungkan: (1) deskripsi profil awal dari pretest, (2) apa yang berubah/tidak berubah setelah post-test, (3) {'instruksi spesifik belajar kembali menyebut bab dan topik yang perlu diulang berdasarkan data akurasi.' if is_failed_posttest else 'bukti kemajuan yang spesifik dari data, bukan generalisasi.'} {'Jika ini percobaan ke-'+str(attempts)+', identifikasi apakah pola kesalahan yang sama berulang.' if attempts > 1 else ''}]",
+  "kesimpulan_strategis": "[{'Sebutkan secara SANGAT SPESIFIK: bab apa yang harus dibaca ulang, topik apa yang perlu diperdalam, dan bagaimana mempersiapkan diri untuk ujian ulang.' if is_failed_posttest else f'Sertakan: (1) rekomendasi sertifikasi konkret terkait {cleaned_title} (nama sertifikasi, platform, link jika ada), (2) profesi yang relevan di pemerintahan dan swasta, (3) saran update portofolio di HRIS.'}] "
         focus_instruction = f"""
 Tugas Khusus: User BELUM LULUS post-test (nilai < 80) pada pelatihan "{elearning_title}". 
 Kategori kompetensi akhir (ditentukan oleh sistem): {kategori}. {kategori_desc}

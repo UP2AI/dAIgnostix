@@ -47,6 +47,14 @@ async def get_feedback(nip: str):
         elearning_config = db_service.get_elearning_config()
         elearning_title = elearning_config.get("judul", "E-Learning") if elearning_config else "E-Learning"
 
+        # Gather quiz results for all babs
+        all_bab = db_service.get_all_bab()
+        quiz_results = []
+        for bab in all_bab:
+            qr = db_service.get_quiz_result(nip, bab["nomor"])
+            if qr and qr.get("completed"):
+                quiz_results.append(qr)
+
         try:
             ai_generated = ai_service.generate_feedback(
                 pretest_data=pretest or {},
@@ -57,7 +65,9 @@ async def get_feedback(nip: str):
                 is_failed_posttest=is_failed,
                 elearning_title=elearning_title,
                 kategori=kategori,
-                jalur=jalur
+                jalur=jalur,
+                quiz_results=quiz_results,
+                user_nama=user.get("nama"),
             )
             # Enforce system-determined profil_akhir
             ai_generated["profil_akhir"] = kategori
