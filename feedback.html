@@ -169,51 +169,89 @@
                         </p>
                     </div>
                 </div>
-                <!-- Score & Profile Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px]">
-                        <div class="flex flex-col items-center gap-1 mb-2">
-                            <span class="material-symbols-outlined text-slate-400">assignment</span>
-                            <span class="text-sm font-semibold text-slate-500">Nilai Pre-test</span>
+                <!-- Score & Profile Cards (Redesigned & Uniform) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+                    
+                    <!-- Card 1: Nilai Pre-test -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/40 dark:hover:border-primary/50 transition-all flex flex-col min-h-[150px] relative overflow-hidden group">
+                        <div class="relative z-10 flex justify-between items-start w-full mb-4">
+                            <div class="w-11 h-11 rounded-xl bg-blue-50/80 dark:bg-slate-800 flex items-center justify-center text-slate-500 group-hover:bg-primary group-hover:text-white transition-colors shrink-0 outline outline-1 outline-blue-100 dark:outline-slate-700">
+                                <span class="material-symbols-outlined text-[22px]">assignment</span>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-2.5 py-1 rounded-lg">
+                                <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pre-Test</p>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-3xl font-black text-slate-900 dark:text-white" id="fb-Pre-test">-<span
-                                    class="text-sm text-slate-500 font-medium">/100</span></div>
-                        </div>
-                    </div>
-                    <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px]">
-                        <div class="flex flex-col items-center gap-1 mb-2">
-                            <span class="material-symbols-outlined text-slate-400">verified</span>
-                            <span class="text-sm font-semibold text-slate-500">Nilai Post-test</span>
-                        </div>
-                        <div class="flex flex-col items-center">
-                            <div class="text-3xl font-black text-primary dark:text-white" id="fb-Post-test">-<span
-                                    class="text-sm text-slate-500 font-medium">/100</span></div>
-                            <div class="mt-2 text-xs text-slate-400 font-medium bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded inline-flex items-center gap-1"
-                                id="fb-Post-test-badge">Memuat...</div>
-                        </div>
-                    </div>
-                    <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px]">
-                        <div class="flex flex-col items-center gap-1 mb-2">
-                            <span class="material-symbols-outlined text-slate-400">person_search</span>
-                            <span class="text-sm font-semibold text-slate-500">Profil Awal</span>
-                        </div>
-                        <div>
-                            <div class="text-xl font-bold text-slate-700 dark:text-slate-300" id="fb-profil-awal">-
+                        <div class="relative z-10 flex-1 flex flex-col justify-end">
+                            <div class="flex items-baseline gap-1" id="fb-Pre-test">
+                                <span class="text-[32px] font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">-</span>
+                                <span class="text-xs font-semibold text-slate-400">/ 100</span>
+                            </div>
+                            <div class="h-[24px] mt-1.5 flex items-center">
+                                <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Skor penguasaan awal</p>
                             </div>
                         </div>
                     </div>
-                    <div
-                        class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center justify-center text-center min-h-[160px] border-b-4 border-b-accent-yellow">
-                        <div class="flex flex-col items-center gap-1 mb-2">
-                            <span class="material-symbols-outlined text-accent-yellow">military_tech</span>
-                            <span class="text-sm font-semibold text-slate-500">Profil Akhir</span>
+
+                    <!-- Card 2: Nilai Post-test -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/40 dark:hover:border-primary/50 transition-all flex flex-col min-h-[150px] relative overflow-hidden group">
+                        <div class="relative z-10 flex justify-between items-start w-full mb-4">
+                            <div class="w-11 h-11 rounded-xl bg-blue-50/80 dark:bg-slate-800 flex items-center justify-center text-primary dark:text-blue-400 group-hover:bg-primary group-hover:text-white transition-colors shrink-0 outline outline-1 outline-blue-200 dark:outline-slate-700">
+                                <span class="material-symbols-outlined text-[22px]">verified</span>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-2.5 py-1 rounded-lg">
+                                <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Post-Test</p>
+                            </div>
                         </div>
-                        <div>
-                            <div class="text-xl font-black text-primary dark:text-accent-yellow" id="fb-profil-akhir">-
+                        <div class="relative z-10 flex-1 flex flex-col justify-end">
+                            <div class="flex items-baseline gap-1" id="fb-Post-test">
+                                <span class="text-[32px] font-black text-primary dark:text-white tracking-tight leading-none">-</span>
+                                <span class="text-xs font-semibold text-slate-400">/ 100</span>
+                            </div>
+                            <div class="h-[24px] mt-1.5 flex items-center">
+                                <div id="fb-Post-test-badge">
+                                    <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Menganalisis hasil...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Profil Awal -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-primary/40 dark:hover:border-primary/50 transition-all flex flex-col min-h-[150px] relative overflow-hidden group">
+                        <div class="relative z-10 flex justify-between items-start w-full mb-4">
+                            <div class="w-11 h-11 rounded-xl bg-slate-50 dark:bg-slate-800 flex items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-colors shrink-0 outline outline-1 outline-slate-200 dark:outline-slate-700">
+                                <span class="material-symbols-outlined text-[22px]">person_search</span>
+                            </div>
+                            <div class="bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 px-2.5 py-1 rounded-lg">
+                                <p class="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Gelar Awal</p>
+                            </div>
+                        </div>
+                        <div class="relative z-10 flex-1 flex flex-col justify-end">
+                            <div class="text-[22px] font-black text-slate-700 dark:text-slate-300 tracking-tight leading-none line-clamp-1 pb-1" id="fb-profil-awal">-</div>
+                            <div class="h-[24px] mt-1.5 flex items-center">
+                                <p class="text-[11px] font-medium text-slate-500 dark:text-slate-400">Berdasarkan skor pre-test</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Profil Akhir -->
+                    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:border-accent-yellow transition-all flex flex-col min-h-[150px] relative overflow-hidden group border-b-[5px] border-b-accent-yellow">
+                        <!-- Decorative background -->
+                        <div class="absolute -right-6 -top-6 w-24 h-24 bg-gradient-to-bl from-accent-yellow/10 to-transparent rounded-full z-0"></div>
+                        <div class="relative z-10 flex justify-between items-start w-full mb-4">
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 dark:bg-amber-900/20 flex items-center justify-center text-accent-yellow group-hover:bg-accent-yellow group-hover:text-white transition-colors shrink-0 outline outline-1 outline-amber-200 dark:outline-amber-900">
+                                <span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+                            </div>
+                            <div class="bg-amber-50 border border-accent-yellow/20 px-2.5 py-1 rounded-lg shadow-sm">
+                                <p class="text-[9px] font-bold text-accent-yellow uppercase tracking-widest">Gelar Baru</p>
+                            </div>
+                        </div>
+                        <div class="relative z-10 flex-1 flex flex-col justify-end">
+                            <div class="text-[24px] font-black text-primary dark:text-white tracking-tight leading-none line-clamp-1 pb-1" id="fb-profil-akhir">-</div>
+                            <div class="h-[24px] mt-1.5 flex items-center">
+                                <div class="inline-flex items-center gap-1.5 py-0.5 rounded-full text-[11px] font-bold text-primary dark:text-slate-300">
+                                    Tingkat kompetensi saat ini
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -456,21 +494,21 @@
                     // Update score cards
                     const preNilai = data.pretest_nilai ?? data.skor_pretest;
                     if (preNilai != null) {
-                        document.getElementById('fb-Pre-test').innerHTML = `${preNilai}<span class="text-sm text-slate-500 font-medium">/100</span>`;
+                        document.getElementById('fb-Pre-test').innerHTML = `<span class="text-[32px] font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">${preNilai}</span><span class="text-xs font-semibold text-slate-400 mt-2">/ 100</span>`;
                     }
                     if (data.posttest_nilai != null) {
-                        document.getElementById('fb-Post-test').innerHTML = `${data.posttest_nilai}<span class="text-sm text-slate-500 font-medium">/100</span>`;
+                        document.getElementById('fb-Post-test').innerHTML = `<span class="text-[32px] font-black text-primary dark:text-white tracking-tight leading-none">${data.posttest_nilai}</span><span class="text-xs font-semibold text-slate-400 mt-2">/ 100</span>`;
                         const badge = document.getElementById('fb-Post-test-badge');
                         if (badge) {
                             const diff = data.posttest_nilai - (preNilai || 0);
                             const isDown = diff < 0;
                             const colorClass = isDown
-                                ? 'text-red-500 bg-red-50 dark:bg-red-900/20'
-                                : 'text-green-600 bg-green-50 dark:bg-green-900/20';
+                                ? 'text-red-600 bg-red-50 border-red-200'
+                                : 'text-emerald-700 bg-emerald-50 border-emerald-200';
                             const icon = isDown ? 'trending_down' : 'trending_up';
 
-                            badge.className = `mt-2 text-xs font-medium px-2 py-1 rounded inline-flex w-max shrink-0 flex items-center gap-1 ${colorClass}`;
-                            badge.innerHTML = `<span class="material-symbols-outlined text-[12px]">${icon}</span> ${diff >= 0 ? '+' : ''}${diff} Poin`;
+                            badge.className = `inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[11px] font-bold w-max transition-all shadow-sm ${colorClass}`;
+                            badge.innerHTML = `<span class="material-symbols-outlined text-[13px]" style="font-weight:700;">${icon}</span> ${diff >= 0 ? '+' : ''}${diff} Poin`;
                         }
 
                         // --- SKILL TREE TRIGGER LOGIC ---
@@ -483,7 +521,7 @@
                                     if (typeof showSkillTreeToast === 'function') {
                                         showSkillTreeToast(judul);
                                     }
-                                }, 1500); 
+                                }, 1500);
                             }).catch(err => console.error("Gagal load config for skill tree", err));
                         }
                     }
@@ -493,7 +531,7 @@
                         profilEl.textContent = data.profil_akhir;
                         // Color-code based on kategori
                         const colorMap = { 'Mahir': 'text-amber-600', 'Menengah': 'text-blue-600', 'Pemula': 'text-orange-600' };
-                        profilEl.className = `text-3xl font-black ${colorMap[data.profil_akhir] || 'text-primary'}`;
+                        profilEl.className = `text-[24px] font-black tracking-tight leading-none line-clamp-1 pb-1 ${colorMap[data.profil_akhir] || 'text-primary'}`;
                     }
 
                     // Update AI report
@@ -529,7 +567,7 @@
                         if (textStrategis.includes('|||AI_COURSES|||')) {
                             const parts = textStrategis.split('|||AI_COURSES|||');
                             textStrategis = parts[0];
-                            try { aiCourses = JSON.parse(parts[1]); } catch(e) { console.error('Failed to parse AI courses', e); }
+                            try { aiCourses = JSON.parse(parts[1]); } catch (e) { console.error('Failed to parse AI courses', e); }
                         }
 
                         const saranCard = document.createElement('div');
@@ -651,9 +689,9 @@
                         if (!plt) {
                             plt = isAi ? platformColors['AI Recommendation'] : { bg: 'bg-slate-500', text: 'text-white', icon: '🌐' };
                         }
-                        
+
                         const lvl = levelColors[course.level] || 'bg-slate-100 text-slate-600';
-                        
+
                         // For AI dynamic ones, maybe no thumbnail, fallback to styled background
                         const thumb = course.thumbnail
                             ? `<img src="${course.thumbnail}" alt="${course.title}" class="w-full h-24 object-cover rounded-t-lg" onerror="this.parentElement.querySelector('.fallback-thumb').style.display='flex';this.style.display='none'">
@@ -669,7 +707,7 @@
                             ${aiBadge}
                             <div class="p-3 flex flex-col gap-1.5 flex-1">
                                 <div class="flex items-center gap-1 flex-wrap">
-                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${plt.bg} ${plt.text}">${typeof course.platform === 'string' ? course.platform.substring(0,20) : 'Platform'}</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${plt.bg} ${plt.text}">${typeof course.platform === 'string' ? course.platform.substring(0, 20) : 'Platform'}</span>
                                     <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full ${lvl}">${course.level}</span>
                                 </div>
                                 <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:${isAi ? 'text-indigo-600' : 'text-primary'} transition-colors">${course.title}</h4>
@@ -736,29 +774,43 @@
             }, 300);
             document.body.style.overflow = '';
         }
+
+        function showComingSoon(courseName) {
+            alert("🚀 Segera Hadir (Coming Soon)!\n\nPelatihan untuk kompetensi \"" + courseName + "\" dalam proses penyusunan dan akan segera tersedia di menu E-Learning Anda");
+        }
     </script>
 
     <!-- Toast Notification (Permanent Huge Floating Widget) -->
-    <div id="skill-tree-toast" class="fixed bottom-6 right-6 w-[350px] max-w-[90vw] bg-primary border border-white/20 rounded-2xl shadow-2xl p-5 transform translate-y-full opacity-0 transition-all duration-700 ease-out z-[90] flex gap-4 items-center group cursor-pointer hover:shadow-[0_10px_30px_rgba(0,51,102,0.4)] hover:-translate-y-1" onclick="openSkillTreeModal()">
-        <div class="bg-white/10 rounded-full p-3 shrink-0 text-white group-hover:bg-accent-yellow group-hover:text-primary transition-colors">
+    <div id="skill-tree-toast"
+        class="fixed bottom-6 right-6 w-[350px] max-w-[90vw] bg-primary border border-white/20 rounded-2xl shadow-2xl p-5 transform translate-y-full opacity-0 transition-all duration-700 ease-out z-[90] flex gap-4 items-center group cursor-pointer hover:shadow-[0_10px_30px_rgba(0,51,102,0.4)] hover:-translate-y-1"
+        onclick="openSkillTreeModal()">
+        <div
+            class="bg-white/10 rounded-full p-3 shrink-0 text-white group-hover:bg-accent-yellow group-hover:text-primary transition-colors">
             <span class="material-symbols-outlined text-[28px] animate-pulse">account_tree</span>
         </div>
         <div class="flex-1">
-            <h4 class="text-[13px] font-bold text-white mb-1 leading-snug">Selamat, Anda telah menyelesaikan 1 Kompetensi.</h4>
-            <p class="text-[11px] text-accent-yellow font-medium leading-snug">Buka rekomendasi kompetensi Anda di sini.</p>
+            <h4 class="text-[13px] font-bold text-white mb-1 leading-snug">Selamat, Anda telah menyelesaikan 1
+                Kompetensi.</h4>
+            <p class="text-[11px] text-accent-yellow font-medium leading-snug">Buka rekomendasi kompetensi Anda di sini.
+            </p>
         </div>
-        <div class="shrink-0 bg-white/10 border border-white/10 rounded-xl p-1.5 group-hover:bg-accent-yellow transition-all text-white group-hover:text-primary">
+        <div
+            class="shrink-0 bg-white/10 border border-white/10 rounded-xl p-1.5 group-hover:bg-accent-yellow transition-all text-white group-hover:text-primary">
             <span class="material-symbols-outlined text-xl">chevron_right</span>
         </div>
     </div>
 
     <!-- Skill Tree Modal -->
-    <div id="skill-tree-overlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[95] hidden opacity-0 transition-opacity duration-300" onclick="closeSkillTreeModal()"></div>
-    <div id="skill-tree-modal" class="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-[100] w-[95vw] max-w-6xl max-h-[90vh] md:max-h-[85vh] bg-white dark:bg-slate-900 md:rounded-2xl shadow-2xl flex flex-col hidden opacity-0 scale-95 transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700">
+    <div id="skill-tree-overlay"
+        class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[95] hidden opacity-0 transition-opacity duration-300"
+        onclick="closeSkillTreeModal()"></div>
+    <div id="skill-tree-modal"
+        class="fixed inset-0 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 z-[100] w-[95vw] max-w-6xl max-h-[90vh] md:max-h-[85vh] bg-white dark:bg-slate-900 md:rounded-2xl shadow-2xl flex flex-col hidden opacity-0 scale-95 transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700">
         <!-- Modal Header -->
         <div class="p-6 md:p-8 bg-gradient-to-r from-primary to-slate-800 text-white relative shrink-0">
             <div class="absolute top-4 right-4">
-                <button onclick="closeSkillTreeModal()" class="text-white/70 hover:text-white bg-white/10 rounded-full p-1.5 transition-colors">
+                <button onclick="closeSkillTreeModal()"
+                    class="text-white/70 hover:text-white bg-white/10 rounded-full p-1.5 transition-colors">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
@@ -768,139 +820,283 @@
                 </div>
                 <div>
                     <h2 class="text-2xl font-black text-accent-yellow tracking-tight">Peta Kompetensi (Skill Tree)</h2>
-                    <p class="text-sm text-slate-300 font-medium opacity-90">Fungsional Pengembang Teknologi Pembelajaran</p>
+                    <p class="text-sm text-slate-300 font-medium opacity-90">Fungsional Pengembang Teknologi
+                        Pembelajaran</p>
                 </div>
             </div>
         </div>
-        
+
         <!-- Modal Body / Tree Rendering -->
         <div class="p-6 md:p-8 overflow-y-auto overflow-x-auto bg-slate-50 flex-1 relative custom-scrollbar">
             <div class="min-w-[900px] w-full pb-10 pt-2 select-none flex flex-col items-center">
-                
+
                 <!-- Root Node -->
-                <div class="bg-primary text-white rounded-xl py-4 px-12 text-center shadow-md relative z-10 w-max border-2 border-primary/20">
+                <div
+                    class="bg-primary text-white rounded-xl py-4 px-12 text-center shadow-md relative z-10 w-max border-2 border-primary/20">
                     <h3 class="font-bold text-lg tracking-wide text-accent-yellow drop-shadow-sm">PTP Ahli Pertama</h3>
                     <p class="text-blue-100 text-xs mt-0.5">Kompetensi Dasar & Fondasi</p>
                     <div class="absolute -bottom-8 left-1/2 w-px h-8 bg-slate-300 -translate-x-1/2"></div>
                 </div>
-                
+
                 <div class="h-8"></div>
-                
+
                 <!-- 4 Columns Container -->
                 <div class="flex gap-6 relative w-full justify-center">
-                    
+
                     <!-- Horizontal Line -->
                     <div class="absolute top-0 left-[12.5%] right-[12.5%] h-px bg-slate-300 z-0"></div>
 
                     <!-- Column 1: Dasar & Regulasi -->
-                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
                         <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
                         <!-- Header -->
-                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                        <div
+                            class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
                             <h4 class="font-bold text-[13px]">Dasar & Regulasi</h4>
                             <p class="text-slate-500 text-[10px] mt-0.5">Fondasi Ilmu</p>
                         </div>
                         <!-- Items (Completed) -->
-                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
-                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
-                            <span class="text-primary text-[11px] font-bold leading-snug">E-learning Pembelajaran Terintegrasi</span>
+                        <div
+                            class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span
+                                class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform"
+                                style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">E-learning Pembelajaran
+                                Terintegrasi</span>
                         </div>
-                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
-                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
-                            <span class="text-primary text-[11px] font-bold leading-snug">Andragogi & Teori Belajar Dewasa</span>
+                        <div
+                            class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span
+                                class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform"
+                                style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Andragogi & Teori Belajar
+                                Dewasa</span>
                         </div>
-                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
-                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
-                            <span class="text-primary text-[11px] font-bold leading-snug">Kebijakan & Regulasi Diklat (Kemenkeu)</span>
+                        <div
+                            class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span
+                                class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform"
+                                style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Kebijakan & Regulasi Diklat
+                                (Kemenkeu)</span>
                         </div>
-                        <div class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
-                            <span class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform" style="font-variation-settings:'FILL' 1">check_circle</span>
-                            <span class="text-primary text-[11px] font-bold leading-snug">Analisis Kebutuhan Diklat (AKD) Dasar</span>
+                        <div
+                            class="bg-blue-200 border-2 border-blue-400/80 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-default hover:shadow-md transition-shadow">
+                            <span
+                                class="material-symbols-outlined text-primary text-[16px] mt-0.5 shrink-0 hover:scale-110 transition-transform"
+                                style="font-variation-settings:'FILL' 1">check_circle</span>
+                            <span class="text-primary text-[11px] font-bold leading-snug">Analisis Kebutuhan Diklat
+                                (AKD) Dasar</span>
                         </div>
                     </div>
 
                     <!-- Column 2: Desain Pembelajaran -->
-                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
                         <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
                         <!-- Header -->
-                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                        <div
+                            class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
                             <h4 class="font-bold text-[13px]">Desain Pembelajaran</h4>
                             <p class="text-slate-500 text-[10px] mt-0.5">Rancang & Kembang</p>
                         </div>
                         <!-- Items (Available) -->
-                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Tujuan Pembelajaran (ABCD)</span>
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Tujuan
+                                Pembelajaran (ABCD)</span>
                         </div>
-                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Kurikulum & Silabus Dasar</span>
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Kurikulum
+                                & Silabus Dasar</span>
                         </div>
-                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-primary hover:shadow-md transition-all group relative overflow-hidden">
-                            <div class="w-1.5 h-1.5 rounded-full bg-accent-yellow animate-pulse mt-1.5 shrink-0"></div>
-                            <span class="text-primary text-[11px] font-bold leading-snug">Desain Instruksional ADDIE (Dasar)</span>
+
+                        <!-- AI Recommended Node -->
+                        <div onclick="showComingSoon('Desain Instruksional ADDIE (Dasar)')"
+                            class="bg-gradient-to-br from-[#f8fafc] to-blue-50/50 border border-primary/40 rounded-lg py-2.5 px-3 w-full text-left flex flex-col gap-1.5 shadow-sm cursor-pointer hover:border-primary hover:shadow-md transition-all group relative overflow-hidden">
+                            <div class="flex items-center gap-1 mb-0.5">
+                                <span class="material-symbols-outlined text-[11px] text-accent-yellow animate-pulse"
+                                    style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                <span class="text-[9px] text-primary font-bold tracking-widest uppercase">Rekomendasi
+                                    AI</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
+                                <span class="text-primary text-[11px] font-bold leading-snug">Desain Instruksional ADDIE
+                                    (Dasar)</span>
+                            </div>
                         </div>
-                        <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penyusunan Modul & Bahan Ajar</span>
+
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penyusunan
+                                Modul & Bahan Ajar</span>
                         </div>
                     </div>
 
                     <!-- Column 3: Teknologi Pembelajaran -->
-                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
                         <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
                         <!-- Header -->
-                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                        <div
+                            class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
                             <h4 class="font-bold text-[13px]">Teknologi Belajar</h4>
                             <p class="text-slate-500 text-[10px] mt-0.5">Media & Digital</p>
                         </div>
                         <!-- Items -->
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pengenalan LMS & E-Learning</span>
+                        <!-- AI Recommended Node -->
+                        <div onclick="showComingSoon('Pengenalan LMS & E-Learning')"
+                            class="bg-gradient-to-br from-[#f8fafc] to-blue-50/50 border border-primary/40 rounded-lg py-2.5 px-3 w-full text-left flex flex-col gap-1.5 shadow-sm cursor-pointer hover:border-primary hover:shadow-md transition-all group relative overflow-hidden">
+                            <div class="flex items-center gap-1 mb-0.5">
+                                <span class="material-symbols-outlined text-[11px] text-accent-yellow animate-pulse"
+                                    style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                <span class="text-[9px] text-primary font-bold tracking-widest uppercase">Rekomendasi
+                                    AI</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
+                                <span class="text-primary text-[11px] font-bold leading-snug">Pengenalan LMS &
+                                    E-Learning</span>
+                            </div>
                         </div>
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Media Pembelajaran Interaktif</span>
+
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Media
+                                Pembelajaran Interaktif</span>
                         </div>
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penggunaan Authoring Tool</span>
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penggunaan
+                                Authoring Tool</span>
                         </div>
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pengelolaan Kelas Daring</span>
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pengelolaan
+                                Kelas Daring</span>
                         </div>
                     </div>
 
                     <!-- Column 4: Evaluasi Pembelajaran -->
-                    <div class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
+                    <div
+                        class="flex flex-col w-56 relative items-center gap-3 z-10 hover:-translate-y-1 transition-transform">
                         <div class="absolute -top-px left-1/2 w-px h-4 bg-slate-300 -translate-x-1/2"></div>
                         <!-- Header -->
-                        <div class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
+                        <div
+                            class="bg-white border-2 border-primary text-primary rounded-xl p-3 w-full text-center shadow-sm mb-2 relative">
                             <h4 class="font-bold text-[13px]">Evaluasi Pembelajaran</h4>
                             <p class="text-slate-500 text-[10px] mt-0.5">Ukur & Tindak Lanjut</p>
                         </div>
                         <!-- Items -->
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Evaluasi Level 1 (Reaksi)</span>
+                        <!-- AI Recommended Node -->
+                        <div onclick="showComingSoon('Evaluasi Level 1 (Reaksi)')"
+                            class="bg-gradient-to-br from-[#f8fafc] to-blue-50/50 border border-primary/40 rounded-lg py-2.5 px-3 w-full text-left flex flex-col gap-1.5 shadow-sm cursor-pointer hover:border-primary hover:shadow-md transition-all group relative overflow-hidden">
+                            <div class="flex items-center gap-1 mb-0.5">
+                                <span class="material-symbols-outlined text-[11px] text-accent-yellow animate-pulse"
+                                    style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+                                <span class="text-[9px] text-primary font-bold tracking-widest uppercase">Rekomendasi
+                                    AI</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <div class="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0"></div>
+                                <span class="text-primary text-[11px] font-bold leading-snug">Evaluasi Level 1
+                                    (Reaksi)</span>
+                            </div>
                         </div>
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Evaluasi Level 2 (Pemahaman)</span>
+
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Evaluasi
+                                Level 2 (Pemahaman)</span>
                         </div>
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penyusunan Perangkat Asesmen</span>
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Penyusunan
+                                Perangkat Asesmen</span>
                         </div>
-                         <div class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
-                            <div class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors"></div>
-                            <span class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pelaporan Data Evaluasi</span>
+                        <div
+                            class="bg-white border border-slate-200 rounded-lg p-3 w-full text-left flex items-start gap-2.5 shadow-sm cursor-pointer hover:border-accent-yellow hover:shadow-md transition-all group">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-accent-yellow mt-1.5 shrink-0 transition-colors">
+                            </div>
+                            <span
+                                class="text-slate-700 text-[11px] font-semibold leading-snug group-hover:text-primary transition-colors">Pelaporan
+                                Data Evaluasi</span>
                         </div>
                     </div>
 
                 </div>
+
+                <!-- AI Insight Explanation Footer -->
+                <div class="mt-14 w-full max-w-[1000px] mx-auto">
+                    <div
+                        class="bg-[#f0f4f8] border-2 border-primary/10 rounded-2xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row gap-5 items-start transition-shadow hover:shadow-md">
+                        <div
+                            class="bg-white rounded-full p-4 shadow-sm border border-slate-200 shrink-0 mt-1 flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[32px] text-accent-yellow drop-shadow-sm"
+                                style="font-variation-settings: 'FILL' 1;">psychology</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-3">
+                                <h4 class="text-primary font-black text-base tracking-tight">Insight Rekomendasi AI</h4>
+                                <span
+                                    class="bg-primary text-accent-yellow text-[9px] px-2 py-0.5 rounded-sm uppercase tracking-widest font-bold">Berdasarkan
+                                    Histori Anda</span>
+                            </div>
+                            <p class="text-slate-600 font-medium text-[12px] leading-relaxed mb-2.5 text-justify">
+                                Berdasarkan analisis data 120 jam riwayat pelatihan Anda, Anda terbukti sangat solid
+                                pada aspek teoritis (meraih skor optimal pada modul <b>Andragogi</b> & <b>Kebijakan
+                                    Pelatihan</b>). Kelulusan Anda hari ini pada dasar <b>Pembelajaran Terintegrasi</b>
+                                menandakan kesiapan penuh Anda untuk memasuki fase keahlian teknis terapan.
+                            </p>
+                            <p class="text-slate-600 font-medium text-[12px] leading-relaxed text-justify">
+                                Untuk mengakselerasi kapasitas Anda sebagai PTP, Kami merumuskan jalur rekomendasi
+                                pengembangan komprehensif. Silakan ambil prioritas yang bertanda <b
+                                    class="text-primary italic">Rekomendasi AI</b>: <b>Desain Instruksional ADDIE</b>
+                                sebagai penguatan desain pembelajaran, <b>Pengenalan LMS</b> untuk menunjang
+                                digitalisasi
+                                konten Anda, kemudian <b>Evaluasi Level 1</b> guna memetakan efektivitas penyajian
+                                materi kepada peserta pembelajaran.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
