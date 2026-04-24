@@ -71,6 +71,13 @@ async def get_feedback(nip: str):
             )
             # Enforce system-determined profil_akhir
             ai_generated["profil_akhir"] = kategori
+
+            # Encode rekomendasi_ai_courses into kesimpulan_strategis to avoid DB schema modification
+            ai_courses = ai_generated.get("rekomendasi_ai_courses")
+            if ai_courses:
+                import json
+                ai_generated["kesimpulan_strategis"] = ai_generated.get("kesimpulan_strategis", "") + f"|||AI_COURSES|||{json.dumps(ai_courses)}"
+
             feedback_data = db_service.save_feedback(nip, ai_generated)
         except Exception as e:
             import traceback

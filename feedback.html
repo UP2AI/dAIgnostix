@@ -510,6 +510,14 @@
                         container.innerHTML += createCard('Transformasi Profil', data.transformasi_profil, 'published_with_changes');
                     }
                     if (data.kesimpulan_strategis) {
+                        let textStrategis = data.kesimpulan_strategis;
+                        let aiCourses = [];
+                        if (textStrategis.includes('|||AI_COURSES|||')) {
+                            const parts = textStrategis.split('|||AI_COURSES|||');
+                            textStrategis = parts[0];
+                            try { aiCourses = JSON.parse(parts[1]); } catch(e) { console.error('Failed to parse AI courses', e); }
+                        }
+
                         const saranCard = document.createElement('div');
                         saranCard.className = 'bg-blue-50 dark:bg-blue-900/20 p-5 rounded-xl border border-blue-100 dark:border-blue-800 flex flex-col gap-4 shadow-sm';
                         saranCard.innerHTML = `
@@ -518,7 +526,7 @@
                                 <span class="text-sm">Saran Strategis dan Next Actions</span>
                             </div>
                             <div class="text-sm text-blue-700 dark:text-blue-400 leading-relaxed font-medium">
-                                ${data.kesimpulan_strategis}
+                                ${textStrategis}
                             </div>
                             <div class="border-t border-blue-200 dark:border-blue-700/50 pt-4">
                                 <div class="flex items-center gap-2 mb-3">
@@ -538,7 +546,7 @@
                         await loadCourseRecommendations(
                             saranCard.querySelector('#courses-scroll-container'),
                             data.profil_akhir || data.kategori || 'Menengah',
-                            data.rekomendasi_ai_courses || []
+                            aiCourses
                         );
                     }
 
